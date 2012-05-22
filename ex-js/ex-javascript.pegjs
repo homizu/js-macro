@@ -1556,9 +1556,104 @@ SyntaxRuleList
 
 SyntaxRule
   = pat:Pattern __ "=>" __ temp:Template { return { pattern: pat, template: temp }; }
-
+/*
 Pattern
   = chars:(!"=>" char:. { return char; })* { return chars.join(""); }
+*/
+
+Pattern
+  = ("_" / !"=>" Identifier) __ patterns:SubPatternList? { return patterns; }
+
+SubPatternList
+  = head:SubPattern tail:(__ ","? __ SubPattern)* {
+        var result = [head];
+        for (var i=0; i<tail.length; i++) {
+            if (tail[i][1])
+               result.push(tail[i][1]);
+            result.push(tail[i][3]);
+        }
+        return result;
+    }
+
+SubPattern
+  = "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ ","? __ "...")? {
+        var result = [{
+          type: "Block",
+          patterns: patterns
+        }];
+        if (ellipsis[3]) {
+           if (ellipsis[1])
+              result.push(ellipsis[1]);
+           result.push(ellipsis[3]);
+        }
+        return result;                    
+      }
+  / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ ","? __ "...")? {
+        var result = [{
+          type: "Paren",
+          patterns: patterns
+        }];
+        if (ellipsis[3]) {
+           if (ellipsis[1])
+              result.push(ellipsis[1]);
+           result.push(ellipsis[3]);
+        }
+        return result;                    
+      }
+  / "[" __ patterns:SubPatternList? __ "]" ellipsis:(__ ","? __ "...")? {
+        var result = [{
+          type: "Bracket",
+          patterns: patterns
+        }];
+        if (ellipsis[3]) {
+           if (ellipsis[1])
+              result.push(ellipsis[1]);
+           result.push(ellipsis[3]);
+        }
+        return result;                    
+      }
+  / name:IdentifierName ellipsis:(__ ","? __ "...")? {
+        var result = [{
+          type: "Identifier",
+          name: name
+        }];
+        if (ellipsis[3]) {
+           if (ellipsis[1])
+              result.push(ellipsis[1]);
+           result.push(ellipsis[3]);
+        }
+        return result;                    
+      }
+  / data:Literal ellipsis:(__ ","? __ "...")? {
+        var result = [{
+          type: "Literal",
+          data: data
+        }];
+        if (ellipsis[3]) {
+           if (ellipsis[1])
+              result.push(ellipsis[1]);
+           result.push(ellipsis[3]);
+        }
+        return result;                    
+      }
+  / !"=>" puncs:Punctuators { return puncs; }
+/*
+Punctuators
+  = "." / ";" / "," / "<" / ">"
+  / "=" / "!" / "+" / "-" / "*" / "%"
+  / "&" / "|" / "^" / "!" / "~"
+  / "?" / ":" /
+*/
+
+Punctuators
+  = "." / ";" / "," / "<" / ">"
+  / "<=" / ">=" / "==" / "!=" / "==="
+  / "!==" / "+" / "-" / "*" / "%"
+  / "++" / "--" / "<<" / ">>" / ">>>"
+  / "&" / "|" / "^" / "!" / "~"
+  / "&&" / "||" / "?" / ":" / "="
+  / "+=" / "-=" / "*=" / "%=" / "<<="
+  / ">>=" / ">>>=" / "&=" / "|=" / "^="
 
 Template
   = temp:Statement { return temp; }

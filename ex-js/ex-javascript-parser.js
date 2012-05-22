@@ -237,6 +237,9 @@ module.exports = (function(){
         "SyntaxRuleList": parse_SyntaxRuleList,
         "SyntaxRule": parse_SyntaxRule,
         "Pattern": parse_Pattern,
+        "SubPatternList": parse_SubPatternList,
+        "SubPattern": parse_SubPattern,
+        "Punctuators": parse_Punctuators,
         "Template": parse_Template
       };
       
@@ -15887,107 +15890,1215 @@ module.exports = (function(){
         var pos0, pos1, pos2, pos3;
         
         pos0 = pos;
-        result0 = [];
         pos1 = pos;
-        pos2 = pos;
-        pos3 = pos;
-        reportFailures++;
-        if (input.substr(pos, 2) === "=>") {
-          result1 = "=>";
-          pos += 2;
+        if (input.charCodeAt(pos) === 95) {
+          result0 = "_";
+          pos++;
         } else {
-          result1 = null;
+          result0 = null;
           if (reportFailures === 0) {
-            matchFailed("\"=>\"");
+            matchFailed("\"_\"");
           }
         }
-        reportFailures--;
-        if (result1 === null) {
-          result1 = "";
-        } else {
-          result1 = null;
-          pos = pos3;
-        }
-        if (result1 !== null) {
-          if (input.length > pos) {
-            result2 = input.charAt(pos);
-            pos++;
-          } else {
-            result2 = null;
-            if (reportFailures === 0) {
-              matchFailed("any character");
-            }
-          }
-          if (result2 !== null) {
-            result1 = [result1, result2];
-          } else {
-            result1 = null;
-            pos = pos2;
-          }
-        } else {
-          result1 = null;
-          pos = pos2;
-        }
-        if (result1 !== null) {
-          result1 = (function(offset, char) { return char; })(pos1, result1[1]);
-        }
-        if (result1 === null) {
-          pos = pos1;
-        }
-        while (result1 !== null) {
-          result0.push(result1);
-          pos1 = pos;
+        if (result0 === null) {
           pos2 = pos;
           pos3 = pos;
           reportFailures++;
           if (input.substr(pos, 2) === "=>") {
-            result1 = "=>";
+            result0 = "=>";
             pos += 2;
           } else {
-            result1 = null;
+            result0 = null;
             if (reportFailures === 0) {
               matchFailed("\"=>\"");
             }
           }
           reportFailures--;
-          if (result1 === null) {
-            result1 = "";
+          if (result0 === null) {
+            result0 = "";
           } else {
-            result1 = null;
+            result0 = null;
             pos = pos3;
           }
-          if (result1 !== null) {
-            if (input.length > pos) {
-              result2 = input.charAt(pos);
-              pos++;
+          if (result0 !== null) {
+            result1 = parse_Identifier();
+            if (result1 !== null) {
+              result0 = [result0, result1];
             } else {
-              result2 = null;
-              if (reportFailures === 0) {
-                matchFailed("any character");
-              }
-            }
-            if (result2 !== null) {
-              result1 = [result1, result2];
-            } else {
-              result1 = null;
+              result0 = null;
               pos = pos2;
             }
           } else {
-            result1 = null;
+            result0 = null;
             pos = pos2;
-          }
-          if (result1 !== null) {
-            result1 = (function(offset, char) { return char; })(pos1, result1[1]);
-          }
-          if (result1 === null) {
-            pos = pos1;
           }
         }
         if (result0 !== null) {
-          result0 = (function(offset, chars) { return chars.join(""); })(pos0, result0);
+          result1 = parse___();
+          if (result1 !== null) {
+            result2 = parse_SubPatternList();
+            result2 = result2 !== null ? result2 : "";
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, patterns) { return patterns; })(pos0, result0[2]);
         }
         if (result0 === null) {
           pos = pos0;
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_SubPatternList() {
+        var cacheKey = "SubPatternList@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2, result3, result4, result5;
+        var pos0, pos1, pos2;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_SubPattern();
+        if (result0 !== null) {
+          result1 = [];
+          pos2 = pos;
+          result2 = parse___();
+          if (result2 !== null) {
+            if (input.charCodeAt(pos) === 44) {
+              result3 = ",";
+              pos++;
+            } else {
+              result3 = null;
+              if (reportFailures === 0) {
+                matchFailed("\",\"");
+              }
+            }
+            result3 = result3 !== null ? result3 : "";
+            if (result3 !== null) {
+              result4 = parse___();
+              if (result4 !== null) {
+                result5 = parse_SubPattern();
+                if (result5 !== null) {
+                  result2 = [result2, result3, result4, result5];
+                } else {
+                  result2 = null;
+                  pos = pos2;
+                }
+              } else {
+                result2 = null;
+                pos = pos2;
+              }
+            } else {
+              result2 = null;
+              pos = pos2;
+            }
+          } else {
+            result2 = null;
+            pos = pos2;
+          }
+          while (result2 !== null) {
+            result1.push(result2);
+            pos2 = pos;
+            result2 = parse___();
+            if (result2 !== null) {
+              if (input.charCodeAt(pos) === 44) {
+                result3 = ",";
+                pos++;
+              } else {
+                result3 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\",\"");
+                }
+              }
+              result3 = result3 !== null ? result3 : "";
+              if (result3 !== null) {
+                result4 = parse___();
+                if (result4 !== null) {
+                  result5 = parse_SubPattern();
+                  if (result5 !== null) {
+                    result2 = [result2, result3, result4, result5];
+                  } else {
+                    result2 = null;
+                    pos = pos2;
+                  }
+                } else {
+                  result2 = null;
+                  pos = pos2;
+                }
+              } else {
+                result2 = null;
+                pos = pos2;
+              }
+            } else {
+              result2 = null;
+              pos = pos2;
+            }
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, head, tail) {
+                var result = [head];
+                for (var i=0; i<tail.length; i++) {
+                    if (tail[i][1])
+                       result.push(tail[i][1]);
+                    result.push(tail[i][3]);
+                }
+                return result;
+            })(pos0, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_SubPattern() {
+        var cacheKey = "SubPattern@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2, result3, result4, result5, result6, result7, result8;
+        var pos0, pos1, pos2;
+        
+        pos0 = pos;
+        pos1 = pos;
+        if (input.charCodeAt(pos) === 123) {
+          result0 = "{";
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"{\"");
+          }
+        }
+        if (result0 !== null) {
+          result1 = parse___();
+          if (result1 !== null) {
+            result2 = parse_SubPatternList();
+            result2 = result2 !== null ? result2 : "";
+            if (result2 !== null) {
+              result3 = parse___();
+              if (result3 !== null) {
+                if (input.charCodeAt(pos) === 125) {
+                  result4 = "}";
+                  pos++;
+                } else {
+                  result4 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"}\"");
+                  }
+                }
+                if (result4 !== null) {
+                  pos2 = pos;
+                  result5 = parse___();
+                  if (result5 !== null) {
+                    if (input.charCodeAt(pos) === 44) {
+                      result6 = ",";
+                      pos++;
+                    } else {
+                      result6 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\",\"");
+                      }
+                    }
+                    result6 = result6 !== null ? result6 : "";
+                    if (result6 !== null) {
+                      result7 = parse___();
+                      if (result7 !== null) {
+                        if (input.substr(pos, 3) === "...") {
+                          result8 = "...";
+                          pos += 3;
+                        } else {
+                          result8 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("\"...\"");
+                          }
+                        }
+                        if (result8 !== null) {
+                          result5 = [result5, result6, result7, result8];
+                        } else {
+                          result5 = null;
+                          pos = pos2;
+                        }
+                      } else {
+                        result5 = null;
+                        pos = pos2;
+                      }
+                    } else {
+                      result5 = null;
+                      pos = pos2;
+                    }
+                  } else {
+                    result5 = null;
+                    pos = pos2;
+                  }
+                  result5 = result5 !== null ? result5 : "";
+                  if (result5 !== null) {
+                    result0 = [result0, result1, result2, result3, result4, result5];
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, patterns, ellipsis) {
+                var result = [{
+                  type: "Block",
+                  patterns: patterns
+                }];
+                if (ellipsis[3]) {
+                   if (ellipsis[1])
+                      result.push(ellipsis[1]);
+                   result.push(ellipsis[3]);
+                }
+                return result;                    
+              })(pos0, result0[2], result0[5]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          pos0 = pos;
+          pos1 = pos;
+          if (input.charCodeAt(pos) === 40) {
+            result0 = "(";
+            pos++;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"(\"");
+            }
+          }
+          if (result0 !== null) {
+            result1 = parse___();
+            if (result1 !== null) {
+              result2 = parse_SubPatternList();
+              result2 = result2 !== null ? result2 : "";
+              if (result2 !== null) {
+                result3 = parse___();
+                if (result3 !== null) {
+                  if (input.charCodeAt(pos) === 41) {
+                    result4 = ")";
+                    pos++;
+                  } else {
+                    result4 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\")\"");
+                    }
+                  }
+                  if (result4 !== null) {
+                    pos2 = pos;
+                    result5 = parse___();
+                    if (result5 !== null) {
+                      if (input.charCodeAt(pos) === 44) {
+                        result6 = ",";
+                        pos++;
+                      } else {
+                        result6 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\",\"");
+                        }
+                      }
+                      result6 = result6 !== null ? result6 : "";
+                      if (result6 !== null) {
+                        result7 = parse___();
+                        if (result7 !== null) {
+                          if (input.substr(pos, 3) === "...") {
+                            result8 = "...";
+                            pos += 3;
+                          } else {
+                            result8 = null;
+                            if (reportFailures === 0) {
+                              matchFailed("\"...\"");
+                            }
+                          }
+                          if (result8 !== null) {
+                            result5 = [result5, result6, result7, result8];
+                          } else {
+                            result5 = null;
+                            pos = pos2;
+                          }
+                        } else {
+                          result5 = null;
+                          pos = pos2;
+                        }
+                      } else {
+                        result5 = null;
+                        pos = pos2;
+                      }
+                    } else {
+                      result5 = null;
+                      pos = pos2;
+                    }
+                    result5 = result5 !== null ? result5 : "";
+                    if (result5 !== null) {
+                      result0 = [result0, result1, result2, result3, result4, result5];
+                    } else {
+                      result0 = null;
+                      pos = pos1;
+                    }
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, patterns, ellipsis) {
+                  var result = [{
+                    type: "Paren",
+                    patterns: patterns
+                  }];
+                  if (ellipsis[3]) {
+                     if (ellipsis[1])
+                        result.push(ellipsis[1]);
+                     result.push(ellipsis[3]);
+                  }
+                  return result;                    
+                })(pos0, result0[2], result0[5]);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
+          if (result0 === null) {
+            pos0 = pos;
+            pos1 = pos;
+            if (input.charCodeAt(pos) === 91) {
+              result0 = "[";
+              pos++;
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"[\"");
+              }
+            }
+            if (result0 !== null) {
+              result1 = parse___();
+              if (result1 !== null) {
+                result2 = parse_SubPatternList();
+                result2 = result2 !== null ? result2 : "";
+                if (result2 !== null) {
+                  result3 = parse___();
+                  if (result3 !== null) {
+                    if (input.charCodeAt(pos) === 93) {
+                      result4 = "]";
+                      pos++;
+                    } else {
+                      result4 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\"]\"");
+                      }
+                    }
+                    if (result4 !== null) {
+                      pos2 = pos;
+                      result5 = parse___();
+                      if (result5 !== null) {
+                        if (input.charCodeAt(pos) === 44) {
+                          result6 = ",";
+                          pos++;
+                        } else {
+                          result6 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("\",\"");
+                          }
+                        }
+                        result6 = result6 !== null ? result6 : "";
+                        if (result6 !== null) {
+                          result7 = parse___();
+                          if (result7 !== null) {
+                            if (input.substr(pos, 3) === "...") {
+                              result8 = "...";
+                              pos += 3;
+                            } else {
+                              result8 = null;
+                              if (reportFailures === 0) {
+                                matchFailed("\"...\"");
+                              }
+                            }
+                            if (result8 !== null) {
+                              result5 = [result5, result6, result7, result8];
+                            } else {
+                              result5 = null;
+                              pos = pos2;
+                            }
+                          } else {
+                            result5 = null;
+                            pos = pos2;
+                          }
+                        } else {
+                          result5 = null;
+                          pos = pos2;
+                        }
+                      } else {
+                        result5 = null;
+                        pos = pos2;
+                      }
+                      result5 = result5 !== null ? result5 : "";
+                      if (result5 !== null) {
+                        result0 = [result0, result1, result2, result3, result4, result5];
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
+                    } else {
+                      result0 = null;
+                      pos = pos1;
+                    }
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+            if (result0 !== null) {
+              result0 = (function(offset, patterns, ellipsis) {
+                    var result = [{
+                      type: "Bracket",
+                      patterns: patterns
+                    }];
+                    if (ellipsis[3]) {
+                       if (ellipsis[1])
+                          result.push(ellipsis[1]);
+                       result.push(ellipsis[3]);
+                    }
+                    return result;                    
+                  })(pos0, result0[2], result0[5]);
+            }
+            if (result0 === null) {
+              pos = pos0;
+            }
+            if (result0 === null) {
+              pos0 = pos;
+              pos1 = pos;
+              result0 = parse_IdentifierName();
+              if (result0 !== null) {
+                pos2 = pos;
+                result1 = parse___();
+                if (result1 !== null) {
+                  if (input.charCodeAt(pos) === 44) {
+                    result2 = ",";
+                    pos++;
+                  } else {
+                    result2 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\",\"");
+                    }
+                  }
+                  result2 = result2 !== null ? result2 : "";
+                  if (result2 !== null) {
+                    result3 = parse___();
+                    if (result3 !== null) {
+                      if (input.substr(pos, 3) === "...") {
+                        result4 = "...";
+                        pos += 3;
+                      } else {
+                        result4 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\"...\"");
+                        }
+                      }
+                      if (result4 !== null) {
+                        result1 = [result1, result2, result3, result4];
+                      } else {
+                        result1 = null;
+                        pos = pos2;
+                      }
+                    } else {
+                      result1 = null;
+                      pos = pos2;
+                    }
+                  } else {
+                    result1 = null;
+                    pos = pos2;
+                  }
+                } else {
+                  result1 = null;
+                  pos = pos2;
+                }
+                result1 = result1 !== null ? result1 : "";
+                if (result1 !== null) {
+                  result0 = [result0, result1];
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+              if (result0 !== null) {
+                result0 = (function(offset, name, ellipsis) {
+                      var result = [{
+                        type: "Identifier",
+                        name: name
+                      }];
+                      if (ellipsis[3]) {
+                         if (ellipsis[1])
+                            result.push(ellipsis[1]);
+                         result.push(ellipsis[3]);
+                      }
+                      return result;                    
+                    })(pos0, result0[0], result0[1]);
+              }
+              if (result0 === null) {
+                pos = pos0;
+              }
+              if (result0 === null) {
+                pos0 = pos;
+                pos1 = pos;
+                result0 = parse_Literal();
+                if (result0 !== null) {
+                  pos2 = pos;
+                  result1 = parse___();
+                  if (result1 !== null) {
+                    if (input.charCodeAt(pos) === 44) {
+                      result2 = ",";
+                      pos++;
+                    } else {
+                      result2 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\",\"");
+                      }
+                    }
+                    result2 = result2 !== null ? result2 : "";
+                    if (result2 !== null) {
+                      result3 = parse___();
+                      if (result3 !== null) {
+                        if (input.substr(pos, 3) === "...") {
+                          result4 = "...";
+                          pos += 3;
+                        } else {
+                          result4 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("\"...\"");
+                          }
+                        }
+                        if (result4 !== null) {
+                          result1 = [result1, result2, result3, result4];
+                        } else {
+                          result1 = null;
+                          pos = pos2;
+                        }
+                      } else {
+                        result1 = null;
+                        pos = pos2;
+                      }
+                    } else {
+                      result1 = null;
+                      pos = pos2;
+                    }
+                  } else {
+                    result1 = null;
+                    pos = pos2;
+                  }
+                  result1 = result1 !== null ? result1 : "";
+                  if (result1 !== null) {
+                    result0 = [result0, result1];
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+                if (result0 !== null) {
+                  result0 = (function(offset, data, ellipsis) {
+                        var result = [{
+                          type: "Literal",
+                          data: data
+                        }];
+                        if (ellipsis[3]) {
+                           if (ellipsis[1])
+                              result.push(ellipsis[1]);
+                           result.push(ellipsis[3]);
+                        }
+                        return result;                    
+                      })(pos0, result0[0], result0[1]);
+                }
+                if (result0 === null) {
+                  pos = pos0;
+                }
+                if (result0 === null) {
+                  pos0 = pos;
+                  pos1 = pos;
+                  pos2 = pos;
+                  reportFailures++;
+                  if (input.substr(pos, 2) === "=>") {
+                    result0 = "=>";
+                    pos += 2;
+                  } else {
+                    result0 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\"=>\"");
+                    }
+                  }
+                  reportFailures--;
+                  if (result0 === null) {
+                    result0 = "";
+                  } else {
+                    result0 = null;
+                    pos = pos2;
+                  }
+                  if (result0 !== null) {
+                    result1 = parse_Punctuators();
+                    if (result1 !== null) {
+                      result0 = [result0, result1];
+                    } else {
+                      result0 = null;
+                      pos = pos1;
+                    }
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                  if (result0 !== null) {
+                    result0 = (function(offset, puncs) { return puncs; })(pos0, result0[1]);
+                  }
+                  if (result0 === null) {
+                    pos = pos0;
+                  }
+                }
+              }
+            }
+          }
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_Punctuators() {
+        var cacheKey = "Punctuators@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0;
+        
+        if (input.charCodeAt(pos) === 46) {
+          result0 = ".";
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\".\"");
+          }
+        }
+        if (result0 === null) {
+          if (input.charCodeAt(pos) === 59) {
+            result0 = ";";
+            pos++;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\";\"");
+            }
+          }
+          if (result0 === null) {
+            if (input.charCodeAt(pos) === 44) {
+              result0 = ",";
+              pos++;
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\",\"");
+              }
+            }
+            if (result0 === null) {
+              if (input.charCodeAt(pos) === 60) {
+                result0 = "<";
+                pos++;
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"<\"");
+                }
+              }
+              if (result0 === null) {
+                if (input.charCodeAt(pos) === 62) {
+                  result0 = ">";
+                  pos++;
+                } else {
+                  result0 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\">\"");
+                  }
+                }
+                if (result0 === null) {
+                  if (input.substr(pos, 2) === "<=") {
+                    result0 = "<=";
+                    pos += 2;
+                  } else {
+                    result0 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\"<=\"");
+                    }
+                  }
+                  if (result0 === null) {
+                    if (input.substr(pos, 2) === ">=") {
+                      result0 = ">=";
+                      pos += 2;
+                    } else {
+                      result0 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\">=\"");
+                      }
+                    }
+                    if (result0 === null) {
+                      if (input.substr(pos, 2) === "==") {
+                        result0 = "==";
+                        pos += 2;
+                      } else {
+                        result0 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\"==\"");
+                        }
+                      }
+                      if (result0 === null) {
+                        if (input.substr(pos, 2) === "!=") {
+                          result0 = "!=";
+                          pos += 2;
+                        } else {
+                          result0 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("\"!=\"");
+                          }
+                        }
+                        if (result0 === null) {
+                          if (input.substr(pos, 3) === "===") {
+                            result0 = "===";
+                            pos += 3;
+                          } else {
+                            result0 = null;
+                            if (reportFailures === 0) {
+                              matchFailed("\"===\"");
+                            }
+                          }
+                          if (result0 === null) {
+                            if (input.substr(pos, 3) === "!==") {
+                              result0 = "!==";
+                              pos += 3;
+                            } else {
+                              result0 = null;
+                              if (reportFailures === 0) {
+                                matchFailed("\"!==\"");
+                              }
+                            }
+                            if (result0 === null) {
+                              if (input.charCodeAt(pos) === 43) {
+                                result0 = "+";
+                                pos++;
+                              } else {
+                                result0 = null;
+                                if (reportFailures === 0) {
+                                  matchFailed("\"+\"");
+                                }
+                              }
+                              if (result0 === null) {
+                                if (input.charCodeAt(pos) === 45) {
+                                  result0 = "-";
+                                  pos++;
+                                } else {
+                                  result0 = null;
+                                  if (reportFailures === 0) {
+                                    matchFailed("\"-\"");
+                                  }
+                                }
+                                if (result0 === null) {
+                                  if (input.charCodeAt(pos) === 42) {
+                                    result0 = "*";
+                                    pos++;
+                                  } else {
+                                    result0 = null;
+                                    if (reportFailures === 0) {
+                                      matchFailed("\"*\"");
+                                    }
+                                  }
+                                  if (result0 === null) {
+                                    if (input.charCodeAt(pos) === 37) {
+                                      result0 = "%";
+                                      pos++;
+                                    } else {
+                                      result0 = null;
+                                      if (reportFailures === 0) {
+                                        matchFailed("\"%\"");
+                                      }
+                                    }
+                                    if (result0 === null) {
+                                      if (input.substr(pos, 2) === "++") {
+                                        result0 = "++";
+                                        pos += 2;
+                                      } else {
+                                        result0 = null;
+                                        if (reportFailures === 0) {
+                                          matchFailed("\"++\"");
+                                        }
+                                      }
+                                      if (result0 === null) {
+                                        if (input.substr(pos, 2) === "--") {
+                                          result0 = "--";
+                                          pos += 2;
+                                        } else {
+                                          result0 = null;
+                                          if (reportFailures === 0) {
+                                            matchFailed("\"--\"");
+                                          }
+                                        }
+                                        if (result0 === null) {
+                                          if (input.substr(pos, 2) === "<<") {
+                                            result0 = "<<";
+                                            pos += 2;
+                                          } else {
+                                            result0 = null;
+                                            if (reportFailures === 0) {
+                                              matchFailed("\"<<\"");
+                                            }
+                                          }
+                                          if (result0 === null) {
+                                            if (input.substr(pos, 2) === ">>") {
+                                              result0 = ">>";
+                                              pos += 2;
+                                            } else {
+                                              result0 = null;
+                                              if (reportFailures === 0) {
+                                                matchFailed("\">>\"");
+                                              }
+                                            }
+                                            if (result0 === null) {
+                                              if (input.substr(pos, 3) === ">>>") {
+                                                result0 = ">>>";
+                                                pos += 3;
+                                              } else {
+                                                result0 = null;
+                                                if (reportFailures === 0) {
+                                                  matchFailed("\">>>\"");
+                                                }
+                                              }
+                                              if (result0 === null) {
+                                                if (input.charCodeAt(pos) === 38) {
+                                                  result0 = "&";
+                                                  pos++;
+                                                } else {
+                                                  result0 = null;
+                                                  if (reportFailures === 0) {
+                                                    matchFailed("\"&\"");
+                                                  }
+                                                }
+                                                if (result0 === null) {
+                                                  if (input.charCodeAt(pos) === 124) {
+                                                    result0 = "|";
+                                                    pos++;
+                                                  } else {
+                                                    result0 = null;
+                                                    if (reportFailures === 0) {
+                                                      matchFailed("\"|\"");
+                                                    }
+                                                  }
+                                                  if (result0 === null) {
+                                                    if (input.charCodeAt(pos) === 94) {
+                                                      result0 = "^";
+                                                      pos++;
+                                                    } else {
+                                                      result0 = null;
+                                                      if (reportFailures === 0) {
+                                                        matchFailed("\"^\"");
+                                                      }
+                                                    }
+                                                    if (result0 === null) {
+                                                      if (input.charCodeAt(pos) === 33) {
+                                                        result0 = "!";
+                                                        pos++;
+                                                      } else {
+                                                        result0 = null;
+                                                        if (reportFailures === 0) {
+                                                          matchFailed("\"!\"");
+                                                        }
+                                                      }
+                                                      if (result0 === null) {
+                                                        if (input.charCodeAt(pos) === 126) {
+                                                          result0 = "~";
+                                                          pos++;
+                                                        } else {
+                                                          result0 = null;
+                                                          if (reportFailures === 0) {
+                                                            matchFailed("\"~\"");
+                                                          }
+                                                        }
+                                                        if (result0 === null) {
+                                                          if (input.substr(pos, 2) === "&&") {
+                                                            result0 = "&&";
+                                                            pos += 2;
+                                                          } else {
+                                                            result0 = null;
+                                                            if (reportFailures === 0) {
+                                                              matchFailed("\"&&\"");
+                                                            }
+                                                          }
+                                                          if (result0 === null) {
+                                                            if (input.substr(pos, 2) === "||") {
+                                                              result0 = "||";
+                                                              pos += 2;
+                                                            } else {
+                                                              result0 = null;
+                                                              if (reportFailures === 0) {
+                                                                matchFailed("\"||\"");
+                                                              }
+                                                            }
+                                                            if (result0 === null) {
+                                                              if (input.charCodeAt(pos) === 63) {
+                                                                result0 = "?";
+                                                                pos++;
+                                                              } else {
+                                                                result0 = null;
+                                                                if (reportFailures === 0) {
+                                                                  matchFailed("\"?\"");
+                                                                }
+                                                              }
+                                                              if (result0 === null) {
+                                                                if (input.charCodeAt(pos) === 58) {
+                                                                  result0 = ":";
+                                                                  pos++;
+                                                                } else {
+                                                                  result0 = null;
+                                                                  if (reportFailures === 0) {
+                                                                    matchFailed("\":\"");
+                                                                  }
+                                                                }
+                                                                if (result0 === null) {
+                                                                  if (input.charCodeAt(pos) === 61) {
+                                                                    result0 = "=";
+                                                                    pos++;
+                                                                  } else {
+                                                                    result0 = null;
+                                                                    if (reportFailures === 0) {
+                                                                      matchFailed("\"=\"");
+                                                                    }
+                                                                  }
+                                                                  if (result0 === null) {
+                                                                    if (input.substr(pos, 2) === "+=") {
+                                                                      result0 = "+=";
+                                                                      pos += 2;
+                                                                    } else {
+                                                                      result0 = null;
+                                                                      if (reportFailures === 0) {
+                                                                        matchFailed("\"+=\"");
+                                                                      }
+                                                                    }
+                                                                    if (result0 === null) {
+                                                                      if (input.substr(pos, 2) === "-=") {
+                                                                        result0 = "-=";
+                                                                        pos += 2;
+                                                                      } else {
+                                                                        result0 = null;
+                                                                        if (reportFailures === 0) {
+                                                                          matchFailed("\"-=\"");
+                                                                        }
+                                                                      }
+                                                                      if (result0 === null) {
+                                                                        if (input.substr(pos, 2) === "*=") {
+                                                                          result0 = "*=";
+                                                                          pos += 2;
+                                                                        } else {
+                                                                          result0 = null;
+                                                                          if (reportFailures === 0) {
+                                                                            matchFailed("\"*=\"");
+                                                                          }
+                                                                        }
+                                                                        if (result0 === null) {
+                                                                          if (input.substr(pos, 2) === "%=") {
+                                                                            result0 = "%=";
+                                                                            pos += 2;
+                                                                          } else {
+                                                                            result0 = null;
+                                                                            if (reportFailures === 0) {
+                                                                              matchFailed("\"%=\"");
+                                                                            }
+                                                                          }
+                                                                          if (result0 === null) {
+                                                                            if (input.substr(pos, 3) === "<<=") {
+                                                                              result0 = "<<=";
+                                                                              pos += 3;
+                                                                            } else {
+                                                                              result0 = null;
+                                                                              if (reportFailures === 0) {
+                                                                                matchFailed("\"<<=\"");
+                                                                              }
+                                                                            }
+                                                                            if (result0 === null) {
+                                                                              if (input.substr(pos, 3) === ">>=") {
+                                                                                result0 = ">>=";
+                                                                                pos += 3;
+                                                                              } else {
+                                                                                result0 = null;
+                                                                                if (reportFailures === 0) {
+                                                                                  matchFailed("\">>=\"");
+                                                                                }
+                                                                              }
+                                                                              if (result0 === null) {
+                                                                                if (input.substr(pos, 4) === ">>>=") {
+                                                                                  result0 = ">>>=";
+                                                                                  pos += 4;
+                                                                                } else {
+                                                                                  result0 = null;
+                                                                                  if (reportFailures === 0) {
+                                                                                    matchFailed("\">>>=\"");
+                                                                                  }
+                                                                                }
+                                                                                if (result0 === null) {
+                                                                                  if (input.substr(pos, 2) === "&=") {
+                                                                                    result0 = "&=";
+                                                                                    pos += 2;
+                                                                                  } else {
+                                                                                    result0 = null;
+                                                                                    if (reportFailures === 0) {
+                                                                                      matchFailed("\"&=\"");
+                                                                                    }
+                                                                                  }
+                                                                                  if (result0 === null) {
+                                                                                    if (input.substr(pos, 2) === "|=") {
+                                                                                      result0 = "|=";
+                                                                                      pos += 2;
+                                                                                    } else {
+                                                                                      result0 = null;
+                                                                                      if (reportFailures === 0) {
+                                                                                        matchFailed("\"|=\"");
+                                                                                      }
+                                                                                    }
+                                                                                    if (result0 === null) {
+                                                                                      if (input.substr(pos, 2) === "^=") {
+                                                                                        result0 = "^=";
+                                                                                        pos += 2;
+                                                                                      } else {
+                                                                                        result0 = null;
+                                                                                        if (reportFailures === 0) {
+                                                                                          matchFailed("\"^=\"");
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
         
         cache[cacheKey] = {

@@ -4,8 +4,8 @@ syntax let {
     expression: expr;
     statement: stmt;
 
-    let (var id = expr) {
-        stmt
+    let (var id = expr, ...) {
+        stmt ...
     } => ((function (id) {
         stmt
     })(expr));
