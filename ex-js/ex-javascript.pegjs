@@ -1566,11 +1566,12 @@ Pattern
 
 SubPatternList
   = head:SubPattern tail:(__ ","? __ SubPattern)* {
-        var result = [head];
+        var result = head;
         for (var i=0; i<tail.length; i++) {
             if (tail[i][1])
-               result.push(tail[i][1]);
-            result.push(tail[i][3]);
+               result.push({ type: "Punctuator", data: "," });
+            result = result.concat(tail[i][3]);
+            console.log(tail[i][3]);
         }
         return result;
     }
@@ -1579,36 +1580,36 @@ SubPattern
   = "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ ","? __ "...")? {
         var result = [{
           type: "Block",
-          patterns: patterns
+          elements: patterns
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push(ellipsis[1]);
-           result.push(ellipsis[3]);
+              result.push({ type: "Punctuator", data: "," });
+           result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
   / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ ","? __ "...")? {
         var result = [{
           type: "Paren",
-          patterns: patterns
+          elements: patterns
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push(ellipsis[1]);
-           result.push(ellipsis[3]);
+              result.push({ type: "Punctuator", data: "," });
+           result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
   / "[" __ patterns:SubPatternList? __ "]" ellipsis:(__ ","? __ "...")? {
         var result = [{
           type: "Bracket",
-          patterns: patterns
+          elements: patterns
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push(ellipsis[1]);
-           result.push(ellipsis[3]);
+              result.push({ type: "Punctuator", data: "," });
+           result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
@@ -1619,8 +1620,8 @@ SubPattern
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push(ellipsis[1]);
-           result.push(ellipsis[3]);
+              result.push({ type: "Punctuator", data: "," });
+           result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
@@ -1631,20 +1632,25 @@ SubPattern
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push(ellipsis[1]);
-           result.push(ellipsis[3]);
+              result.push({ type: "Punctuator", data: "," });
+           result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
-  / !"=>" puncs:Punctuators { return puncs; }
-/*
-Punctuators
+  / !("=>" __) puncs:Punctuator+ {
+        return [{
+           type: "Punctuator",
+           data: puncs.join("")
+        }];
+    }
+
+Punctuator
   = "." / ";" / "," / "<" / ">"
   / "=" / "!" / "+" / "-" / "*" / "%"
   / "&" / "|" / "^" / "!" / "~"
-  / "?" / ":" /
-*/
+  / "?" / ":"
 
+/*
 Punctuators
   = "." / ";" / "," / "<" / ">"
   / "<=" / ">=" / "==" / "!=" / "==="
@@ -1654,6 +1660,6 @@ Punctuators
   / "&&" / "||" / "?" / ":" / "="
   / "+=" / "-=" / "*=" / "%=" / "<<="
   / ">>=" / ">>>=" / "&=" / "|=" / "^="
-
+*/
 Template
   = temp:Statement { return temp; }
