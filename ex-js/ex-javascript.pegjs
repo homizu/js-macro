@@ -1571,7 +1571,6 @@ SubPatternList
             if (tail[i][1])
                result.push({ type: "Punctuator", data: "," });
             result = result.concat(tail[i][3]);
-            console.log(tail[i][3]);
         }
         return result;
     }
