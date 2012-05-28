@@ -3,8 +3,9 @@ syntax let {
     identifier: id;
     expression: expr;
     statement: stmt;
+    literal: var, =>>;
 
-    let (var id = expr, ...) {
+    let (var id = expr =>> ...) {
         stmt ...
     } => ((function (id) {
         stmt

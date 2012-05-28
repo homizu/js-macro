@@ -1532,18 +1532,49 @@ SourceElement
 
 /* Irrelevant. */
 
+
+/* マクロ定義 */
+
 MacroDefinition
   = SyntaxToken __
     macroName:Identifier __
     "{" __
-    idList:("identifier:" __ Identifier (__ "," __ Identifier)* ";")? __
-    exprList:("expression:" __ Identifier (__ "," __ Identifier)* ";")? __
-    stmtList:("statement:" __ Identifier (__ "," __ Identifier)* ";")? __
-    literalList:("literal:" __ Identifier (__ "," __ Identifier)* ";")? __
+    idList:("identifier:" __ ids:VariableList __ ";" { return ids; })? __ 
+    exprList:("expression:" __ exprs:VariableList __ ";" { return exprs; })? __
+    stmtList:("statement:" __ stmts:VariableList __ ";" { return stmts; })? __
+    literalList:("literal:" __ literals:LiteralKeywordList __ ";" { return literals; })? __
     syntaxRules:SyntaxRuleList __
     "}" { return { type: "MacroDefinition",
                    macroName: macroName,
+                   identifiers: idList,
+                   expressions: exprList,
+                   statements: stmtList,
+                   literals: literalList,
                    syntaxRules: syntaxRules }; }
+
+VariableList
+  = head:IdentifierName tail:(__ "," __ IdentifierName)* {
+        var result = [head];
+        for (var i=0; i<tail.length; i++) {
+            result.push(tail[i][3]);
+        }
+        return result;
+    }
+
+LiteralKeywordList
+  = head:LiteralKeyword tail:(__ "," __ LiteralKeyword)* {
+        var result = [head];
+        for (var i=0; i<tail.length; i++) {
+            result.push(tail[i][3]);
+        }
+        return result;
+    }
+
+// リテラルキーワード "=>" は禁止
+LiteralKeyword
+  = name:IdentifierName { return name; }
+  / !"=>" puncs:Punctuator2+ { return puncs.join(""); } 
+  / "=>" puncs:Punctuator2+ { return "=>"+puncs.join(""); } 
 
 SyntaxRuleList
   = head:SyntaxRule tail:(__ SyntaxRule)* {
@@ -1556,11 +1587,8 @@ SyntaxRuleList
 
 SyntaxRule
   = pat:Pattern __ "=>" __ temp:Template { return { pattern: pat, template: temp }; }
-/*
-Pattern
-  = chars:(!"=>" char:. { return char; })* { return chars.join(""); }
-*/
 
+// パターン
 Pattern
   = ("_" / !"=>" Identifier) __ patterns:SubPatternList? { return patterns; }
 
@@ -1573,83 +1601,99 @@ SubPatternList
             result = result.concat(tail[i][3]);
         }
         return result;
-    }
+     }
 
 SubPattern
-  = "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ ","? __ "...")? {
+  = "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = [{
           type: "Block",
           elements: patterns
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: "," });
+              result.push({ type: "Punctuator", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
-  / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ ","? __ "...")? {
+  / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = [{
           type: "Paren",
           elements: patterns
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: "," });
+              result.push({ type: "Punctuator", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
-  / "[" __ patterns:SubPatternList? __ "]" ellipsis:(__ ","? __ "...")? {
+  / "[" __ patterns:SubPatternList? __ "]" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = [{
           type: "Bracket",
           elements: patterns
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: "," });
+              result.push({ type: "Punctuator", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
-  / name:IdentifierName ellipsis:(__ ","? __ "...")? {
+  / name:IdentifierName ellipsis:(__ PunctuationMark? __ "...")? {
         var result = [{
           type: "Identifier",
           name: name
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: "," });
+              result.push({ type: "Punctuator", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
-  / data:Literal ellipsis:(__ ","? __ "...")? {
+  / data:Literal ellipsis:(__ PunctuationMark? __ "...")? {
         var result = [{
           type: "Literal",
           data: data
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: "," });
+              result.push({ type: "Punctuator", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
-  / !("=>" __) puncs:Punctuator+ {
+  / punc:PatternPunctuator {
         return [{
            type: "Punctuator",
-           data: puncs.join("")
+           data: punc
         }];
     }
 
-Punctuator
-  = "." / ";" / "," / "<" / ">"
-  / "=" / "!" / "+" / "-" / "*" / "%"
-  / "&" / "|" / "^" / "!" / "~"
-  / "?" / ":"
+PunctuationMark
+  = name:IdentifierName { return name; }
+  / punc:PatternPunctuator { return punc; }
 
-/*
+PatternPunctuator
+  = !"..." punc:Punctuator1 { return punc; }
+  / !"=>" puncs:Punctuator2+ { return puncs.join(""); }
+  / "=>" puncs:Punctuator2+ { return "=>"+puncs.join(""); }
+
+// 区切り記号 '"', "'" は除く
+Punctuator
+  = Punctuator1 / Punctuator2
+
+Punctuator1
+  = "." / ";" / ","
+
+Punctuator2
+  = "<" / ">" / "=" / "!" / "+"
+  / "-" / "*" / "%" / "&" / "|"
+  / "^" / "!" / "~" / "?" / ":"
+
+
+/*　JS の区切り記号
 Punctuators
   = "." / ";" / "," / "<" / ">"
   / "<=" / ">=" / "==" / "!=" / "==="
@@ -1660,5 +1704,7 @@ Punctuators
   / "+=" / "-=" / "*=" / "%=" / "<<="
   / ">>=" / ">>>=" / "&=" / "|=" / "^="
 */
+
+// テンプレート
 Template
   = temp:Statement { return temp; }
