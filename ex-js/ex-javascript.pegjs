@@ -1604,7 +1604,17 @@ SubPatternList
      }
 
 SubPattern
-  = "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
+  = "[#" __ patterns:SubPatternList? __ "#]" ellipsis:(__ PunctuationMark? __ "...")? {
+        var result = [{
+          type: "EllipsisScope",
+          elements: patterns
+        }];
+        if (ellipsis[1])
+           result.push({ type: "Punctuator", data: ellipsis[1] });
+        result.push({ type: "Ellipsis" });
+        return result;                    
+      }
+  / "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = [{
           type: "Block",
           elements: patterns
@@ -1707,4 +1717,49 @@ Punctuators
 
 // テンプレート
 Template
-  = temp:Statement { return temp; }
+  = temp:StatementInTemplate { return temp; }
+
+StatementInTemp
+  = Expression "..."
+  / Statement
+  / Statement "..."
+  / Expression 
+
+StatementInTemplate
+  = Block
+  / VariableStatement
+  / EmptyStatement
+  / ExpressionStatement
+  / IfStatement
+  / IterationStatement
+  / ContinueStatement
+  / BreakStatement
+  / ReturnStatement
+  / WithStatement
+  / LabelledStatement
+  / SwitchStatement
+  / ThrowStatement
+  / TryStatement
+  / DebuggerStatement
+  / MacroDefinition      // add
+  / FunctionDeclaration
+  / FunctionExpression
+  / Expression ","? "..."
+
+ExpressionInTemplate
+  = head:AssignmentExpression
+    tail:(__ "," __ AssignmentExpression)* __ ","? __ "..."? {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+ExpressionStatementInTemplate
+  = !("{" / FunctionToken) expression:ExpressionInTemplate EOS { return expression; }

@@ -5,12 +5,13 @@ syntax let {
     statement: stmt;
     literal: var, =>>;
 
-    let (var id = expr =>> ...) {
+    let (var [#id = expr#] =>> ...) {
         stmt ...
     } => ((function (id) {
         stmt
     })(expr));
 }
+
 /*
 // let マクロの使用
 let (var id1=expr1, var id2=expr) {
