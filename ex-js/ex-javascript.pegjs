@@ -45,6 +45,11 @@
  * grammar correctly.
  */
 
+/* Initializer written by homizu */
+{
+  var inTemplate = false;
+}
+
 start
   = __ program:Program __ { return program; }
 
@@ -146,7 +151,7 @@ Keyword
       / "new"
       / "return"
       / "switch"
-      / "syntax" // add
+      / "syntax" // added by homizu
       / "this"
       / "throw"
       / "try"
@@ -384,7 +389,7 @@ NullToken       = "null"             !IdentifierPart
 ReturnToken     = "return"           !IdentifierPart
 SetToken        = "set"              !IdentifierPart
 SwitchToken     = "switch"           !IdentifierPart
-SyntaxToken     = "syntax"           !IdentifierPart // add
+SyntaxToken     = "syntax"           !IdentifierPart // added by homizu
 ThisToken       = "this"             !IdentifierPart
 ThrowToken      = "throw"            !IdentifierPart
 TrueToken       = "true"             !IdentifierPart
@@ -659,13 +664,28 @@ Arguments
   }
 
 ArgumentList
-  = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* {
+  = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)*
+    ellipsis:(!{ return inTemplate; }
+                  / (&{ return inTemplate; }(__ "," __ "...")?)) {
     var result = [head];
     for (var i = 0; i < tail.length; i++) {
       result.push(tail[i][3]);
     }
+    if (ellipsis[1]) {
+      result.push({ type: "Ellipsis" });
+    }
     return result;
   }
+
+/* original */
+// ArgumentList
+//   = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* {
+//     var result = [head];
+//     for (var i = 0; i < tail.length; i++) {
+//       result.push(tail[i][3]);
+//     }
+//     return result;
+//   }
 
 LeftHandSideExpression
   = CallExpression
@@ -1075,9 +1095,13 @@ AssignmentOperator
   / "^="
   / "|="
 
+/* Expression and ExpressionNoIn changed by homizu */
+///*
 Expression
   = head:AssignmentExpression
-    tail:(__ "," __ AssignmentExpression)* {
+    tail:(__ "," __ AssignmentExpression)*
+    ellipsis:(!{ return inTemplate; }
+                  / (&{ return inTemplate; } (__ (","/";")? __ "...")?)) {
       var result = head;
       for (var i = 0; i < tail.length; i++) {
         result = {
@@ -1086,13 +1110,18 @@ Expression
           left:     result,
           right:    tail[i][3]
         };
+      }
+      if (ellipsis[1]) {
+        result.ellipsis = true;
       }
       return result;
     }
 
 ExpressionNoIn
   = head:AssignmentExpressionNoIn
-    tail:(__ "," __ AssignmentExpressionNoIn)* {
+    tail:(__ "," __ AssignmentExpressionNoIn)*
+    ellipsis:(!{ return inTemplate; }
+                  / (&{ return inTemplate; } (__ (","/";")? __ "...")?)) {
       var result = head;
       for (var i = 0; i < tail.length; i++) {
         result = {
@@ -1104,6 +1133,38 @@ ExpressionNoIn
       }
       return result;
     }
+//*/
+
+/* original */
+// Expression
+//   = head:AssignmentExpression
+//     tail:(__ "," __ AssignmentExpression)* {
+//       var result = head;
+//       for (var i = 0; i < tail.length; i++) {
+//         result = {
+//           type:     "BinaryExpression",
+//           operator: tail[i][1],
+//           left:     result,
+//           right:    tail[i][3]
+//         };
+//       }
+//       return result;
+//     }
+
+// ExpressionNoIn
+//   = head:AssignmentExpressionNoIn
+//     tail:(__ "," __ AssignmentExpressionNoIn)* {
+//       var result = head;
+//       for (var i = 0; i < tail.length; i++) {
+//         result = {
+//           type:     "BinaryExpression",
+//           operator: tail[i][1],
+//           left:     result,
+//           right:    tail[i][3]
+//         };
+//       }
+//       return result;
+//     }
 
 /* ===== A.4 Statements ===== */
 
@@ -1480,14 +1541,30 @@ FunctionExpression
       };
     }
 
+/* changed by homizu */
 FormalParameterList
-  = head:Identifier tail:(__ "," __ Identifier)* {
+  = head:Identifier tail:(__ "," __ Identifier)* 
+    ellipsis:(!{ return inTemplate; }
+                  / (&{ return inTemplate; } (__ "," __ "...")?)) {
       var result = [head];
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][3]);
       }
+      if (ellipsis[1]) {
+        result.push({ type: "Ellipsis" });
+      }
       return result;
     }
+
+/* original */
+// FormalParameterList
+//   = head:Identifier tail:(__ "," __ Identifier)* {
+//       var result = [head];
+//       for (var i = 0; i < tail.length; i++) {
+//         result.push(tail[i][3]);
+//       }
+//       return result;
+//     }
 
 FunctionBody
   = elements:SourceElements? { return elements !== "" ? elements : []; }
@@ -1533,7 +1610,7 @@ SourceElement
 /* Irrelevant. */
 
 
-/* マクロ定義 */
+/* マクロ定義のパーザー written by homizu */
 
 MacroDefinition
   = SyntaxToken __
@@ -1586,7 +1663,10 @@ SyntaxRuleList
     }
 
 SyntaxRule
-  = pat:Pattern __ "=>" __ temp:Template { return { pattern: pat, template: temp }; }
+  = pat:Pattern __ ("=>" { inTemplate = true; })  __ temp:Template {
+        inTemplate = false;       
+        return { pattern: pat, template: temp };
+    }
 
 // パターン
 Pattern

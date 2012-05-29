@@ -2,15 +2,18 @@
 syntax let {
     identifier: id;
     expression: expr;
-    statement: stmt;
+    statement: stmt1, stmt2;
     literal: var, =>>;
 
     let (var [#id = expr#] =>> ...) {
         stmt ...
-    } => ((function (id) {
-        stmt
-    })(expr));
+    } => ((function (id, ...) {
+            stmt1
+            ...
+    })(expr, ...));
 }
+
+hoge1, (hoge2, hoge3)
 
 /*
 // let マクロの使用
