@@ -48,6 +48,9 @@
 /* Initializer written by homizu */
 {
   var inTemplate = false;
+  var statementNames = null;
+  var literalKeywordNames = null;
+  var lastExpr = null;
 }
 
 start
@@ -1098,21 +1101,41 @@ AssignmentOperator
 /* Expression and ExpressionNoIn changed by homizu */
 ///*
 Expression
-  = head:AssignmentExpression
-    tail:(__ "," __ AssignmentExpression)*
+  = head:(exp:AssignmentExpression { lastExpr = exp; return exp; })
+    tail:(__ delimiter:(comma:(","/"") &{
+              return comma[0] || inTemplate; } { return comma[0] || " "; })
+          __ exp:AssignmentExpression &{
+              if (delimiter) {
+                  return delimiter;
+              } else {
+                  var find = false;
+                  for (var i=0; i<statementNames.length; i++) {
+                      console.log(lastExpr);
+                      if (lastExpr.type === "Variable" && lastExpr.name === statementNames[i]) {
+                         find = true;
+                         break;
+                      }
+                  }
+                  lastExpr = exp;
+                  console.log(1, exp);
+                  return find;
+              }
+          } { return [delimiter, exp]; })*
     ellipsis:(!{ return inTemplate; }
                   / (&{ return inTemplate; } (__ (","/";")? __ "...")?)) {
+//      lastExpr = null;
       var result = head;
       for (var i = 0; i < tail.length; i++) {
         result = {
           type:     "BinaryExpression",
-          operator: tail[i][1],
+          operator: tail[i][0],
           left:     result,
-          right:    tail[i][3]
+          right:    tail[i][1]
         };
       }
       if (ellipsis[1]) {
-        result.ellipsis = true;
+        result = [result];
+        result.push({ type: "Ellipsis" });
       }
       return result;
     }
@@ -1618,10 +1641,15 @@ MacroDefinition
     "{" __
     idList:("identifier:" __ ids:VariableList __ ";" { return ids; })? __ 
     exprList:("expression:" __ exprs:VariableList __ ";" { return exprs; })? __
-    stmtList:("statement:" __ stmts:VariableList __ ";" { return stmts; })? __
-    literalList:("literal:" __ literals:LiteralKeywordList __ ";" { return literals; })? __
+    stmtList:("statement:" __ stmts:VariableList __ ";" {
+                           statementNames = stmts; return stmts; })? __
+    literalList:("literal:" __ literals:LiteralKeywordList __ ";" {
+                            literalKeywordNames = literals; return literals; })? __
     syntaxRules:SyntaxRuleList __
-    "}" { return { type: "MacroDefinition",
+    "}" { 
+          statementNames = null;
+          literalKeywordNames = null;
+          return { type: "MacroDefinition",
                    macroName: macroName,
                    identifiers: idList,
                    expressions: exprList,
@@ -1762,13 +1790,18 @@ SubPattern
     }
 
 PunctuationMark
-  = name:IdentifierName { return name; }
-  / punc:PatternPunctuator { return punc; }
+  = ";"
+  / ","
+  / name:(IdentifierName/PatternPunctuator) &{
+      for (var i=0; i<literalKeywordNames.length; i++) {
+            if (name === literalKeywordNames[i])
+               return true;
+        }
+        return false;
+    }{ return name; }
 
 PatternPunctuator
-  = !"..." punc:Punctuator1 { return punc; }
-  / !"=>" puncs:Punctuator2+ { return puncs.join(""); }
-  / "=>" puncs:Punctuator2+ { return "=>"+puncs.join(""); }
+  =  puncs:Punctuator2+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
 
 // 区切り記号 '"', "'" は除く
 Punctuator
