@@ -48,8 +48,8 @@
 /* Initializer written by homizu */
 {
   var inTemplate = false;
-  var statementNames = null;
-  var literalKeywordNames = null;
+  var statementNames = [];
+  var literalKeywordNames = [];
   var lastExpr = null;
 }
 
@@ -145,6 +145,7 @@ Keyword
       / "delete"
       / "do"
       / "else"
+      / "expression" // added by homizu
       / "finally"
       / "for"
       / "function"
@@ -153,8 +154,8 @@ Keyword
       / "in"
       / "new"
       / "return"
+      / "statement" // added by homizu
       / "switch"
-      / "syntax" // added by homizu
       / "this"
       / "throw"
       / "try"
@@ -379,6 +380,7 @@ DefaultToken    = "default"          !IdentifierPart
 DeleteToken     = "delete"           !IdentifierPart { return "delete"; }
 DoToken         = "do"               !IdentifierPart
 ElseToken       = "else"             !IdentifierPart
+ExpressionToken = "expression"       !IdentifierPart { return "expression"; } // added by homizu
 FalseToken      = "false"            !IdentifierPart
 FinallyToken    = "finally"          !IdentifierPart
 ForToken        = "for"              !IdentifierPart
@@ -391,8 +393,8 @@ NewToken        = "new"              !IdentifierPart
 NullToken       = "null"             !IdentifierPart
 ReturnToken     = "return"           !IdentifierPart
 SetToken        = "set"              !IdentifierPart
+StatementToken  = "statement"        !IdentifierPart { return "statement"; } // added by homizu
 SwitchToken     = "switch"           !IdentifierPart
-SyntaxToken     = "syntax"           !IdentifierPart // added by homizu
 ThisToken       = "this"             !IdentifierPart
 ThrowToken      = "throw"            !IdentifierPart
 TrueToken       = "true"             !IdentifierPart
@@ -1636,7 +1638,7 @@ SourceElement
 /* マクロ定義のパーザー written by homizu */
 
 MacroDefinition
-  = SyntaxToken __
+  = type:(ExpressionToken / StatementToken) __
     macroName:Identifier __
     "{" __
     idList:("identifier:" __ ids:VariableList __ ";" { return ids; })? __ 
@@ -1647,9 +1649,9 @@ MacroDefinition
                             literalKeywordNames = literals; return literals; })? __
     syntaxRules:SyntaxRuleList __
     "}" { 
-          statementNames = null;
-          literalKeywordNames = null;
-          return { type: "MacroDefinition",
+          statementNames = [];
+          literalKeywordNames = [];
+          return { type: (type === "expression" ? "Expression" : "Statement" ) + "MacroDefinition",
                    macroName: macroName,
                    identifiers: idList,
                    expressions: exprList,
@@ -1677,9 +1679,8 @@ LiteralKeywordList
 
 // リテラルキーワード "=>" は禁止
 LiteralKeyword
-  = name:IdentifierName { return name; }
-  / !"=>" puncs:Punctuator2+ { return puncs.join(""); } 
-  / "=>" puncs:Punctuator2+ { return "=>"+puncs.join(""); } 
+  = IdentifierName
+  / PatternPunctuator
 
 SyntaxRuleList
   = head:SyntaxRule tail:(__ SyntaxRule)* {
@@ -1712,7 +1713,7 @@ SubPatternList
      }
 
 SubPattern
-  = "[#" __ patterns:SubPatternList? __ "#]" ellipsis:(__ PunctuationMark? __ "...")? {
+  = "[#" __ patterns:SubPatternList? __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
         var result = [{
           type: "EllipsisScope",
           elements: patterns
@@ -1782,17 +1783,17 @@ SubPattern
         }
         return result;                    
       }
-  / punc:PatternPunctuator {
+/*  / punc:PatternPunctuator {
         return [{
            type: "Punctuator",
            data: punc
         }];
     }
-
+*/
 PunctuationMark
   = ";"
   / ","
-  / name:(IdentifierName/PatternPunctuator) &{
+  / name:LiteralKeyword &{
       for (var i=0; i<literalKeywordNames.length; i++) {
             if (name === literalKeywordNames[i])
                return true;
@@ -1830,13 +1831,10 @@ Punctuators
 
 // テンプレート
 Template
-  = temp:StatementInTemplate { return temp; }
-
+  = temp:Statement { return temp; }
+/*
 StatementInTemp
-  = Expression "..."
-  / Statement
-  / Statement "..."
-  / Expression 
+  = Statement __ "..."?
 
 StatementInTemplate
   = Block
@@ -1876,3 +1874,4 @@ ExpressionInTemplate
 
 ExpressionStatementInTemplate
   = !("{" / FunctionToken) expression:ExpressionInTemplate EOS { return expression; }
+*/

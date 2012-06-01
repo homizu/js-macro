@@ -1,18 +1,17 @@
 // let マクロの定義(イメージ)
-syntax let {
+statement let {
     identifier: id;
     expression: expr;
-    statement: stmt1, stmt2;
-    literal: var, =>>;
+    statement: stmt;
+    literal: var, and;
 
-    let (var [#id = expr#] =>> ...) {
-        stmt stmt2 ...
+    let (var [#id = expr#] , ...) {
+        stmt ...
     } => ((function (id, ...) {
-        stmt1 stmt2 ...
+        stmt ...
     })(expr, ...));
 }
 
-hoge1, (hoge2, hoge3)
 
 /*
 // let マクロの使用
