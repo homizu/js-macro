@@ -11564,7 +11564,6 @@ module.exports = (function(){
                                         }
                                     }
                                     lastExpr = exp;
-                                    console.log(1, exp);
                                     return find;
                                 }
                             })(pos, result3, result5) ? "" : null;
@@ -11653,7 +11652,6 @@ module.exports = (function(){
                                           }
                                       }
                                       lastExpr = exp;
-                                      console.log(1, exp);
                                       return find;
                                   }
                               })(pos, result3, result5) ? "" : null;
@@ -11774,7 +11772,6 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, tail, ellipsis) {
-        //      lastExpr = null;
               var result = head;
               for (var i = 0; i < tail.length; i++) {
                 result = {
@@ -11907,18 +11904,6 @@ module.exports = (function(){
                       matchFailed("\",\"");
                     }
                   }
-                  if (result4 === null) {
-                    if (input.charCodeAt(pos) === 59) {
-                      result4 = ";";
-                      pos++;
-                    } else {
-                      result4 = null;
-                      if (reportFailures === 0) {
-                        matchFailed("\";\"");
-                      }
-                    }
-                  }
-                  result4 = result4 !== null ? result4 : "";
                   if (result4 !== null) {
                     result5 = parse___();
                     if (result5 !== null) {
@@ -11985,6 +11970,10 @@ module.exports = (function(){
                   left:     result,
                   right:    tail[i][3]
                 };
+              }
+              if (ellipsis[1]) {
+                 result = [result];
+                 result.push({ type: "Ellipsis" });
               }
               return result;
             })(pos0, result0[0], result0[1], result0[2]);
@@ -16579,7 +16568,7 @@ module.exports = (function(){
                 var result = head;
                 for (var i=0; i<tail.length; i++) {
                     if (tail[i][1])
-                       result.push({ type: "Punctuator", data: "," });
+                       result.push({ type: "PunctuationMark", data: "," });
                     result = result.concat(tail[i][3]);
                 }
                 return result;
@@ -16704,7 +16693,7 @@ module.exports = (function(){
                   elements: patterns
                 }];
                 if (ellipsis[1])
-                   result.push({ type: "Punctuator", data: ellipsis[1] });
+                   result.push({ type: "PunctuationMark", data: ellipsis[1] });
                 result.push({ type: "Ellipsis" });
                 return result;                    
               })(pos0, result0[2], result0[5]);
@@ -16812,7 +16801,7 @@ module.exports = (function(){
                   }];
                   if (ellipsis[3]) {
                      if (ellipsis[1])
-                        result.push({ type: "Punctuator", data: ellipsis[1] });
+                        result.push({ type: "PunctuationMark", data: ellipsis[1] });
                      result.push({ type: "Ellipsis" });
                   }
                   return result;                    
@@ -16921,7 +16910,7 @@ module.exports = (function(){
                     }];
                     if (ellipsis[3]) {
                        if (ellipsis[1])
-                          result.push({ type: "Punctuator", data: ellipsis[1] });
+                          result.push({ type: "PunctuationMark", data: ellipsis[1] });
                        result.push({ type: "Ellipsis" });
                     }
                     return result;                    
@@ -17030,7 +17019,7 @@ module.exports = (function(){
                       }];
                       if (ellipsis[3]) {
                          if (ellipsis[1])
-                            result.push({ type: "Punctuator", data: ellipsis[1] });
+                            result.push({ type: "PunctuationMark", data: ellipsis[1] });
                          result.push({ type: "Ellipsis" });
                       }
                       return result;                    
@@ -17098,7 +17087,7 @@ module.exports = (function(){
                         }];
                         if (ellipsis[3]) {
                            if (ellipsis[1])
-                              result.push({ type: "Punctuator", data: ellipsis[1] });
+                              result.push({ type: "PunctuationMark", data: ellipsis[1] });
                            result.push({ type: "Ellipsis" });
                         }
                         return result;                    
@@ -17166,7 +17155,7 @@ module.exports = (function(){
                           }];
                           if (ellipsis[3]) {
                              if (ellipsis[1])
-                                result.push({ type: "Punctuator", data: ellipsis[1] });
+                                result.push({ type: "PunctuationMark", data: ellipsis[1] });
                              result.push({ type: "Ellipsis" });
                           }
                           return result;                    
@@ -17174,6 +17163,21 @@ module.exports = (function(){
                   }
                   if (result0 === null) {
                     pos = pos0;
+                  }
+                  if (result0 === null) {
+                    pos0 = pos;
+                    result0 = parse_PatternPunctuator();
+                    if (result0 !== null) {
+                      result0 = (function(offset, punc) {
+                            return [{
+                               type: "Punctuator",
+                               data: punc
+                            }];
+                        })(pos0, result0);
+                    }
+                    if (result0 === null) {
+                      pos = pos0;
+                    }
                   }
                 }
               }
@@ -17631,10 +17635,10 @@ module.exports = (function(){
       }
       
       
-        var inTemplate = false;
-        var statementNames = [];
-        var literalKeywordNames = [];
-        var lastExpr = null;
+        var inTemplate = false;       // テンプレート中かどうかを表す変数
+        var statementNames = [];      // ステートメント変数のリスト
+        var literalKeywordNames = []; // リテラルキーワードのリスト
+        var lastExpr = null;          // テンプレート中の式を保存するための変数
       
       
       var result = parseFunctions[startRule]();

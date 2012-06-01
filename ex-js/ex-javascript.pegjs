@@ -47,10 +47,10 @@
 
 /* Initializer written by homizu */
 {
-  var inTemplate = false;
-  var statementNames = [];
-  var literalKeywordNames = [];
-  var lastExpr = null;
+  var inTemplate = false;       // テンプレート中かどうかを表す変数
+  var statementNames = [];      // ステートメント変数のリスト
+  var literalKeywordNames = []; // リテラルキーワードのリスト
+  var lastExpr = null;          // テンプレート中の式を保存するための変数
 }
 
 start
@@ -1101,7 +1101,6 @@ AssignmentOperator
   / "|="
 
 /* Expression and ExpressionNoIn changed by homizu */
-///*
 Expression
   = head:(exp:AssignmentExpression { lastExpr = exp; return exp; })
     tail:(__ delimiter:(comma:(","/"") &{
@@ -1119,13 +1118,11 @@ Expression
                       }
                   }
                   lastExpr = exp;
-                  console.log(1, exp);
                   return find;
               }
           } { return [delimiter, exp]; })*
     ellipsis:(!{ return inTemplate; }
                   / (&{ return inTemplate; } (__ (","/";")? __ "...")?)) {
-//      lastExpr = null;
       var result = head;
       for (var i = 0; i < tail.length; i++) {
         result = {
@@ -1142,11 +1139,11 @@ Expression
       return result;
     }
 
-ExpressionNoIn
+ExpressionNoIn  // for in で使う
   = head:AssignmentExpressionNoIn
     tail:(__ "," __ AssignmentExpressionNoIn)*
     ellipsis:(!{ return inTemplate; }
-                  / (&{ return inTemplate; } (__ (","/";")? __ "...")?)) {
+                  / (&{ return inTemplate; } (__ "," __ "...")?)) {
       var result = head;
       for (var i = 0; i < tail.length; i++) {
         result = {
@@ -1156,9 +1153,13 @@ ExpressionNoIn
           right:    tail[i][3]
         };
       }
+      if (ellipsis[1]) {
+         result = [result];
+         result.push({ type: "Ellipsis" });
+      }
       return result;
     }
-//*/
+
 
 /* original */
 // Expression
@@ -1706,7 +1707,7 @@ SubPatternList
         var result = head;
         for (var i=0; i<tail.length; i++) {
             if (tail[i][1])
-               result.push({ type: "Punctuator", data: "," });
+               result.push({ type: "PunctuationMark", data: "," });
             result = result.concat(tail[i][3]);
         }
         return result;
@@ -1719,7 +1720,7 @@ SubPattern
           elements: patterns
         }];
         if (ellipsis[1])
-           result.push({ type: "Punctuator", data: ellipsis[1] });
+           result.push({ type: "PunctuationMark", data: ellipsis[1] });
         result.push({ type: "Ellipsis" });
         return result;                    
       }
@@ -1730,7 +1731,7 @@ SubPattern
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: ellipsis[1] });
+              result.push({ type: "PunctuationMark", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
@@ -1742,7 +1743,7 @@ SubPattern
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: ellipsis[1] });
+              result.push({ type: "PunctuationMark", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
@@ -1754,7 +1755,7 @@ SubPattern
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: ellipsis[1] });
+              result.push({ type: "PunctuationMark", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
@@ -1766,7 +1767,7 @@ SubPattern
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: ellipsis[1] });
+              result.push({ type: "PunctuationMark", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
@@ -1778,18 +1779,18 @@ SubPattern
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
-              result.push({ type: "Punctuator", data: ellipsis[1] });
+              result.push({ type: "PunctuationMark", data: ellipsis[1] });
            result.push({ type: "Ellipsis" });
         }
         return result;                    
       }
-/*  / punc:PatternPunctuator {
+  / punc:PatternPunctuator {
         return [{
            type: "Punctuator",
            data: punc
         }];
     }
-*/
+
 PunctuationMark
   = ";"
   / ","
@@ -1832,46 +1833,3 @@ Punctuators
 // テンプレート
 Template
   = temp:Statement { return temp; }
-/*
-StatementInTemp
-  = Statement __ "..."?
-
-StatementInTemplate
-  = Block
-  / VariableStatement
-  / EmptyStatement
-  / ExpressionStatement
-  / IfStatement
-  / IterationStatement
-  / ContinueStatement
-  / BreakStatement
-  / ReturnStatement
-  / WithStatement
-  / LabelledStatement
-  / SwitchStatement
-  / ThrowStatement
-  / TryStatement
-  / DebuggerStatement
-  / MacroDefinition      // add
-  / FunctionDeclaration
-  / FunctionExpression
-  / Expression ","? "..."
-
-ExpressionInTemplate
-  = head:AssignmentExpression
-    tail:(__ "," __ AssignmentExpression)* __ ","? __ "..."? {
-      var result = head;
-      for (var i = 0; i < tail.length; i++) {
-        result = {
-          type:     "BinaryExpression",
-          operator: tail[i][1],
-          left:     result,
-          right:    tail[i][3]
-        };
-      }
-      return result;
-    }
-
-ExpressionStatementInTemplate
-  = !("{" / FunctionToken) expression:ExpressionInTemplate EOS { return expression; }
-*/

@@ -5,7 +5,7 @@ statement let {
     statement: stmt;
     literal: var, and;
 
-    let (var [#id = expr#] , ...) {
+    let (var [#id = expr#] and ...) {
         stmt ...
     } => ((function (id, ...) {
         stmt ...
