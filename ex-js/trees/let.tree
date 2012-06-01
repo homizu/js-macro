@@ -1,0 +1,106 @@
+{
+  "type": "Program",
+  "elements": [
+    {
+      "type": "StatementMacroDefinition",
+      "macroName": "let",
+      "identifiers": [
+        "id"
+      ],
+      "expressions": [
+        "expr"
+      ],
+      "statements": [
+        "stmt"
+      ],
+      "literals": [
+        "var",
+        "and"
+      ],
+      "syntaxRules": [
+        {
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": [
+                {
+                  "type": "Identifier",
+                  "name": "var"
+                },
+                {
+                  "type": "EllipsisScope",
+                  "elements": [
+                    {
+                      "type": "Identifier",
+                      "name": "id"
+                    },
+                    {
+                      "type": "Punctuator",
+                      "data": "="
+                    },
+                    {
+                      "type": "Identifier",
+                      "name": "expr"
+                    }
+                  ]
+                },
+                {
+                  "type": "PunctuationMark",
+                  "data": "and"
+                },
+                {
+                  "type": "Ellipsis"
+                }
+              ]
+            },
+            {
+              "type": "Block",
+              "elements": [
+                {
+                  "type": "Identifier",
+                  "name": "stmt"
+                },
+                {
+                  "type": "Ellipsis"
+                }
+              ]
+            }
+          ],
+          "template": {
+            "type": "FunctionCall",
+            "name": {
+              "type": "Function",
+              "name": null,
+              "params": [
+                "id",
+                {
+                  "type": "Ellipsis"
+                }
+              ],
+              "elements": [
+                [
+                  {
+                    "type": "Variable",
+                    "name": "stmt"
+                  },
+                  {
+                    "type": "Ellipsis"
+                  }
+                ]
+              ]
+            },
+            "arguments": [
+              {
+                "type": "Variable",
+                "name": "expr"
+              },
+              {
+                "type": "Ellipsis"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
