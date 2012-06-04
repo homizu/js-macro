@@ -1,0 +1,162 @@
+{
+  "type": "Program",
+  "elements": [
+    {
+      "type": "StatementMacroDefinition",
+      "macroName": "cond",
+      "identifiers": "",
+      "expressions": [
+        "pred1",
+        "pred2",
+        "exp1",
+        "exp2"
+      ],
+      "statements": "",
+      "literals": "",
+      "syntaxRules": [
+        {
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": [
+                {
+                  "type": "Paren",
+                  "elements": [
+                    {
+                      "type": "Identifier",
+                      "name": "pred1"
+                    },
+                    {
+                      "type": "PunctuationMark",
+                      "data": ","
+                    },
+                    {
+                      "type": "Identifier",
+                      "name": "exp1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "template": {
+            "type": "IfStatement",
+            "condition": {
+              "type": "Variable",
+              "name": "pred1"
+            },
+            "ifStatement": {
+              "type": "Block",
+              "statements": [
+                {
+                  "type": "Variable",
+                  "name": "exp1"
+                }
+              ]
+            },
+            "elseStatement": null
+          }
+        },
+        {
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": [
+                {
+                  "type": "Paren",
+                  "elements": [
+                    {
+                      "type": "Identifier",
+                      "name": "pred1"
+                    },
+                    {
+                      "type": "PunctuationMark",
+                      "data": ","
+                    },
+                    {
+                      "type": "Identifier",
+                      "name": "exp1"
+                    }
+                  ]
+                },
+                {
+                  "type": "PunctuationMark",
+                  "data": ","
+                },
+                {
+                  "type": "Paren",
+                  "elements": [
+                    {
+                      "type": "Identifier",
+                      "name": "pred2"
+                    },
+                    {
+                      "type": "PunctuationMark",
+                      "data": ","
+                    },
+                    {
+                      "type": "Identifier",
+                      "name": "exp2"
+                    }
+                  ]
+                },
+                {
+                  "type": "PunctuationMark",
+                  "data": ","
+                },
+                {
+                  "type": "Ellipsis"
+                }
+              ]
+            }
+          ],
+          "template": {
+            "type": "IfStatement",
+            "condition": {
+              "type": "Variable",
+              "name": "pred1"
+            },
+            "ifStatement": {
+              "type": "Block",
+              "statements": [
+                {
+                  "type": "Variable",
+                  "name": "exp1"
+                }
+              ]
+            },
+            "elseStatement": {
+              "type": "Block",
+              "statements": [
+                {
+                  "type": "FunctionCall",
+                  "name": {
+                    "type": "Variable",
+                    "name": "cond"
+                  },
+                  "arguments": [
+                    {
+                      "type": "BinaryExpression",
+                      "operator": ",",
+                      "left": {
+                        "type": "Variable",
+                        "name": "pred2"
+                      },
+                      "right": {
+                        "type": "Variable",
+                        "name": "exp2"
+                      }
+                    },
+                    {
+                      "type": "Ellipsis"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

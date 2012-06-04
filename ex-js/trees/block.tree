@@ -3,7 +3,7 @@
   "elements": [
     {
       "type": "StatementMacroDefinition",
-      "macroName": "let",
+      "macroName": "block",
       "identifiers": [
         "id"
       ],
@@ -14,48 +14,37 @@
         "stmt"
       ],
       "literals": [
-        "var",
-        "and"
+        "var"
       ],
       "syntaxRules": [
         {
           "pattern": [
             {
-              "type": "Paren",
+              "type": "Block",
               "elements": [
                 {
                   "type": "Identifier",
                   "name": "var"
                 },
                 {
-                  "type": "EllipsisScope",
-                  "elements": [
-                    {
-                      "type": "Identifier",
-                      "name": "id"
-                    },
-                    {
-                      "type": "Punctuator",
-                      "data": "="
-                    },
-                    {
-                      "type": "Identifier",
-                      "name": "expr"
-                    }
-                  ]
+                  "type": "Identifier",
+                  "name": "id"
+                },
+                {
+                  "type": "Punctuator",
+                  "data": "="
+                },
+                {
+                  "type": "Identifier",
+                  "name": "expr"
                 },
                 {
                   "type": "PunctuationMark",
-                  "data": "and"
+                  "data": ";"
                 },
                 {
                   "type": "Ellipsis"
-                }
-              ]
-            },
-            {
-              "type": "Block",
-              "elements": [
+                },
                 {
                   "type": "Identifier",
                   "name": "stmt"
@@ -78,17 +67,15 @@
                 }
               ],
               "elements": [
-                {
-                  "type": "BinaryExpression",
-                  "operator": " ",
-                  "left": {
+                [
+                  {
                     "type": "Variable",
                     "name": "stmt"
                   },
-                  "right": {
+                  {
                     "type": "Ellipsis"
                   }
-                }
+                ]
               ]
             },
             "arguments": [
