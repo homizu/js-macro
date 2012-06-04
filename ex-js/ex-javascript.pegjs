@@ -1133,8 +1133,14 @@ Expression
         };
       }
       if (ellipsis[1]) {
-        result = [result];
-        result.push({ type: "Ellipsis" });
+         result = {
+           type:     "BinaryExpression",
+           operator: ellipsis[1][1] || " ",
+           left:     result,
+           right:    { type: "Ellipsis" }
+         }
+//        result = [result];
+//        result.push({ type: "Ellipsis" });
       }
       return result;
     }
@@ -1154,8 +1160,14 @@ ExpressionNoIn  // for in で使う
         };
       }
       if (ellipsis[1]) {
-         result = [result];
-         result.push({ type: "Ellipsis" });
+         result = {
+           type:     "BinaryExpression",
+           operator: ",",
+           left:     result,
+           right:    { type: "Ellipsis" }
+         }
+//         result = [result];
+//         result.push({ type: "Ellipsis" });
       }
       return result;
     }
@@ -1832,4 +1844,18 @@ Punctuators
 
 // テンプレート
 Template
-  = temp:Statement { return temp; }
+  = StatementInTemplate
+
+StatementInTemplate
+  = "{" __ head:Statement tail:(__ Statement __ "..."?)* __ "}" {
+        var statements = [head];
+        for (var i=0; i<tail.length; i++) {
+            statements.push(tail[i][1]);
+            if (tail[i][3]) {
+               statements.push({ type: "Ellipsis" });
+            }
+        }
+        return { type: "Block",
+                 statements: statements };
+    }
+  / Statement 
