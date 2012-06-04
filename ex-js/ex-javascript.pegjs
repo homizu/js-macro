@@ -1109,16 +1109,8 @@ Expression
               if (delimiter) {
                   return delimiter;
               } else {
-                  var find = false;
-                  for (var i=0; i<statementNames.length; i++) {
-                      console.log(lastExpr);
-                      if (lastExpr.type === "Variable" && lastExpr.name === statementNames[i]) {
-                         find = true;
-                         break;
-                      }
-                  }
                   lastExpr = exp;
-                  return find;
+                  return lastExpr.type === "Variable" && statementNames.indexOf(lastExpr.name) >= 0
               }
           } { return [delimiter, exp]; })*
     ellipsis:(!{ return inTemplate; }
@@ -1807,11 +1799,7 @@ PunctuationMark
   = ";"
   / ","
   / name:LiteralKeyword &{
-      for (var i=0; i<literalKeywordNames.length; i++) {
-            if (name === literalKeywordNames[i])
-               return true;
-        }
-        return false;
+      return literalKeywordNames.indexOf(name) >= 0;
     }{ return name; }
 
 PatternPunctuator

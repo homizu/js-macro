@@ -11555,16 +11555,8 @@ module.exports = (function(){
                                 if (delimiter) {
                                     return delimiter;
                                 } else {
-                                    var find = false;
-                                    for (var i=0; i<statementNames.length; i++) {
-                                        console.log(lastExpr);
-                                        if (lastExpr.type === "Variable" && lastExpr.name === statementNames[i]) {
-                                           find = true;
-                                           break;
-                                        }
-                                    }
                                     lastExpr = exp;
-                                    return find;
+                                    return lastExpr.type === "Variable" && statementNames.indexOf(lastExpr.name) >= 0
                                 }
                             })(pos, result3, result5) ? "" : null;
                   if (result6 !== null) {
@@ -11643,16 +11635,8 @@ module.exports = (function(){
                                   if (delimiter) {
                                       return delimiter;
                                   } else {
-                                      var find = false;
-                                      for (var i=0; i<statementNames.length; i++) {
-                                          console.log(lastExpr);
-                                          if (lastExpr.type === "Variable" && lastExpr.name === statementNames[i]) {
-                                             find = true;
-                                             break;
-                                          }
-                                      }
                                       lastExpr = exp;
-                                      return find;
+                                      return lastExpr.type === "Variable" && statementNames.indexOf(lastExpr.name) >= 0
                                   }
                               })(pos, result3, result5) ? "" : null;
                     if (result6 !== null) {
@@ -17240,11 +17224,7 @@ module.exports = (function(){
             result0 = parse_LiteralKeyword();
             if (result0 !== null) {
               result1 = (function(offset, name) {
-                    for (var i=0; i<literalKeywordNames.length; i++) {
-                          if (name === literalKeywordNames[i])
-                             return true;
-                      }
-                      return false;
+                    return literalKeywordNames.indexOf(name) >= 0;
                   })(pos, result0) ? "" : null;
               if (result1 !== null) {
                 result0 = [result0, result1];
