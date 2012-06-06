@@ -16561,11 +16561,11 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, tail) {
-                var result = head;
+                var result = [head];
                 for (var i=0; i<tail.length; i++) {
                     if (tail[i][1])
-                       result.push({ type: "PunctuationMark", data: "," });
-                    result = result.concat(tail[i][3]);
+                       result.push({ type: "Punctuator", data: "," });
+                    result.push(tail[i][3]);
                 }
                 return result;
              })(pos0, result0[0], result0[1]);
@@ -16684,14 +16684,11 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, patterns, ellipsis) {
-                var result = [{
-                  type: "EllipsisScope",
-                  elements: patterns
-                }];
-                if (ellipsis[1])
-                   result.push({ type: "PunctuationMark", data: ellipsis[1] });
-                result.push({ type: "Ellipsis" });
-                return result;                    
+                 return {
+                   type: "Ellipsis",
+                   data: patterns,
+                   punctuationMark: ellipsis[1]
+                };
               })(pos0, result0[2], result0[5]);
         }
         if (result0 === null) {
@@ -16791,15 +16788,17 @@ module.exports = (function(){
           }
           if (result0 !== null) {
             result0 = (function(offset, patterns, ellipsis) {
-                  var result = [{
+                  var result = {
                     type: "Block",
                     elements: patterns
-                  }];
+                  };
                   if (ellipsis[3]) {
-                     if (ellipsis[1])
-                        result.push({ type: "PunctuationMark", data: ellipsis[1] });
-                     result.push({ type: "Ellipsis" });
-                  }
+                     result = {
+                       type: "Ellipsis",
+                       data: result,
+                       punctuationMark: ellipsis[1]
+                     }
+                   }
                   return result;                    
                 })(pos0, result0[2], result0[5]);
           }
@@ -16900,14 +16899,16 @@ module.exports = (function(){
             }
             if (result0 !== null) {
               result0 = (function(offset, patterns, ellipsis) {
-                    var result = [{
+                    var result = {
                       type: "Paren",
                       elements: patterns
-                    }];
+                    };
                     if (ellipsis[3]) {
-                       if (ellipsis[1])
-                          result.push({ type: "PunctuationMark", data: ellipsis[1] });
-                       result.push({ type: "Ellipsis" });
+                       result = {
+                         type: "Ellipsis",
+                         data: result,
+                         punctuationMark: ellipsis[1]
+                       }
                     }
                     return result;                    
                   })(pos0, result0[2], result0[5]);
@@ -17009,14 +17010,16 @@ module.exports = (function(){
               }
               if (result0 !== null) {
                 result0 = (function(offset, patterns, ellipsis) {
-                      var result = [{
+                      var result = {
                         type: "Bracket",
                         elements: patterns
-                      }];
+                      };
                       if (ellipsis[3]) {
-                         if (ellipsis[1])
-                            result.push({ type: "PunctuationMark", data: ellipsis[1] });
-                         result.push({ type: "Ellipsis" });
+                         result = {
+                           type: "Ellipsis",
+                           data: result,
+                           punctuationMark: ellipsis[1]
+                         }
                       }
                       return result;                    
                     })(pos0, result0[2], result0[5]);
@@ -17027,7 +17030,7 @@ module.exports = (function(){
               if (result0 === null) {
                 pos0 = pos;
                 pos1 = pos;
-                result0 = parse_IdentifierName();
+                result0 = parse_Literal();
                 if (result0 !== null) {
                   pos2 = pos;
                   result1 = parse___();
@@ -17076,15 +17079,14 @@ module.exports = (function(){
                   pos = pos1;
                 }
                 if (result0 !== null) {
-                  result0 = (function(offset, name, ellipsis) {
-                        var result = [{
-                          type: "Identifier",
-                          name: name
-                        }];
+                  result0 = (function(offset, data, ellipsis) {
+                        var result = data;
                         if (ellipsis[3]) {
-                           if (ellipsis[1])
-                              result.push({ type: "PunctuationMark", data: ellipsis[1] });
-                           result.push({ type: "Ellipsis" });
+                           result = {
+                             type: "Ellipsis",
+                             data: result,
+                             punctuationMark: ellipsis[1]
+                           }
                         }
                         return result;                    
                       })(pos0, result0[0], result0[1]);
@@ -17095,7 +17097,7 @@ module.exports = (function(){
                 if (result0 === null) {
                   pos0 = pos;
                   pos1 = pos;
-                  result0 = parse_Literal();
+                  result0 = parse_IdentifierName();
                   if (result0 !== null) {
                     pos2 = pos;
                     result1 = parse___();
@@ -17144,15 +17146,17 @@ module.exports = (function(){
                     pos = pos1;
                   }
                   if (result0 !== null) {
-                    result0 = (function(offset, data, ellipsis) {
-                          var result = [{
-                            type: "Literal",
-                            data: data
-                          }];
+                    result0 = (function(offset, name, ellipsis) {
+                          var result = {
+                            type: "Identifier",
+                            name: name
+                          };
                           if (ellipsis[3]) {
-                             if (ellipsis[1])
-                                result.push({ type: "PunctuationMark", data: ellipsis[1] });
-                             result.push({ type: "Ellipsis" });
+                             result = {
+                               type: "Ellipsis",
+                               data: result,
+                               punctuationMark: ellipsis[1]
+                             }
                           }
                           return result;                    
                         })(pos0, result0[0], result0[1]);
@@ -17165,10 +17169,10 @@ module.exports = (function(){
                     result0 = parse_PatternPunctuator();
                     if (result0 !== null) {
                       result0 = (function(offset, punc) {
-                            return [{
+                            return {
                                type: "Punctuator",
                                data: punc
-                            }];
+                            };
                         })(pos0, result0);
                     }
                     if (result0 === null) {

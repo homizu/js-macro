@@ -28,8 +28,8 @@
                   "name": "var"
                 },
                 {
-                  "type": "EllipsisScope",
-                  "elements": [
+                  "type": "Ellipsis",
+                  "data": [
                     {
                       "type": "Identifier",
                       "name": "id"
@@ -42,14 +42,8 @@
                       "type": "Identifier",
                       "name": "expr"
                     }
-                  ]
-                },
-                {
-                  "type": "PunctuationMark",
-                  "data": "and"
-                },
-                {
-                  "type": "Ellipsis"
+                  ],
+                  "punctuationMark": "and"
                 }
               ]
             },
@@ -57,11 +51,12 @@
               "type": "Block",
               "elements": [
                 {
-                  "type": "Identifier",
-                  "name": "stmt"
-                },
-                {
-                  "type": "Ellipsis"
+                  "type": "Ellipsis",
+                  "data": {
+                    "type": "Identifier",
+                    "name": "stmt"
+                  },
+                  "punctuationMark": ""
                 }
               ]
             }

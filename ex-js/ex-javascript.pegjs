@@ -1708,15 +1708,98 @@ Pattern
 
 SubPatternList
   = head:SubPattern tail:(__ ","? __ SubPattern)* {
-        var result = head;
+        var result = [head];
         for (var i=0; i<tail.length; i++) {
             if (tail[i][1])
-               result.push({ type: "PunctuationMark", data: "," });
-            result = result.concat(tail[i][3]);
+               result.push({ type: "Punctuator", data: "," });
+            result.push(tail[i][3]);
         }
         return result;
      }
 
+SubPattern
+  = "[#" __ patterns:SubPatternList? __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
+         return {
+           type: "Ellipsis",
+           data: patterns,
+           punctuationMark: ellipsis[1]
+        };
+      }
+  / "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
+        var result = {
+          type: "Block",
+          elements: patterns
+        };
+        if (ellipsis[3]) {
+           result = {
+             type: "Ellipsis",
+             data: result,
+             punctuationMark: ellipsis[1]
+           }
+         }
+        return result;                    
+      }
+  / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ PunctuationMark? __ "...")? {
+        var result = {
+          type: "Paren",
+          elements: patterns
+        };
+        if (ellipsis[3]) {
+           result = {
+             type: "Ellipsis",
+             data: result,
+             punctuationMark: ellipsis[1]
+           }
+        }
+        return result;                    
+      }
+  / "[" __ patterns:SubPatternList? __ "]" ellipsis:(__ PunctuationMark? __ "...")? {
+        var result = {
+          type: "Bracket",
+          elements: patterns
+        };
+        if (ellipsis[3]) {
+           result = {
+             type: "Ellipsis",
+             data: result,
+             punctuationMark: ellipsis[1]
+           }
+        }
+        return result;                    
+      }
+  / data:Literal ellipsis:(__ PunctuationMark? __ "...")? {
+        var result = data;
+        if (ellipsis[3]) {
+           result = {
+             type: "Ellipsis",
+             data: result,
+             punctuationMark: ellipsis[1]
+           }
+        }
+        return result;                    
+      }
+  / name:IdentifierName ellipsis:(__ PunctuationMark? __ "...")? {
+        var result = {
+          type: "Identifier",
+          name: name
+        };
+        if (ellipsis[3]) {
+           result = {
+             type: "Ellipsis",
+             data: result,
+             punctuationMark: ellipsis[1]
+           }
+        }
+        return result;                    
+      }
+  / punc:PatternPunctuator {
+        return {
+           type: "Punctuator",
+           data: punc
+        };
+    }
+
+/* version 1.0
 SubPattern
   = "[#" __ patterns:SubPatternList? __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
         var result = [{
@@ -1764,11 +1847,8 @@ SubPattern
         }
         return result;                    
       }
-  / name:IdentifierName ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = [{
-          type: "Identifier",
-          name: name
-        }];
+  / data:Literal ellipsis:(__ PunctuationMark? __ "...")? {
+        var result = [data];
         if (ellipsis[3]) {
            if (ellipsis[1])
               result.push({ type: "PunctuationMark", data: ellipsis[1] });
@@ -1776,10 +1856,10 @@ SubPattern
         }
         return result;                    
       }
-  / data:Literal ellipsis:(__ PunctuationMark? __ "...")? {
+  / name:IdentifierName ellipsis:(__ PunctuationMark? __ "...")? {
         var result = [{
-          type: "Literal",
-          data: data
+          type: "Identifier",
+          name: name
         }];
         if (ellipsis[3]) {
            if (ellipsis[1])
@@ -1794,6 +1874,7 @@ SubPattern
            data: punc
         }];
     }
+*/
 
 PunctuationMark
   = ";"

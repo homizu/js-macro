@@ -55,10 +55,26 @@
               "elements": [
                 {
                   "type": "Identifier",
+                  "name": "id"
+                },
+                {
+                  "type": "Punctuator",
+                  "data": "="
+                },
+                {
+                  "type": "StringLiteral",
+                  "value": ""
+                },
+                {
+                  "type": "Identifier",
                   "name": "stmt"
                 },
                 {
                   "type": "Ellipsis"
+                },
+                {
+                  "type": "StringLiteral",
+                  "value": "hoge"
                 }
               ]
             }
@@ -83,8 +99,16 @@
                         "name": "id"
                       },
                       "right": {
-                        "type": "Variable",
-                        "name": "expr1"
+                        "type": "BinaryExpression",
+                        "operator": "+",
+                        "left": {
+                          "type": "Variable",
+                          "name": "expr1"
+                        },
+                        "right": {
+                          "type": "StringLiteral",
+                          "value": "hoge"
+                        }
                       }
                     }
                   ]
