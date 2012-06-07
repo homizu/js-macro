@@ -13,10 +13,10 @@ statement let {
 }
 
 
-/*
+
 // let マクロの使用
-let (var id1=expr1, var id2=expr) {
+let (var id1=expr1 and id2=expr) {
     var result = id1 + id2;
     return result;
 }
-*/
+

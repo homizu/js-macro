@@ -48,8 +48,11 @@
 /* Initializer written by homizu */
 {
   var inTemplate = false;       // テンプレート中かどうかを表す変数
-  var statementNames = [];      // ステートメント変数のリスト
+  var identifierNames = [];     // identifier変数のリスト
+  var expressionNames = [];     // expression変数のリスト
+  var statementNames = [];      // statement変数のリスト
   var literalKeywordNames = []; // リテラルキーワードのリスト
+  var identifierType = ""       // パターン中の識別子の種類を表す変数
   var lastExpr = null;          // テンプレート中の式を保存するための変数
 }
 
@@ -1646,14 +1649,16 @@ MacroDefinition
   = type:(ExpressionToken / StatementToken) __
     macroName:Identifier __
     "{" __
-    idList:("identifier:" __ ids:VariableList __ ";" { return ids; })? __ 
-    exprList:("expression:" __ exprs:VariableList __ ";" { return exprs; })? __
+    idList:("identifier:" __ ids:VariableList __ ";" { identifierNames = ids; return ids; })? __ 
+    exprList:("expression:" __ exprs:VariableList __ ";" { expressionNames = exprs; return exprs; })? __
     stmtList:("statement:" __ stmts:VariableList __ ";" {
                            statementNames = stmts; return stmts; })? __
     literalList:("literal:" __ literals:LiteralKeywordList __ ";" {
                             literalKeywordNames = literals; return literals; })? __
     syntaxRules:SyntaxRuleList __
     "}" { 
+          identifierNames = [];
+          expressionNames = [];
           statementNames = [];
           literalKeywordNames = [];
           return { type: (type === "expression" ? "Expression" : "Statement" ) + "MacroDefinition",
@@ -1778,9 +1783,24 @@ SubPattern
         }
         return result;                    
       }
-  / name:IdentifierName ellipsis:(__ PunctuationMark? __ "...")? {
+  / name:IdentifierName
+    &{ if (identifierNames.indexOf(name) >= 0) {
+           identifierType = 'Identifier';
+           return identifierType;
+       } else if (expressionNames.indexOf(name) >= 0) {
+           identifierType = 'Expression';
+           return identifierType;
+       } else if (statementNames.indexOf(name) >= 0) {
+           identifierType = 'Statement';
+           return identifierType;
+       } else if (literalKeywordNames.indexOf(name) >= 0) {
+           identifierType = 'LiteralKeyword';
+           return identifierType;
+       }
+    } 
+    ellipsis:(__ PunctuationMark? __ "...")? {
         var result = {
-          type: "Identifier",
+          type: identifierType === 'LiteralKeyword' ? identifierType : (identifierType + 'Variable'),
           name: name
         };
         if (ellipsis[3]) {
@@ -1798,83 +1818,6 @@ SubPattern
            data: punc
         };
     }
-
-/* version 1.0
-SubPattern
-  = "[#" __ patterns:SubPatternList? __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
-        var result = [{
-          type: "EllipsisScope",
-          elements: patterns
-        }];
-        if (ellipsis[1])
-           result.push({ type: "PunctuationMark", data: ellipsis[1] });
-        result.push({ type: "Ellipsis" });
-        return result;                    
-      }
-  / "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = [{
-          type: "Block",
-          elements: patterns
-        }];
-        if (ellipsis[3]) {
-           if (ellipsis[1])
-              result.push({ type: "PunctuationMark", data: ellipsis[1] });
-           result.push({ type: "Ellipsis" });
-        }
-        return result;                    
-      }
-  / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = [{
-          type: "Paren",
-          elements: patterns
-        }];
-        if (ellipsis[3]) {
-           if (ellipsis[1])
-              result.push({ type: "PunctuationMark", data: ellipsis[1] });
-           result.push({ type: "Ellipsis" });
-        }
-        return result;                    
-      }
-  / "[" __ patterns:SubPatternList? __ "]" ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = [{
-          type: "Bracket",
-          elements: patterns
-        }];
-        if (ellipsis[3]) {
-           if (ellipsis[1])
-              result.push({ type: "PunctuationMark", data: ellipsis[1] });
-           result.push({ type: "Ellipsis" });
-        }
-        return result;                    
-      }
-  / data:Literal ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = [data];
-        if (ellipsis[3]) {
-           if (ellipsis[1])
-              result.push({ type: "PunctuationMark", data: ellipsis[1] });
-           result.push({ type: "Ellipsis" });
-        }
-        return result;                    
-      }
-  / name:IdentifierName ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = [{
-          type: "Identifier",
-          name: name
-        }];
-        if (ellipsis[3]) {
-           if (ellipsis[1])
-              result.push({ type: "PunctuationMark", data: ellipsis[1] });
-           result.push({ type: "Ellipsis" });
-        }
-        return result;                    
-      }
-  / punc:PatternPunctuator {
-        return [{
-           type: "Punctuator",
-           data: punc
-        }];
-    }
-*/
 
 PunctuationMark
   = ";"
@@ -1928,3 +1871,38 @@ StatementInTemplate
                  statements: statements };
     }
   / Statement 
+
+AssignmentExpression
+ = left:LeftHandSideExpression __
+ operator:AssignmentOperator __
+ right:AssignmentExpression {
+ return {
+ type:     "AssignmentExpression",
+ operator: operator,
+ left:     left,
+ right:    right
+ };
+ }
+ / ConditionalExpression
+ / "or" / "or" __ "(" __ Expression __ ")"
+
+Statement
+ = Block
+ / VariableStatement
+ / EmptyStatement
+ / ExpressionStatement
+ / IfStatement
+ / IterationStatement
+ / ContinueStatement
+ / BreakStatement
+ / ReturnStatement
+ / WithStatement
+ / LabelledStatement
+ / SwitchStatement
+ / ThrowStatement
+ / TryStatement
+ / DebuggerStatement
+ / MacroDefinition
+ / FunctionDeclaration
+ / FunctionExpression
+ / "let" __ "(" __ "var" __ (IdentifierName __ "=" __ AssignmentExpression (__ "and" __ IdentifierName __ "=" __ AssignmentExpression)*)? __ ")" __ "{" __ (Statement (__ Statement)*)? __ "}"

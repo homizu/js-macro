@@ -9,8 +9,8 @@ if (argv.length === 4) {
     fs.readFile(argv[2],
                 function(err, input) {
                     input = '' + input;
-                    json = JSON.parse(input);
-                    util.print(json);
-                    console.log(generator.generate());
+                    jsObj = JSON.parse(input);
+                    util.print(jsObj);
+                    console.log(generator.generate(jsObj));
                 });
 }

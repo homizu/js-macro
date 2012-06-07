@@ -24,14 +24,14 @@
               "type": "Paren",
               "elements": [
                 {
-                  "type": "Identifier",
+                  "type": "LiteralKeyword",
                   "name": "var"
                 },
                 {
                   "type": "Ellipsis",
                   "data": [
                     {
-                      "type": "Identifier",
+                      "type": "IdentifierVariable",
                       "name": "id"
                     },
                     {
@@ -39,7 +39,7 @@
                       "data": "="
                     },
                     {
-                      "type": "Identifier",
+                      "type": "ExpressionVariable",
                       "name": "expr"
                     }
                   ],
@@ -53,7 +53,7 @@
                 {
                   "type": "Ellipsis",
                   "data": {
-                    "type": "Identifier",
+                    "type": "StatementVariable",
                     "name": "stmt"
                   },
                   "punctuationMark": ""
@@ -98,6 +98,105 @@
           }
         }
       ]
-    }
+    },
+    [
+      "let",
+      [
+        " "
+      ],
+      "(",
+      [],
+      "var",
+      [
+        " "
+      ],
+      [
+        "id1",
+        [],
+        "=",
+        [],
+        {
+          "type": "Variable",
+          "name": "expr1"
+        },
+        [
+          [
+            [
+              " "
+            ],
+            "and",
+            [
+              " "
+            ],
+            "id2",
+            [],
+            "=",
+            [],
+            {
+              "type": "Variable",
+              "name": "expr"
+            }
+          ]
+        ]
+      ],
+      [],
+      ")",
+      [
+        " "
+      ],
+      "{",
+      [
+        "\n",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      [
+        {
+          "type": "VariableStatement",
+          "declarations": [
+            {
+              "type": "VariableDeclaration",
+              "name": "result",
+              "value": {
+                "type": "BinaryExpression",
+                "operator": "+",
+                "left": {
+                  "type": "Variable",
+                  "name": "id1"
+                },
+                "right": {
+                  "type": "Variable",
+                  "name": "id2"
+                }
+              }
+            }
+          ]
+        },
+        [
+          [
+            [
+              "\n",
+              " ",
+              " ",
+              " ",
+              " "
+            ],
+            {
+              "type": "ReturnStatement",
+              "value": {
+                "type": "Variable",
+                "name": "result"
+              }
+            }
+          ]
+        ]
+      ],
+      [
+        "\n"
+      ],
+      "}"
+    ]
   ]
 }

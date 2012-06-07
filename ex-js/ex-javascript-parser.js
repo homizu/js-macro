@@ -248,7 +248,9 @@ module.exports = (function(){
         "Punctuator": parse_Punctuator,
         "Punctuator1": parse_Punctuator1,
         "Punctuator2": parse_Punctuator2,
-        "StatementInTemplate": parse_StatementInTemplate
+        "StatementInTemplate": parse_StatementInTemplate,
+        "AssignmentExpression": parse_AssignmentExpression,
+        "Statement": parse_Statement
       };
       
       if (startRule !== undefined) {
@@ -15669,7 +15671,7 @@ module.exports = (function(){
                       pos = pos3;
                     }
                     if (result6 !== null) {
-                      result6 = (function(offset, ids) { return ids; })(pos2, result6[2]);
+                      result6 = (function(offset, ids) { identifierNames = ids; return ids; })(pos2, result6[2]);
                     }
                     if (result6 === null) {
                       pos = pos2;
@@ -15728,7 +15730,7 @@ module.exports = (function(){
                           pos = pos3;
                         }
                         if (result8 !== null) {
-                          result8 = (function(offset, exprs) { return exprs; })(pos2, result8[2]);
+                          result8 = (function(offset, exprs) { expressionNames = exprs; return exprs; })(pos2, result8[2]);
                         }
                         if (result8 === null) {
                           pos = pos2;
@@ -15942,6 +15944,8 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, type, macroName, idList, exprList, stmtList, literalList, syntaxRules) { 
+                  identifierNames = [];
+                  expressionNames = [];
                   statementNames = [];
                   literalKeywordNames = [];
                   return { type: (type === "expression" ? "Expression" : "Statement" ) + "MacroDefinition",
@@ -17099,44 +17103,63 @@ module.exports = (function(){
                   pos1 = pos;
                   result0 = parse_IdentifierName();
                   if (result0 !== null) {
-                    pos2 = pos;
-                    result1 = parse___();
+                    result1 = (function(offset, name) { if (identifierNames.indexOf(name) >= 0) {
+                               identifierType = 'Identifier';
+                               return identifierType;
+                           } else if (expressionNames.indexOf(name) >= 0) {
+                               identifierType = 'Expression';
+                               return identifierType;
+                           } else if (statementNames.indexOf(name) >= 0) {
+                               identifierType = 'Statement';
+                               return identifierType;
+                           } else if (literalKeywordNames.indexOf(name) >= 0) {
+                               identifierType = 'LiteralKeyword';
+                               return identifierType;
+                           }
+                        })(pos, result0) ? "" : null;
                     if (result1 !== null) {
-                      result2 = parse_PunctuationMark();
-                      result2 = result2 !== null ? result2 : "";
+                      pos2 = pos;
+                      result2 = parse___();
                       if (result2 !== null) {
-                        result3 = parse___();
+                        result3 = parse_PunctuationMark();
+                        result3 = result3 !== null ? result3 : "";
                         if (result3 !== null) {
-                          if (input.substr(pos, 3) === "...") {
-                            result4 = "...";
-                            pos += 3;
-                          } else {
-                            result4 = null;
-                            if (reportFailures === 0) {
-                              matchFailed("\"...\"");
-                            }
-                          }
+                          result4 = parse___();
                           if (result4 !== null) {
-                            result1 = [result1, result2, result3, result4];
+                            if (input.substr(pos, 3) === "...") {
+                              result5 = "...";
+                              pos += 3;
+                            } else {
+                              result5 = null;
+                              if (reportFailures === 0) {
+                                matchFailed("\"...\"");
+                              }
+                            }
+                            if (result5 !== null) {
+                              result2 = [result2, result3, result4, result5];
+                            } else {
+                              result2 = null;
+                              pos = pos2;
+                            }
                           } else {
-                            result1 = null;
+                            result2 = null;
                             pos = pos2;
                           }
                         } else {
-                          result1 = null;
+                          result2 = null;
                           pos = pos2;
                         }
                       } else {
-                        result1 = null;
+                        result2 = null;
                         pos = pos2;
                       }
-                    } else {
-                      result1 = null;
-                      pos = pos2;
-                    }
-                    result1 = result1 !== null ? result1 : "";
-                    if (result1 !== null) {
-                      result0 = [result0, result1];
+                      result2 = result2 !== null ? result2 : "";
+                      if (result2 !== null) {
+                        result0 = [result0, result1, result2];
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
                     } else {
                       result0 = null;
                       pos = pos1;
@@ -17148,7 +17171,7 @@ module.exports = (function(){
                   if (result0 !== null) {
                     result0 = (function(offset, name, ellipsis) {
                           var result = {
-                            type: "Identifier",
+                            type: identifierType === 'LiteralKeyword' ? identifierType : (identifierType + 'Variable'),
                             name: name
                           };
                           if (ellipsis[3]) {
@@ -17159,7 +17182,7 @@ module.exports = (function(){
                              }
                           }
                           return result;                    
-                        })(pos0, result0[0], result0[1]);
+                        })(pos0, result0[0], result0[2]);
                   }
                   if (result0 === null) {
                     pos = pos0;
@@ -17723,6 +17746,594 @@ module.exports = (function(){
         return result0;
       }
       
+      function parse_AssignmentExpression() {
+        var cacheKey = "AssignmentExpression@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2, result3, result4, result5, result6;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_LeftHandSideExpression();
+        if (result0 !== null) {
+          result1 = parse___();
+          if (result1 !== null) {
+            result2 = parse_AssignmentOperator();
+            if (result2 !== null) {
+              result3 = parse___();
+              if (result3 !== null) {
+                result4 = parse_AssignmentExpression();
+                if (result4 !== null) {
+                  result0 = [result0, result1, result2, result3, result4];
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, left, operator, right) {
+         return {
+         type:     "AssignmentExpression",
+         operator: operator,
+         left:     left,
+         right:    right
+         };
+         })(pos0, result0[0], result0[2], result0[4]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          result0 = parse_ConditionalExpression();
+          if (result0 === null) {
+            if (input.substr(pos, 2) === "or") {
+              result0 = "or";
+              pos += 2;
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"or\"");
+              }
+            }
+            if (result0 === null) {
+              pos0 = pos;
+              if (input.substr(pos, 2) === "or") {
+                result0 = "or";
+                pos += 2;
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"or\"");
+                }
+              }
+              if (result0 !== null) {
+                result1 = parse___();
+                if (result1 !== null) {
+                  if (input.charCodeAt(pos) === 40) {
+                    result2 = "(";
+                    pos++;
+                  } else {
+                    result2 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\"(\"");
+                    }
+                  }
+                  if (result2 !== null) {
+                    result3 = parse___();
+                    if (result3 !== null) {
+                      result4 = parse_Expression();
+                      if (result4 !== null) {
+                        result5 = parse___();
+                        if (result5 !== null) {
+                          if (input.charCodeAt(pos) === 41) {
+                            result6 = ")";
+                            pos++;
+                          } else {
+                            result6 = null;
+                            if (reportFailures === 0) {
+                              matchFailed("\")\"");
+                            }
+                          }
+                          if (result6 !== null) {
+                            result0 = [result0, result1, result2, result3, result4, result5, result6];
+                          } else {
+                            result0 = null;
+                            pos = pos0;
+                          }
+                        } else {
+                          result0 = null;
+                          pos = pos0;
+                        }
+                      } else {
+                        result0 = null;
+                        pos = pos0;
+                      }
+                    } else {
+                      result0 = null;
+                      pos = pos0;
+                    }
+                  } else {
+                    result0 = null;
+                    pos = pos0;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos0;
+                }
+              } else {
+                result0 = null;
+                pos = pos0;
+              }
+            }
+          }
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_Statement() {
+        var cacheKey = "Statement@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14, result15, result16, result17, result18, result19;
+        var pos0, pos1, pos2;
+        
+        result0 = parse_Block();
+        if (result0 === null) {
+          result0 = parse_VariableStatement();
+          if (result0 === null) {
+            result0 = parse_EmptyStatement();
+            if (result0 === null) {
+              result0 = parse_ExpressionStatement();
+              if (result0 === null) {
+                result0 = parse_IfStatement();
+                if (result0 === null) {
+                  result0 = parse_IterationStatement();
+                  if (result0 === null) {
+                    result0 = parse_ContinueStatement();
+                    if (result0 === null) {
+                      result0 = parse_BreakStatement();
+                      if (result0 === null) {
+                        result0 = parse_ReturnStatement();
+                        if (result0 === null) {
+                          result0 = parse_WithStatement();
+                          if (result0 === null) {
+                            result0 = parse_LabelledStatement();
+                            if (result0 === null) {
+                              result0 = parse_SwitchStatement();
+                              if (result0 === null) {
+                                result0 = parse_ThrowStatement();
+                                if (result0 === null) {
+                                  result0 = parse_TryStatement();
+                                  if (result0 === null) {
+                                    result0 = parse_DebuggerStatement();
+                                    if (result0 === null) {
+                                      result0 = parse_MacroDefinition();
+                                      if (result0 === null) {
+                                        result0 = parse_FunctionDeclaration();
+                                        if (result0 === null) {
+                                          result0 = parse_FunctionExpression();
+                                          if (result0 === null) {
+                                            pos0 = pos;
+                                            if (input.substr(pos, 3) === "let") {
+                                              result0 = "let";
+                                              pos += 3;
+                                            } else {
+                                              result0 = null;
+                                              if (reportFailures === 0) {
+                                                matchFailed("\"let\"");
+                                              }
+                                            }
+                                            if (result0 !== null) {
+                                              result1 = parse___();
+                                              if (result1 !== null) {
+                                                if (input.charCodeAt(pos) === 40) {
+                                                  result2 = "(";
+                                                  pos++;
+                                                } else {
+                                                  result2 = null;
+                                                  if (reportFailures === 0) {
+                                                    matchFailed("\"(\"");
+                                                  }
+                                                }
+                                                if (result2 !== null) {
+                                                  result3 = parse___();
+                                                  if (result3 !== null) {
+                                                    if (input.substr(pos, 3) === "var") {
+                                                      result4 = "var";
+                                                      pos += 3;
+                                                    } else {
+                                                      result4 = null;
+                                                      if (reportFailures === 0) {
+                                                        matchFailed("\"var\"");
+                                                      }
+                                                    }
+                                                    if (result4 !== null) {
+                                                      result5 = parse___();
+                                                      if (result5 !== null) {
+                                                        pos1 = pos;
+                                                        result6 = parse_IdentifierName();
+                                                        if (result6 !== null) {
+                                                          result7 = parse___();
+                                                          if (result7 !== null) {
+                                                            if (input.charCodeAt(pos) === 61) {
+                                                              result8 = "=";
+                                                              pos++;
+                                                            } else {
+                                                              result8 = null;
+                                                              if (reportFailures === 0) {
+                                                                matchFailed("\"=\"");
+                                                              }
+                                                            }
+                                                            if (result8 !== null) {
+                                                              result9 = parse___();
+                                                              if (result9 !== null) {
+                                                                result10 = parse_AssignmentExpression();
+                                                                if (result10 !== null) {
+                                                                  result11 = [];
+                                                                  pos2 = pos;
+                                                                  result12 = parse___();
+                                                                  if (result12 !== null) {
+                                                                    if (input.substr(pos, 3) === "and") {
+                                                                      result13 = "and";
+                                                                      pos += 3;
+                                                                    } else {
+                                                                      result13 = null;
+                                                                      if (reportFailures === 0) {
+                                                                        matchFailed("\"and\"");
+                                                                      }
+                                                                    }
+                                                                    if (result13 !== null) {
+                                                                      result14 = parse___();
+                                                                      if (result14 !== null) {
+                                                                        result15 = parse_IdentifierName();
+                                                                        if (result15 !== null) {
+                                                                          result16 = parse___();
+                                                                          if (result16 !== null) {
+                                                                            if (input.charCodeAt(pos) === 61) {
+                                                                              result17 = "=";
+                                                                              pos++;
+                                                                            } else {
+                                                                              result17 = null;
+                                                                              if (reportFailures === 0) {
+                                                                                matchFailed("\"=\"");
+                                                                              }
+                                                                            }
+                                                                            if (result17 !== null) {
+                                                                              result18 = parse___();
+                                                                              if (result18 !== null) {
+                                                                                result19 = parse_AssignmentExpression();
+                                                                                if (result19 !== null) {
+                                                                                  result12 = [result12, result13, result14, result15, result16, result17, result18, result19];
+                                                                                } else {
+                                                                                  result12 = null;
+                                                                                  pos = pos2;
+                                                                                }
+                                                                              } else {
+                                                                                result12 = null;
+                                                                                pos = pos2;
+                                                                              }
+                                                                            } else {
+                                                                              result12 = null;
+                                                                              pos = pos2;
+                                                                            }
+                                                                          } else {
+                                                                            result12 = null;
+                                                                            pos = pos2;
+                                                                          }
+                                                                        } else {
+                                                                          result12 = null;
+                                                                          pos = pos2;
+                                                                        }
+                                                                      } else {
+                                                                        result12 = null;
+                                                                        pos = pos2;
+                                                                      }
+                                                                    } else {
+                                                                      result12 = null;
+                                                                      pos = pos2;
+                                                                    }
+                                                                  } else {
+                                                                    result12 = null;
+                                                                    pos = pos2;
+                                                                  }
+                                                                  while (result12 !== null) {
+                                                                    result11.push(result12);
+                                                                    pos2 = pos;
+                                                                    result12 = parse___();
+                                                                    if (result12 !== null) {
+                                                                      if (input.substr(pos, 3) === "and") {
+                                                                        result13 = "and";
+                                                                        pos += 3;
+                                                                      } else {
+                                                                        result13 = null;
+                                                                        if (reportFailures === 0) {
+                                                                          matchFailed("\"and\"");
+                                                                        }
+                                                                      }
+                                                                      if (result13 !== null) {
+                                                                        result14 = parse___();
+                                                                        if (result14 !== null) {
+                                                                          result15 = parse_IdentifierName();
+                                                                          if (result15 !== null) {
+                                                                            result16 = parse___();
+                                                                            if (result16 !== null) {
+                                                                              if (input.charCodeAt(pos) === 61) {
+                                                                                result17 = "=";
+                                                                                pos++;
+                                                                              } else {
+                                                                                result17 = null;
+                                                                                if (reportFailures === 0) {
+                                                                                  matchFailed("\"=\"");
+                                                                                }
+                                                                              }
+                                                                              if (result17 !== null) {
+                                                                                result18 = parse___();
+                                                                                if (result18 !== null) {
+                                                                                  result19 = parse_AssignmentExpression();
+                                                                                  if (result19 !== null) {
+                                                                                    result12 = [result12, result13, result14, result15, result16, result17, result18, result19];
+                                                                                  } else {
+                                                                                    result12 = null;
+                                                                                    pos = pos2;
+                                                                                  }
+                                                                                } else {
+                                                                                  result12 = null;
+                                                                                  pos = pos2;
+                                                                                }
+                                                                              } else {
+                                                                                result12 = null;
+                                                                                pos = pos2;
+                                                                              }
+                                                                            } else {
+                                                                              result12 = null;
+                                                                              pos = pos2;
+                                                                            }
+                                                                          } else {
+                                                                            result12 = null;
+                                                                            pos = pos2;
+                                                                          }
+                                                                        } else {
+                                                                          result12 = null;
+                                                                          pos = pos2;
+                                                                        }
+                                                                      } else {
+                                                                        result12 = null;
+                                                                        pos = pos2;
+                                                                      }
+                                                                    } else {
+                                                                      result12 = null;
+                                                                      pos = pos2;
+                                                                    }
+                                                                  }
+                                                                  if (result11 !== null) {
+                                                                    result6 = [result6, result7, result8, result9, result10, result11];
+                                                                  } else {
+                                                                    result6 = null;
+                                                                    pos = pos1;
+                                                                  }
+                                                                } else {
+                                                                  result6 = null;
+                                                                  pos = pos1;
+                                                                }
+                                                              } else {
+                                                                result6 = null;
+                                                                pos = pos1;
+                                                              }
+                                                            } else {
+                                                              result6 = null;
+                                                              pos = pos1;
+                                                            }
+                                                          } else {
+                                                            result6 = null;
+                                                            pos = pos1;
+                                                          }
+                                                        } else {
+                                                          result6 = null;
+                                                          pos = pos1;
+                                                        }
+                                                        result6 = result6 !== null ? result6 : "";
+                                                        if (result6 !== null) {
+                                                          result7 = parse___();
+                                                          if (result7 !== null) {
+                                                            if (input.charCodeAt(pos) === 41) {
+                                                              result8 = ")";
+                                                              pos++;
+                                                            } else {
+                                                              result8 = null;
+                                                              if (reportFailures === 0) {
+                                                                matchFailed("\")\"");
+                                                              }
+                                                            }
+                                                            if (result8 !== null) {
+                                                              result9 = parse___();
+                                                              if (result9 !== null) {
+                                                                if (input.charCodeAt(pos) === 123) {
+                                                                  result10 = "{";
+                                                                  pos++;
+                                                                } else {
+                                                                  result10 = null;
+                                                                  if (reportFailures === 0) {
+                                                                    matchFailed("\"{\"");
+                                                                  }
+                                                                }
+                                                                if (result10 !== null) {
+                                                                  result11 = parse___();
+                                                                  if (result11 !== null) {
+                                                                    pos1 = pos;
+                                                                    result12 = parse_Statement();
+                                                                    if (result12 !== null) {
+                                                                      result13 = [];
+                                                                      pos2 = pos;
+                                                                      result14 = parse___();
+                                                                      if (result14 !== null) {
+                                                                        result15 = parse_Statement();
+                                                                        if (result15 !== null) {
+                                                                          result14 = [result14, result15];
+                                                                        } else {
+                                                                          result14 = null;
+                                                                          pos = pos2;
+                                                                        }
+                                                                      } else {
+                                                                        result14 = null;
+                                                                        pos = pos2;
+                                                                      }
+                                                                      while (result14 !== null) {
+                                                                        result13.push(result14);
+                                                                        pos2 = pos;
+                                                                        result14 = parse___();
+                                                                        if (result14 !== null) {
+                                                                          result15 = parse_Statement();
+                                                                          if (result15 !== null) {
+                                                                            result14 = [result14, result15];
+                                                                          } else {
+                                                                            result14 = null;
+                                                                            pos = pos2;
+                                                                          }
+                                                                        } else {
+                                                                          result14 = null;
+                                                                          pos = pos2;
+                                                                        }
+                                                                      }
+                                                                      if (result13 !== null) {
+                                                                        result12 = [result12, result13];
+                                                                      } else {
+                                                                        result12 = null;
+                                                                        pos = pos1;
+                                                                      }
+                                                                    } else {
+                                                                      result12 = null;
+                                                                      pos = pos1;
+                                                                    }
+                                                                    result12 = result12 !== null ? result12 : "";
+                                                                    if (result12 !== null) {
+                                                                      result13 = parse___();
+                                                                      if (result13 !== null) {
+                                                                        if (input.charCodeAt(pos) === 125) {
+                                                                          result14 = "}";
+                                                                          pos++;
+                                                                        } else {
+                                                                          result14 = null;
+                                                                          if (reportFailures === 0) {
+                                                                            matchFailed("\"}\"");
+                                                                          }
+                                                                        }
+                                                                        if (result14 !== null) {
+                                                                          result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14];
+                                                                        } else {
+                                                                          result0 = null;
+                                                                          pos = pos0;
+                                                                        }
+                                                                      } else {
+                                                                        result0 = null;
+                                                                        pos = pos0;
+                                                                      }
+                                                                    } else {
+                                                                      result0 = null;
+                                                                      pos = pos0;
+                                                                    }
+                                                                  } else {
+                                                                    result0 = null;
+                                                                    pos = pos0;
+                                                                  }
+                                                                } else {
+                                                                  result0 = null;
+                                                                  pos = pos0;
+                                                                }
+                                                              } else {
+                                                                result0 = null;
+                                                                pos = pos0;
+                                                              }
+                                                            } else {
+                                                              result0 = null;
+                                                              pos = pos0;
+                                                            }
+                                                          } else {
+                                                            result0 = null;
+                                                            pos = pos0;
+                                                          }
+                                                        } else {
+                                                          result0 = null;
+                                                          pos = pos0;
+                                                        }
+                                                      } else {
+                                                        result0 = null;
+                                                        pos = pos0;
+                                                      }
+                                                    } else {
+                                                      result0 = null;
+                                                      pos = pos0;
+                                                    }
+                                                  } else {
+                                                    result0 = null;
+                                                    pos = pos0;
+                                                  }
+                                                } else {
+                                                  result0 = null;
+                                                  pos = pos0;
+                                                }
+                                              } else {
+                                                result0 = null;
+                                                pos = pos0;
+                                              }
+                                            } else {
+                                              result0 = null;
+                                              pos = pos0;
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
       
       function cleanupExpected(expected) {
         expected.sort();
@@ -17771,8 +18382,11 @@ module.exports = (function(){
       
       
         var inTemplate = false;       // テンプレート中かどうかを表す変数
-        var statementNames = [];      // ステートメント変数のリスト
+        var identifierNames = [];     // identifier変数のリスト
+        var expressionNames = [];     // expression変数のリスト
+        var statementNames = [];      // statement変数のリスト
         var literalKeywordNames = []; // リテラルキーワードのリスト
+        var identifierType = ""       // パターン中の識別子の種類を表す変数
         var lastExpr = null;          // テンプレート中の式を保存するための変数
       
       

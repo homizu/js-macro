@@ -2,276 +2,336 @@ module.exports = (function () {
 
     var generator = { debug: false };
 
-    var peg_types = {
-       
+    var pegjsStatement = 'Statement\n = Block\n / VariableStatement\n / EmptyStatement\n / ExpressionStatement\n / IfStatement\n / IterationStatement\n / ContinueStatement\n / BreakStatement\n / ReturnStatement\n / WithStatement\n / LabelledStatement\n / SwitchStatement\n / ThrowStatement\n / TryStatement\n / DebuggerStatement\n / MacroDefinition\n / FunctionDeclaration\n / FunctionExpression\n';
+
+    var pegjsExpression = 'AssignmentExpression\n = left:LeftHandSideExpression __\n operator:AssignmentOperator __\n right:AssignmentExpression {\n return {\n type:     "AssignmentExpression",\n operator: operator,\n left:     left,\n right:    right\n };\n }\n / ConditionalExpression\n';
+
+    var pegObj = {
+        
         // Grouping
-        grouping: {
-            type: 'grouping',
-            toString: function() { return '( __' + this.data.toString() + '__ )'; }
+        grouping: function(data) {
+            return { 
+                data: data,
+                toString: function() { return '( __' + this.data.toString() + '__ )'; }
+            };
         },
         
         // Zero-or-one
-        optional: {
-            type: 'zero-or-one',
-            toString: function() { return  this.data.toString() + '?'; }
+        optional: function(data) {
+            return { 
+                data: data,
+                toString: function() { return  '(' + this.data.toString() + ')?'; }
+            };
         },
-
+        
         // Zero-or-more repetitions
-        repetition: {
-            type: 'zero-or-more',
-            toString: function() { return  this.data.toString() + '*'; }
+        repetition: function(data) {
+            return {
+                data: data,
+                toString: function() { return  '(' + this.data.toString() + ')*'; }
+            };
         },
-
+        
         // Sequence
-        sequence: {
-            type: 'sequence',
-            toString: function() { return this.left.toString() + ' ' + this.right.toString(); }
+        sequence: function(array) {
+            var result = array[0];
+            for (var i=1; i<array.length; i++) {
+                result = {
+                    left: result,
+                    right: array[i],
+                    toString: function() { return this.left.toString() + ' ' + this.right.toString(); }
+                };
+            }
+            return result;
         },
-
+        
         // Prioritized choice
-        choice: { 
-            type: 'prioritized-choice',
-            toString: function() { return this.left.toString() + ' / ' + this.right.toString(); }
+        choice: function(array) {
+            var result = array[0];
+            for (var i=1; i<array.length; i++) {
+                result = {
+                    left: result,
+                    right: array[i],
+                    toString: function() { return this.left.toString() + ' / ' + this.right.toString(); }
+                };
+            }
+            return result;
         }, 
         
         // White spaces
-        whitespace: {
-            type: '-whitespaces',
-            toString: function() { return '__'; }
+        whitespace: function() {
+            return {
+                toString: function() { return '__';}
+            };
         },
-
+        
         // Literal string
-        literal_string: {
-            type: 'literal-string',
-            toString: function() { return '"' + this.data + '"'; }
+        string: function(data) {
+            return {
+                data: data,
+                toString: function() { return '"' + this.data + '"'; }
+            };
         },
-
+        
         // Literal number
-        literal_number: {
-            type: 'literal-number',
-            toString: function() { return 'number:NumericLiteral &{ return (number - 0) === ' + this.data + '; }'; }
+        number: function(data) {
+            return {
+                data: data,
+                toString: function() { return 'number:NumericLiteral &{ return (number - 0) === ' + this.data + '; }'; }
+            };
         },
         
         // Identifier
-        identifier: {
-            type: 'identifier',
-            toString: function() { return 'IdentifierName'; }
+        identifier: function() {
+            return {
+                toString: function() { return 'IdentifierName'; }
+            };
         },
-
+        
         // Expression
-        expression: {
-            type: 'expression',
-            toString: function() { return 'Expression'; }
+        expression: function() {
+            return {
+                toString: function() { return 'AssignmentExpression'; }
+            };
         },
-
+        
         // Statement
-        statement: {
-            type: 'statement',
-            toString: function() { return 'Statement'; }
-        }
-        
-        
-    };
-
-var toStrings = {
-       
-        // Grouping
-    grouping: function() { return '( __' + this.data.toString() + '__ )'; },
-        
-    // Zero-or-one
-    optional: function() { return  '(' + this.data.toString() + ')?'; },
-    
-    // Zero-or-more repetitions
-    repetition: function() { return  '(' + this.data.toString() + ')*'; },
-
-    // Sequence
-    sequence: function() { return this.left.toString() + ' ' + this.right.toString(); },
-
-    // Prioritized choice
-    choice: function() { return this.left.toString() + ' / ' + this.right.toString(); }, 
-        
-    // White spaces
-    whitespace: function() { return '__';},
-
-    // Literal string
-    literal_string: function() { return '"' + this.data + '"'; },
-
-    // Literal number
-    literal_number: function() { return 'number:NumericLiteral &{ return (number - 0) === ' + this.data + '; }'; },
-        
-    // Identifier
-    identifier: function() { return 'IdentifierName'; },
-
-    // Expression
-    expression: function() { return 'Expression'; },
-
-    // Statement
-    statement: function() { return 'Statement'; }
-        
-    };
-    
-
-    var js_macro_types = [
-/*        // Ellipsis Scope
-        { type: 'EllipsisScope',
-          isType: function(t) { return t === this.type; }
+        statement: function() {
+            return {
+                toString: function() { return 'Statement'; }
+            };
         },
-*/
+
+        // Null Object
+        'null': function() {
+            return {
+                toString: function() { return ''; }
+            };
+        }
+    };
+    
+    
+    var js_macro_types = [
+
+        // Ellipsis
+        { type: 'Ellipsis',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              var data = convertToPegObj(obj.data);
+              var result = [pegObj.whitespace()];
+              if (obj.punctuationMark) {
+                  result.push(pegObj.string(obj.punctuationMark));
+                  result.push(pegObj.whitespace());
+              }
+              result.push(data);
+              result = pegObj.sequence(result);
+              result = pegObj.repetition(result);
+              result = pegObj.sequence([data, result]);
+              return pegObj.optional(result);
+          }          
+        },
+
         // Block
         { type: 'Block',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
+              var data = convertToPegObj(obj.elements);
+              return pegObj.sequence([pegObj.string('{'),
+                                      pegObj.whitespace(),
+                                      data,
+                                      pegObj.whitespace(),
+                                      pegObj.string('}')]);
           }
         },
 
         // Parentheses
         { type: 'Paren',
-          isType: function(t) { return t === this.type; }
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              var data = convertToPegObj(obj.elements);
+              return pegObj.sequence([pegObj.string('('),
+                                      pegObj.whitespace(),
+                                      data,
+                                      pegObj.whitespace(),
+                                      pegObj.string(')')]);
+          }
         },
 
         // Bracket
         { type: 'Bracket',
-          isType: function(t) { return t === this.type; }
-        },
-
-        // Identifier
-        { type: 'Identifier',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return {
-                  data: obj.name,
-                  toString: toStrings['identifier']
-              };
+              var data = convertToPegObj(obj.elements);
+              return pegObj.sequence([pegObj.string('{'),
+                                      pegObj.whitespace(),
+                                      data,
+                                      pegObj.whitespace(),
+                                      pegObj.string('}')]);
           }
         },
 
-        // Literal
-        { type: 'Literal',
-          isType: function(t) { return t === this.type; }
+        // IdentifierVariable
+        { type: 'IdentifierVariable',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.identifier();
+          }
+        },
+
+        // ExpressionVariable
+        { type: 'ExpressionVariable',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.expression();
+          }
+        },
+
+        // StatementVariable
+        { type: 'StatementVariable',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.statement();
+          }
+        },
+
+        // LiteralKeyword
+        { type: 'LiteralKeyword',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.string(obj.name);
+          }
         },
 
         // Punctuator
         { type: 'Punctuator',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return {
-                  data: obj.data,
-                  toString: toStrings['literal_string']
-              }
+              return pegObj.string(obj.data);
           }
         },
 
-        // Punctuation Mark
-        { type: 'PunctuationMark',
-          isType: function(t) { return t === this.type; }
-        },
-
-        // Ellipsis
-        { type: 'Ellipsis',
+        // BooleanLiteral
+        { type: 'BooleanLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              var data = convertPegObj(obj.data);
-              var result = {
-                  left: {
-                      toString: toStrings['whitespace']
-                  },
-                  right: data,
-                  toString: toStrings['sequence']
-              };
-              if (obj.punctuationMark) {
-                  result = {
-                      left: {
-                          toString: toStrings['whitespace']
-                      },
-                      right: {
-                          left: {
-                              data: obj.punctuationMark,
-                              toString: toStrings['literal_string']
-                          },
-                          right: result,
-                          toString: toStrings['sequence']
-                      },
-                      toString: toStrings['sequence']
-                  };
-              }
-              return {
-                  data: {
-                      left: data,
-                      right:{
-                          data: result,
-                          toString: toStrings['repetition']
-                      },
-                      toString: toStrings['sequence']
-                  },
-                  toString: toStrings['optional']
-              };
+              return pegObj.string(obj.value);
           }
+        },
 
-        }
+        // NumericLiteral
+        { type: 'NumericLiteral',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.number(obj.value);
+          }
+        },
 
+        // StringLiteral
+        { type: 'StringLiteral',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.string('\"'+ obj.value + '\"');
+          }
+        },
+
+        // NullLiteral
+        { type: 'NullLiteral',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.string('null');
+          }
+        },
         
+        // RegularExpressionLiteral
+        { type: 'RegularExpressionLiteral',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.string('/' + obj.body + '/' + obj.flags);
+          }
+        }
     ];
 
-    var convertPegObj = function(pattern) {
-        var result = null;
+    var convertToPegObj = function(pattern) {
+
         if (pattern instanceof Array) {
-            result = convertPegObj(pattern[0]);
+            var result = [convertToPegObj(pattern[0])];
             for (var i=1; i<pattern.length; i++) {
-                result = {
-                    left: {
-                        left: result,
-                        right: { toString: toStrings['whitespace'] },
-                        toString: toStrings['sequence']
-                    },
-                    right: convertPegObj(pattern[i]),
-                    toString: toStrings['sequence']
-                };
+                result.push(pegObj.whitespace());
+                result.push(convertToPegObj(pattern[i]));
             }
+            return pegObj.sequence(result);
         } else if (pattern) {
             for (var i=0; i<js_macro_types.length; i++) {
                 var type = js_macro_types[i];
                 if (type.isType(pattern.type)) {
-                    result = type.toPegObj(pattern);
-                    break;
+                    return type.toPegObj(pattern);
                 }
             }
         }
-        return result;            
+        return pegObj.null();            
     };
 
+    
 
 
-    generator.generate = function(tree) {
 
+    generator.generate = function(jsObj) {
 
-        var peg_tree;
+        if (jsObj.type === 'Program') {
+            var elements = jsObj.elements;
+            var macroDefs = [];
+            var expressionMacros = [];
+            var statementMacros = [];
+            for (var i=0; i<elements.length; i++) {
+                var element = elements[i];
+                if (element.type.indexOf('MacroDefinition') >= 0)
+                    macroDefs.push(element);
+            }
 
-        peg_tree = {
-            left: {
-                data: 100,
-                toString: peg_types['literal_number'].toString
-            },
-            right: {
-                left: {
-                    data: "+",
-                    toString: peg_types['literal_string'].toString
-                },
-                right: {
-                    toString: peg_types['expression'].toString
-                },
-                toString: peg_types['sequence'].toString
-            },
+            for (var i=0; i<macroDefs.length; i++) {
+                var macroDef = macroDefs[i];
+                var macroName = pegObj.string(macroDef.macroName);
+                var syntaxRules = macroDef.syntaxRules;
+                var patterns;
+                var pattern = syntaxRules[0].pattern
+                if (pattern)
+                    patterns = [pegObj.sequence([macroName,
+                                                 pegObj.whitespace(),
+                                                 convertToPegObj(pattern)])];
+                else
+                    patterns = [macroName];
+                for (var j=1; j<syntaxRules.length; j++) {
+                    pattern = syntaxRules[j].pattern;
+                    if (pattern)
+                        patterns.push(pegObj.sequence([macroName,
+                                                       pegObj.whitespace(),
+                                                       convertToPegObj(pattern)]));
+                    else
+                        patterns.push(macroName);
+                }
+                patterns = pegObj.choice(patterns);
+               
+                if (macroDef.type.indexOf('Expression') >= 0)
+                    expressionMacros.push(patterns);
+                else
+                    statementMacros.push(patterns);
+            }
 
-            toString: peg_types['sequence'].toString
-
-        };
+            return (expressionMacros.length > 0 ? pegjsExpression + ' / ' + pegObj.choice(expressionMacros).toString() + '\n' : "")
+                + (statementMacros.length > 0 ? pegjsStatement + ' / ' + pegObj.choice(statementMacros).toString() + '\n' : "");
+                
+        } else {
+            return 'error';
+        }
+                    
+/*
 
         var pattern =
             {
                   "type": "Ellipsis",
                   "data": [
                     {
-                      "type": "Identifier",
+                      "type": "IdentifierVariable",
                       "name": "id"
                     },
                     {
@@ -279,14 +339,35 @@ var toStrings = {
                       "data": "="
                     },
                     {
-                      "type": "Identifier",
+                      "type": "ExpressionVariable",
                       "name": "expr"
                     }
                   ],
                   "punctuationMark": "and"
         };
+
+        var pattern2 = 
+            {
+              "type": "Block",
+              "elements": [
+                {
+                  "type": "Ellipsis",
+                  "data": {
+                    "type": "StatementVariable",
+                    "name": "stmt"
+                  },
+                  "punctuationMark": ""
+                }
+              ]
+            };
        
-        return convertPegObj(pattern).toString();
+        var pegObj = convertToPegObj(pattern);
+        if (pegObj)
+            return pegObj.toString();
+        else
+            return "";
+
+*/
     }
 
 

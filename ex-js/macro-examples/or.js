@@ -5,6 +5,6 @@ expression or {
     
     or => false;
     or(exp1) => exp1;
-//    or(exp1, exp2, ...) => let (var temp = exp1) { return temp? temp : or(exp2, ...); }
+    or(exp1, exp2, ...) => let (var temp = exp1) { return temp? temp : or(exp2, ...); }
 
 }
