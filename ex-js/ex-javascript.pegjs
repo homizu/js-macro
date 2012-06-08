@@ -1873,7 +1873,8 @@ StatementInTemplate
   / Statement 
 
 AssignmentExpression
- = left:LeftHandSideExpression __
+ = "or" / "or" __ "(" __ AssignmentExpression __ ")"
+ / left:LeftHandSideExpression __
  operator:AssignmentOperator __
  right:AssignmentExpression {
  return {
@@ -1884,10 +1885,12 @@ AssignmentExpression
  };
  }
  / ConditionalExpression
- / "or" / "or" __ "(" __ Expression __ ")"
 
-Statement
- = Block
+
+
+
+Statement =(t0:"let" __ t1:(t0:("(" __ ")" { return { type: "Paren", elements: "" }; }) __ t1:("{" __ "}" { return { type: "Block", elements: "" }; }){ return [t0, t1]; }){ return [t0, t1]; }) 
+ /  Block
  / VariableStatement
  / EmptyStatement
  / ExpressionStatement
@@ -1905,4 +1908,4 @@ Statement
  / MacroDefinition
  / FunctionDeclaration
  / FunctionExpression
- / "let" __ "(" __ "var" __ (IdentifierName __ "=" __ AssignmentExpression (__ "and" __ IdentifierName __ "=" __ AssignmentExpression)*)? __ ")" __ "{" __ (Statement (__ Statement)*)? __ "}"
+ 

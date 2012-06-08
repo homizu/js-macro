@@ -22,6 +22,28 @@
           "pattern": [
             {
               "type": "Paren",
+              "elements": ""
+            },
+            {
+              "type": "Block",
+              "elements": ""
+            }
+          ],
+          "template": {
+            "type": "FunctionCall",
+            "name": {
+              "type": "Function",
+              "name": null,
+              "params": [],
+              "elements": []
+            },
+            "arguments": []
+          }
+        },
+        {
+          "pattern": [
+            {
+              "type": "Paren",
               "elements": [
                 {
                   "type": "LiteralKeyword",
@@ -43,7 +65,7 @@
                       "name": "expr"
                     }
                   ],
-                  "punctuationMark": "and"
+                  "punctuationMark": ","
                 }
               ]
             },
@@ -102,101 +124,15 @@
     [
       "let",
       [
-        " "
-      ],
-      "(",
-      [],
-      "var",
-      [
-        " "
-      ],
-      [
-        "id1",
-        [],
-        "=",
-        [],
         {
-          "type": "Variable",
-          "name": "expr1"
+          "type": "Paren",
+          "elements": ""
         },
-        [
-          [
-            [
-              " "
-            ],
-            "and",
-            [
-              " "
-            ],
-            "id2",
-            [],
-            "=",
-            [],
-            {
-              "type": "Variable",
-              "name": "expr"
-            }
-          ]
-        ]
-      ],
-      [],
-      ")",
-      [
-        " "
-      ],
-      "{",
-      [
-        "\n",
-        " ",
-        " ",
-        " ",
-        " "
-      ],
-      [
         {
-          "type": "VariableStatement",
-          "declarations": [
-            {
-              "type": "VariableDeclaration",
-              "name": "result",
-              "value": {
-                "type": "BinaryExpression",
-                "operator": "+",
-                "left": {
-                  "type": "Variable",
-                  "name": "id1"
-                },
-                "right": {
-                  "type": "Variable",
-                  "name": "id2"
-                }
-              }
-            }
-          ]
-        },
-        [
-          [
-            [
-              "\n",
-              " ",
-              " ",
-              " ",
-              " "
-            ],
-            {
-              "type": "ReturnStatement",
-              "value": {
-                "type": "Variable",
-                "name": "result"
-              }
-            }
-          ]
-        ]
-      ],
-      [
-        "\n"
-      ],
-      "}"
+          "type": "Block",
+          "elements": ""
+        }
+      ]
     ]
   ]
 }

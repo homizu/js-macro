@@ -17757,113 +17757,56 @@ module.exports = (function(){
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1;
         
-        pos0 = pos;
-        pos1 = pos;
-        result0 = parse_LeftHandSideExpression();
-        if (result0 !== null) {
-          result1 = parse___();
-          if (result1 !== null) {
-            result2 = parse_AssignmentOperator();
-            if (result2 !== null) {
-              result3 = parse___();
-              if (result3 !== null) {
-                result4 = parse_AssignmentExpression();
-                if (result4 !== null) {
-                  result0 = [result0, result1, result2, result3, result4];
-                } else {
-                  result0 = null;
-                  pos = pos1;
-                }
-              } else {
-                result0 = null;
-                pos = pos1;
-              }
-            } else {
-              result0 = null;
-              pos = pos1;
-            }
-          } else {
-            result0 = null;
-            pos = pos1;
-          }
+        if (input.substr(pos, 2) === "or") {
+          result0 = "or";
+          pos += 2;
         } else {
           result0 = null;
-          pos = pos1;
-        }
-        if (result0 !== null) {
-          result0 = (function(offset, left, operator, right) {
-         return {
-         type:     "AssignmentExpression",
-         operator: operator,
-         left:     left,
-         right:    right
-         };
-         })(pos0, result0[0], result0[2], result0[4]);
+          if (reportFailures === 0) {
+            matchFailed("\"or\"");
+          }
         }
         if (result0 === null) {
-          pos = pos0;
-        }
-        if (result0 === null) {
-          result0 = parse_ConditionalExpression();
-          if (result0 === null) {
-            if (input.substr(pos, 2) === "or") {
-              result0 = "or";
-              pos += 2;
-            } else {
-              result0 = null;
-              if (reportFailures === 0) {
-                matchFailed("\"or\"");
-              }
+          pos0 = pos;
+          if (input.substr(pos, 2) === "or") {
+            result0 = "or";
+            pos += 2;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"or\"");
             }
-            if (result0 === null) {
-              pos0 = pos;
-              if (input.substr(pos, 2) === "or") {
-                result0 = "or";
-                pos += 2;
+          }
+          if (result0 !== null) {
+            result1 = parse___();
+            if (result1 !== null) {
+              if (input.charCodeAt(pos) === 40) {
+                result2 = "(";
+                pos++;
               } else {
-                result0 = null;
+                result2 = null;
                 if (reportFailures === 0) {
-                  matchFailed("\"or\"");
+                  matchFailed("\"(\"");
                 }
               }
-              if (result0 !== null) {
-                result1 = parse___();
-                if (result1 !== null) {
-                  if (input.charCodeAt(pos) === 40) {
-                    result2 = "(";
-                    pos++;
-                  } else {
-                    result2 = null;
-                    if (reportFailures === 0) {
-                      matchFailed("\"(\"");
-                    }
-                  }
-                  if (result2 !== null) {
-                    result3 = parse___();
-                    if (result3 !== null) {
-                      result4 = parse_Expression();
-                      if (result4 !== null) {
-                        result5 = parse___();
-                        if (result5 !== null) {
-                          if (input.charCodeAt(pos) === 41) {
-                            result6 = ")";
-                            pos++;
-                          } else {
-                            result6 = null;
-                            if (reportFailures === 0) {
-                              matchFailed("\")\"");
-                            }
-                          }
-                          if (result6 !== null) {
-                            result0 = [result0, result1, result2, result3, result4, result5, result6];
-                          } else {
-                            result0 = null;
-                            pos = pos0;
-                          }
-                        } else {
-                          result0 = null;
-                          pos = pos0;
+              if (result2 !== null) {
+                result3 = parse___();
+                if (result3 !== null) {
+                  result4 = parse_AssignmentExpression();
+                  if (result4 !== null) {
+                    result5 = parse___();
+                    if (result5 !== null) {
+                      if (input.charCodeAt(pos) === 41) {
+                        result6 = ")";
+                        pos++;
+                      } else {
+                        result6 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\")\"");
                         }
+                      }
+                      if (result6 !== null) {
+                        result0 = [result0, result1, result2, result3, result4, result5, result6];
                       } else {
                         result0 = null;
                         pos = pos0;
@@ -17884,6 +17827,63 @@ module.exports = (function(){
                 result0 = null;
                 pos = pos0;
               }
+            } else {
+              result0 = null;
+              pos = pos0;
+            }
+          } else {
+            result0 = null;
+            pos = pos0;
+          }
+          if (result0 === null) {
+            pos0 = pos;
+            pos1 = pos;
+            result0 = parse_LeftHandSideExpression();
+            if (result0 !== null) {
+              result1 = parse___();
+              if (result1 !== null) {
+                result2 = parse_AssignmentOperator();
+                if (result2 !== null) {
+                  result3 = parse___();
+                  if (result3 !== null) {
+                    result4 = parse_AssignmentExpression();
+                    if (result4 !== null) {
+                      result0 = [result0, result1, result2, result3, result4];
+                    } else {
+                      result0 = null;
+                      pos = pos1;
+                    }
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+            if (result0 !== null) {
+              result0 = (function(offset, left, operator, right) {
+             return {
+             type:     "AssignmentExpression",
+             operator: operator,
+             left:     left,
+             right:    right
+             };
+             })(pos0, result0[0], result0[2], result0[4]);
+            }
+            if (result0 === null) {
+              pos = pos0;
+            }
+            if (result0 === null) {
+              result0 = parse_ConditionalExpression();
             }
           }
         }
@@ -17903,411 +17903,190 @@ module.exports = (function(){
           return cachedResult.result;
         }
         
-        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14, result15, result16, result17, result18, result19;
-        var pos0, pos1, pos2;
+        var result0, result1, result2, result3, result4, result5, result6;
+        var pos0, pos1, pos2, pos3, pos4, pos5;
         
-        result0 = parse_Block();
+        pos0 = pos;
+        pos1 = pos;
+        if (input.substr(pos, 3) === "let") {
+          result0 = "let";
+          pos += 3;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"let\"");
+          }
+        }
+        if (result0 !== null) {
+          result1 = parse___();
+          if (result1 !== null) {
+            pos2 = pos;
+            pos3 = pos;
+            pos4 = pos;
+            pos5 = pos;
+            if (input.charCodeAt(pos) === 40) {
+              result2 = "(";
+              pos++;
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"(\"");
+              }
+            }
+            if (result2 !== null) {
+              result3 = parse___();
+              if (result3 !== null) {
+                if (input.charCodeAt(pos) === 41) {
+                  result4 = ")";
+                  pos++;
+                } else {
+                  result4 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\")\"");
+                  }
+                }
+                if (result4 !== null) {
+                  result2 = [result2, result3, result4];
+                } else {
+                  result2 = null;
+                  pos = pos5;
+                }
+              } else {
+                result2 = null;
+                pos = pos5;
+              }
+            } else {
+              result2 = null;
+              pos = pos5;
+            }
+            if (result2 !== null) {
+              result2 = (function(offset) { return { type: "Paren", elements: "" }; })(pos4);
+            }
+            if (result2 === null) {
+              pos = pos4;
+            }
+            if (result2 !== null) {
+              result3 = parse___();
+              if (result3 !== null) {
+                pos4 = pos;
+                pos5 = pos;
+                if (input.charCodeAt(pos) === 123) {
+                  result4 = "{";
+                  pos++;
+                } else {
+                  result4 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"{\"");
+                  }
+                }
+                if (result4 !== null) {
+                  result5 = parse___();
+                  if (result5 !== null) {
+                    if (input.charCodeAt(pos) === 125) {
+                      result6 = "}";
+                      pos++;
+                    } else {
+                      result6 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\"}\"");
+                      }
+                    }
+                    if (result6 !== null) {
+                      result4 = [result4, result5, result6];
+                    } else {
+                      result4 = null;
+                      pos = pos5;
+                    }
+                  } else {
+                    result4 = null;
+                    pos = pos5;
+                  }
+                } else {
+                  result4 = null;
+                  pos = pos5;
+                }
+                if (result4 !== null) {
+                  result4 = (function(offset) { return { type: "Block", elements: "" }; })(pos4);
+                }
+                if (result4 === null) {
+                  pos = pos4;
+                }
+                if (result4 !== null) {
+                  result2 = [result2, result3, result4];
+                } else {
+                  result2 = null;
+                  pos = pos3;
+                }
+              } else {
+                result2 = null;
+                pos = pos3;
+              }
+            } else {
+              result2 = null;
+              pos = pos3;
+            }
+            if (result2 !== null) {
+              result2 = (function(offset, t0, t1) { return [t0, t1]; })(pos2, result2[0], result2[2]);
+            }
+            if (result2 === null) {
+              pos = pos2;
+            }
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, t0, t1) { return [t0, t1]; })(pos0, result0[0], result0[2]);
+        }
         if (result0 === null) {
-          result0 = parse_VariableStatement();
+          pos = pos0;
+        }
+        if (result0 === null) {
+          result0 = parse_Block();
           if (result0 === null) {
-            result0 = parse_EmptyStatement();
+            result0 = parse_VariableStatement();
             if (result0 === null) {
-              result0 = parse_ExpressionStatement();
+              result0 = parse_EmptyStatement();
               if (result0 === null) {
-                result0 = parse_IfStatement();
+                result0 = parse_ExpressionStatement();
                 if (result0 === null) {
-                  result0 = parse_IterationStatement();
+                  result0 = parse_IfStatement();
                   if (result0 === null) {
-                    result0 = parse_ContinueStatement();
+                    result0 = parse_IterationStatement();
                     if (result0 === null) {
-                      result0 = parse_BreakStatement();
+                      result0 = parse_ContinueStatement();
                       if (result0 === null) {
-                        result0 = parse_ReturnStatement();
+                        result0 = parse_BreakStatement();
                         if (result0 === null) {
-                          result0 = parse_WithStatement();
+                          result0 = parse_ReturnStatement();
                           if (result0 === null) {
-                            result0 = parse_LabelledStatement();
+                            result0 = parse_WithStatement();
                             if (result0 === null) {
-                              result0 = parse_SwitchStatement();
+                              result0 = parse_LabelledStatement();
                               if (result0 === null) {
-                                result0 = parse_ThrowStatement();
+                                result0 = parse_SwitchStatement();
                                 if (result0 === null) {
-                                  result0 = parse_TryStatement();
+                                  result0 = parse_ThrowStatement();
                                   if (result0 === null) {
-                                    result0 = parse_DebuggerStatement();
+                                    result0 = parse_TryStatement();
                                     if (result0 === null) {
-                                      result0 = parse_MacroDefinition();
+                                      result0 = parse_DebuggerStatement();
                                       if (result0 === null) {
-                                        result0 = parse_FunctionDeclaration();
+                                        result0 = parse_MacroDefinition();
                                         if (result0 === null) {
-                                          result0 = parse_FunctionExpression();
+                                          result0 = parse_FunctionDeclaration();
                                           if (result0 === null) {
-                                            pos0 = pos;
-                                            if (input.substr(pos, 3) === "let") {
-                                              result0 = "let";
-                                              pos += 3;
-                                            } else {
-                                              result0 = null;
-                                              if (reportFailures === 0) {
-                                                matchFailed("\"let\"");
-                                              }
-                                            }
-                                            if (result0 !== null) {
-                                              result1 = parse___();
-                                              if (result1 !== null) {
-                                                if (input.charCodeAt(pos) === 40) {
-                                                  result2 = "(";
-                                                  pos++;
-                                                } else {
-                                                  result2 = null;
-                                                  if (reportFailures === 0) {
-                                                    matchFailed("\"(\"");
-                                                  }
-                                                }
-                                                if (result2 !== null) {
-                                                  result3 = parse___();
-                                                  if (result3 !== null) {
-                                                    if (input.substr(pos, 3) === "var") {
-                                                      result4 = "var";
-                                                      pos += 3;
-                                                    } else {
-                                                      result4 = null;
-                                                      if (reportFailures === 0) {
-                                                        matchFailed("\"var\"");
-                                                      }
-                                                    }
-                                                    if (result4 !== null) {
-                                                      result5 = parse___();
-                                                      if (result5 !== null) {
-                                                        pos1 = pos;
-                                                        result6 = parse_IdentifierName();
-                                                        if (result6 !== null) {
-                                                          result7 = parse___();
-                                                          if (result7 !== null) {
-                                                            if (input.charCodeAt(pos) === 61) {
-                                                              result8 = "=";
-                                                              pos++;
-                                                            } else {
-                                                              result8 = null;
-                                                              if (reportFailures === 0) {
-                                                                matchFailed("\"=\"");
-                                                              }
-                                                            }
-                                                            if (result8 !== null) {
-                                                              result9 = parse___();
-                                                              if (result9 !== null) {
-                                                                result10 = parse_AssignmentExpression();
-                                                                if (result10 !== null) {
-                                                                  result11 = [];
-                                                                  pos2 = pos;
-                                                                  result12 = parse___();
-                                                                  if (result12 !== null) {
-                                                                    if (input.substr(pos, 3) === "and") {
-                                                                      result13 = "and";
-                                                                      pos += 3;
-                                                                    } else {
-                                                                      result13 = null;
-                                                                      if (reportFailures === 0) {
-                                                                        matchFailed("\"and\"");
-                                                                      }
-                                                                    }
-                                                                    if (result13 !== null) {
-                                                                      result14 = parse___();
-                                                                      if (result14 !== null) {
-                                                                        result15 = parse_IdentifierName();
-                                                                        if (result15 !== null) {
-                                                                          result16 = parse___();
-                                                                          if (result16 !== null) {
-                                                                            if (input.charCodeAt(pos) === 61) {
-                                                                              result17 = "=";
-                                                                              pos++;
-                                                                            } else {
-                                                                              result17 = null;
-                                                                              if (reportFailures === 0) {
-                                                                                matchFailed("\"=\"");
-                                                                              }
-                                                                            }
-                                                                            if (result17 !== null) {
-                                                                              result18 = parse___();
-                                                                              if (result18 !== null) {
-                                                                                result19 = parse_AssignmentExpression();
-                                                                                if (result19 !== null) {
-                                                                                  result12 = [result12, result13, result14, result15, result16, result17, result18, result19];
-                                                                                } else {
-                                                                                  result12 = null;
-                                                                                  pos = pos2;
-                                                                                }
-                                                                              } else {
-                                                                                result12 = null;
-                                                                                pos = pos2;
-                                                                              }
-                                                                            } else {
-                                                                              result12 = null;
-                                                                              pos = pos2;
-                                                                            }
-                                                                          } else {
-                                                                            result12 = null;
-                                                                            pos = pos2;
-                                                                          }
-                                                                        } else {
-                                                                          result12 = null;
-                                                                          pos = pos2;
-                                                                        }
-                                                                      } else {
-                                                                        result12 = null;
-                                                                        pos = pos2;
-                                                                      }
-                                                                    } else {
-                                                                      result12 = null;
-                                                                      pos = pos2;
-                                                                    }
-                                                                  } else {
-                                                                    result12 = null;
-                                                                    pos = pos2;
-                                                                  }
-                                                                  while (result12 !== null) {
-                                                                    result11.push(result12);
-                                                                    pos2 = pos;
-                                                                    result12 = parse___();
-                                                                    if (result12 !== null) {
-                                                                      if (input.substr(pos, 3) === "and") {
-                                                                        result13 = "and";
-                                                                        pos += 3;
-                                                                      } else {
-                                                                        result13 = null;
-                                                                        if (reportFailures === 0) {
-                                                                          matchFailed("\"and\"");
-                                                                        }
-                                                                      }
-                                                                      if (result13 !== null) {
-                                                                        result14 = parse___();
-                                                                        if (result14 !== null) {
-                                                                          result15 = parse_IdentifierName();
-                                                                          if (result15 !== null) {
-                                                                            result16 = parse___();
-                                                                            if (result16 !== null) {
-                                                                              if (input.charCodeAt(pos) === 61) {
-                                                                                result17 = "=";
-                                                                                pos++;
-                                                                              } else {
-                                                                                result17 = null;
-                                                                                if (reportFailures === 0) {
-                                                                                  matchFailed("\"=\"");
-                                                                                }
-                                                                              }
-                                                                              if (result17 !== null) {
-                                                                                result18 = parse___();
-                                                                                if (result18 !== null) {
-                                                                                  result19 = parse_AssignmentExpression();
-                                                                                  if (result19 !== null) {
-                                                                                    result12 = [result12, result13, result14, result15, result16, result17, result18, result19];
-                                                                                  } else {
-                                                                                    result12 = null;
-                                                                                    pos = pos2;
-                                                                                  }
-                                                                                } else {
-                                                                                  result12 = null;
-                                                                                  pos = pos2;
-                                                                                }
-                                                                              } else {
-                                                                                result12 = null;
-                                                                                pos = pos2;
-                                                                              }
-                                                                            } else {
-                                                                              result12 = null;
-                                                                              pos = pos2;
-                                                                            }
-                                                                          } else {
-                                                                            result12 = null;
-                                                                            pos = pos2;
-                                                                          }
-                                                                        } else {
-                                                                          result12 = null;
-                                                                          pos = pos2;
-                                                                        }
-                                                                      } else {
-                                                                        result12 = null;
-                                                                        pos = pos2;
-                                                                      }
-                                                                    } else {
-                                                                      result12 = null;
-                                                                      pos = pos2;
-                                                                    }
-                                                                  }
-                                                                  if (result11 !== null) {
-                                                                    result6 = [result6, result7, result8, result9, result10, result11];
-                                                                  } else {
-                                                                    result6 = null;
-                                                                    pos = pos1;
-                                                                  }
-                                                                } else {
-                                                                  result6 = null;
-                                                                  pos = pos1;
-                                                                }
-                                                              } else {
-                                                                result6 = null;
-                                                                pos = pos1;
-                                                              }
-                                                            } else {
-                                                              result6 = null;
-                                                              pos = pos1;
-                                                            }
-                                                          } else {
-                                                            result6 = null;
-                                                            pos = pos1;
-                                                          }
-                                                        } else {
-                                                          result6 = null;
-                                                          pos = pos1;
-                                                        }
-                                                        result6 = result6 !== null ? result6 : "";
-                                                        if (result6 !== null) {
-                                                          result7 = parse___();
-                                                          if (result7 !== null) {
-                                                            if (input.charCodeAt(pos) === 41) {
-                                                              result8 = ")";
-                                                              pos++;
-                                                            } else {
-                                                              result8 = null;
-                                                              if (reportFailures === 0) {
-                                                                matchFailed("\")\"");
-                                                              }
-                                                            }
-                                                            if (result8 !== null) {
-                                                              result9 = parse___();
-                                                              if (result9 !== null) {
-                                                                if (input.charCodeAt(pos) === 123) {
-                                                                  result10 = "{";
-                                                                  pos++;
-                                                                } else {
-                                                                  result10 = null;
-                                                                  if (reportFailures === 0) {
-                                                                    matchFailed("\"{\"");
-                                                                  }
-                                                                }
-                                                                if (result10 !== null) {
-                                                                  result11 = parse___();
-                                                                  if (result11 !== null) {
-                                                                    pos1 = pos;
-                                                                    result12 = parse_Statement();
-                                                                    if (result12 !== null) {
-                                                                      result13 = [];
-                                                                      pos2 = pos;
-                                                                      result14 = parse___();
-                                                                      if (result14 !== null) {
-                                                                        result15 = parse_Statement();
-                                                                        if (result15 !== null) {
-                                                                          result14 = [result14, result15];
-                                                                        } else {
-                                                                          result14 = null;
-                                                                          pos = pos2;
-                                                                        }
-                                                                      } else {
-                                                                        result14 = null;
-                                                                        pos = pos2;
-                                                                      }
-                                                                      while (result14 !== null) {
-                                                                        result13.push(result14);
-                                                                        pos2 = pos;
-                                                                        result14 = parse___();
-                                                                        if (result14 !== null) {
-                                                                          result15 = parse_Statement();
-                                                                          if (result15 !== null) {
-                                                                            result14 = [result14, result15];
-                                                                          } else {
-                                                                            result14 = null;
-                                                                            pos = pos2;
-                                                                          }
-                                                                        } else {
-                                                                          result14 = null;
-                                                                          pos = pos2;
-                                                                        }
-                                                                      }
-                                                                      if (result13 !== null) {
-                                                                        result12 = [result12, result13];
-                                                                      } else {
-                                                                        result12 = null;
-                                                                        pos = pos1;
-                                                                      }
-                                                                    } else {
-                                                                      result12 = null;
-                                                                      pos = pos1;
-                                                                    }
-                                                                    result12 = result12 !== null ? result12 : "";
-                                                                    if (result12 !== null) {
-                                                                      result13 = parse___();
-                                                                      if (result13 !== null) {
-                                                                        if (input.charCodeAt(pos) === 125) {
-                                                                          result14 = "}";
-                                                                          pos++;
-                                                                        } else {
-                                                                          result14 = null;
-                                                                          if (reportFailures === 0) {
-                                                                            matchFailed("\"}\"");
-                                                                          }
-                                                                        }
-                                                                        if (result14 !== null) {
-                                                                          result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14];
-                                                                        } else {
-                                                                          result0 = null;
-                                                                          pos = pos0;
-                                                                        }
-                                                                      } else {
-                                                                        result0 = null;
-                                                                        pos = pos0;
-                                                                      }
-                                                                    } else {
-                                                                      result0 = null;
-                                                                      pos = pos0;
-                                                                    }
-                                                                  } else {
-                                                                    result0 = null;
-                                                                    pos = pos0;
-                                                                  }
-                                                                } else {
-                                                                  result0 = null;
-                                                                  pos = pos0;
-                                                                }
-                                                              } else {
-                                                                result0 = null;
-                                                                pos = pos0;
-                                                              }
-                                                            } else {
-                                                              result0 = null;
-                                                              pos = pos0;
-                                                            }
-                                                          } else {
-                                                            result0 = null;
-                                                            pos = pos0;
-                                                          }
-                                                        } else {
-                                                          result0 = null;
-                                                          pos = pos0;
-                                                        }
-                                                      } else {
-                                                        result0 = null;
-                                                        pos = pos0;
-                                                      }
-                                                    } else {
-                                                      result0 = null;
-                                                      pos = pos0;
-                                                    }
-                                                  } else {
-                                                    result0 = null;
-                                                    pos = pos0;
-                                                  }
-                                                } else {
-                                                  result0 = null;
-                                                  pos = pos0;
-                                                }
-                                              } else {
-                                                result0 = null;
-                                                pos = pos0;
-                                              }
-                                            } else {
-                                              result0 = null;
-                                              pos = pos0;
-                                            }
+                                            result0 = parse_FunctionExpression();
                                           }
                                         }
                                       }
