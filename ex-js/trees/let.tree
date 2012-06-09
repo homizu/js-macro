@@ -121,18 +121,117 @@
         }
       ]
     },
-    [
-      "let",
-      [
+    {
+      "type": "letMacroForm",
+      "inputForm": [
         {
-          "type": "Paren",
-          "elements": ""
+          "type": "MacroName",
+          "name": "let"
         },
-        {
-          "type": "Block",
-          "elements": ""
-        }
+        [
+          {
+            "type": "Paren",
+            "elements": ""
+          },
+          {
+            "type": "Block",
+            "elements": ""
+          }
+        ]
       ]
-    ]
+    },
+    {
+      "type": "letMacroForm",
+      "inputForm": [
+        {
+          "type": "MacroName",
+          "name": "let"
+        },
+        [
+          {
+            "type": "Paren",
+            "elements": [
+              {
+                "type": "String",
+                "data": "var"
+              },
+              {
+                "type": "Repetition",
+                "elements": [
+                  [
+                    {
+                      "type": "Identifier",
+                      "name": "id1"
+                    },
+                    {
+                      "type": "String",
+                      "data": "="
+                    },
+                    {
+                      "type": "Variable",
+                      "name": "expr1"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "Identifier",
+                      "name": "id2"
+                    },
+                    {
+                      "type": "String",
+                      "data": "="
+                    },
+                    {
+                      "type": "Variable",
+                      "name": "expr"
+                    }
+                  ]
+                ],
+                "punctuationMark": ","
+              }
+            ]
+          },
+          {
+            "type": "Block",
+            "elements": [
+              {
+                "type": "Repetition",
+                "elements": [
+                  {
+                    "type": "VariableStatement",
+                    "declarations": [
+                      {
+                        "type": "VariableDeclaration",
+                        "name": "result",
+                        "value": {
+                          "type": "BinaryExpression",
+                          "operator": "+",
+                          "left": {
+                            "type": "Variable",
+                            "name": "id1"
+                          },
+                          "right": {
+                            "type": "Variable",
+                            "name": "id2"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "ReturnStatement",
+                    "value": {
+                      "type": "Variable",
+                      "name": "result"
+                    }
+                  }
+                ],
+                "punctuationMark": ""
+              }
+            ]
+          }
+        ]
+      ]
+    }
   ]
 }

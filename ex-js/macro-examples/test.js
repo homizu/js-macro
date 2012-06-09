@@ -1,3 +1,4 @@
+/*
 // test マクロの定義
 statement test {
     identifier: id;
@@ -19,4 +20,40 @@ statement test {
         stmt
         ...
     }
+}
+*/
+// let マクロの定義(イメージ)
+statement let {
+    identifier: id;
+    expression: expr;
+    statement: stmt;
+    literal: var, and;
+    
+    {let () {} => ((function() {})());}
+
+    {let (var [#id = expr#], ...) {
+        stmt ...
+     } => ((function (id, ...) {
+        stmt ...
+     })(expr, ...));}
+}
+
+
+// let マクロの使用
+let (var id1=expr1, id2=expr) {
+    var result = id1 + id2;
+    return result;
+}
+
+
+
+// or マクロの定義
+expression or {
+    identifier: temp;
+    expression: exp1, exp2;
+    
+    {or => false}
+    {or(exp1) => exp1}
+    {or(exp1, exp2, ...) => let (var temp = exp1) { return temp? temp : or(exp2, ...); }}
+
 }

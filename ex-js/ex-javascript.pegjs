@@ -1206,7 +1206,8 @@ ExpressionNoIn  // for in で使う
  * |FunctionExpression| as statements, but JavaScript implementations do and so
  * are we. This syntax is actually used in the wild (e.g. by jQuery).
  */
-Statement
+// Statement(パーザー拡張前)
+Statement  
   = Block
   / VariableStatement
   / EmptyStatement
@@ -1702,7 +1703,7 @@ SyntaxRuleList
     }
 
 SyntaxRule
-  = pat:Pattern __ ("=>" { inTemplate = true; })  __ temp:Template {
+  = "{" __ pat:Pattern __ ("=>" { inTemplate = true; })  __ temp:Template "}" {
         inTemplate = false;       
         return { pattern: pat, template: temp };
     }
@@ -1725,7 +1726,7 @@ SubPatternList
 SubPattern
   = "[#" __ patterns:SubPatternList? __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
          return {
-           type: "Ellipsis",
+           type: "Repetition",
            data: patterns,
            punctuationMark: ellipsis[1]
         };
@@ -1737,7 +1738,7 @@ SubPattern
         };
         if (ellipsis[3]) {
            result = {
-             type: "Ellipsis",
+             type: "Repetition",
              data: result,
              punctuationMark: ellipsis[1]
            }
@@ -1751,7 +1752,7 @@ SubPattern
         };
         if (ellipsis[3]) {
            result = {
-             type: "Ellipsis",
+             type: "Repetition",
              data: result,
              punctuationMark: ellipsis[1]
            }
@@ -1765,7 +1766,7 @@ SubPattern
         };
         if (ellipsis[3]) {
            result = {
-             type: "Ellipsis",
+             type: "Repetition",
              data: result,
              punctuationMark: ellipsis[1]
            }
@@ -1776,7 +1777,7 @@ SubPattern
         var result = data;
         if (ellipsis[3]) {
            result = {
-             type: "Ellipsis",
+             type: "Repetition",
              data: result,
              punctuationMark: ellipsis[1]
            }
@@ -1805,7 +1806,7 @@ SubPattern
         };
         if (ellipsis[3]) {
            result = {
-             type: "Ellipsis",
+             type: "Repetition",
              data: result,
              punctuationMark: ellipsis[1]
            }
@@ -1854,9 +1855,13 @@ Punctuators
   / ">>=" / ">>>=" / "&=" / "|=" / "^="
 */
 
-// テンプレート
+// テンプレート(パーザー拡張前)
 Template
-  = StatementInTemplate
+  = ("{" (__ Statement)* __ "}"
+  / "(" (__ Statement)* __ ")"
+  / "[" (__ Statement)* __ "]"
+  / Statement
+  / !"}" .)*
 
 StatementInTemplate
   = "{" __ head:Statement tail:(__ Statement __ "..."?)* __ "}" {
@@ -1872,8 +1877,13 @@ StatementInTemplate
     }
   / Statement 
 
-AssignmentExpression
- = "or" / "or" __ "(" __ AssignmentExpression __ ")"
+
+Template
+ = StatementInTemplate
+AssignmentExpression =
+ form:(t0:("or" { return { type: "MacroName", name:"or"}; }) __ t1:(t0:("(" __ t0:(t0:AssignmentExpression __ t1:(","{ return { type: "String", data: "," }; }) __ t2:(head:AssignmentExpression tail:(__ ", "__ AssignmentExpression)* ellipsis:"..."? !{ return !inTemplate && ellipsis; } { var elements = [head]; for (var i=0; i<tail.length; i++) { elements.push(tail[i][3]); } if (ellipsis) elements.push({ type: "Ellipsis" });  return { type: "Repetition", elements: elements, punctuationMark: "," }; })? { return [t0, t1, t2]; }) __ ")" { return { type: "Paren", elements: t0 }; }) { return [t0]; }) { return [t0, t1]; }){ return { type: "orMacroForm", inputForm: form }; }
+ / form:(t0:("or" { return { type: "MacroName", name:"or"}; }) __ t1:(t0:("(" __ t0:(t0:AssignmentExpression { return [t0]; }) __ ")" { return { type: "Paren", elements: t0 }; }) { return [t0]; }) { return [t0, t1]; }){ return { type: "orMacroForm", inputForm: form }; }
+ / form:("or" { return { type: "MacroName", name:"or"}; }){ return { type: "orMacroForm", inputForm: form }; }
  / left:LeftHandSideExpression __
  operator:AssignmentOperator __
  right:AssignmentExpression {
@@ -1885,12 +1895,10 @@ AssignmentExpression
  };
  }
  / ConditionalExpression
-
-
-
-
-Statement =(t0:"let" __ t1:(t0:("(" __ ")" { return { type: "Paren", elements: "" }; }) __ t1:("{" __ "}" { return { type: "Block", elements: "" }; }){ return [t0, t1]; }){ return [t0, t1]; }) 
- /  Block
+Statement
+ = form:(t0:("let" { return { type: "MacroName", name:"let"}; }) __ t1:(t0:("(" __ t0:(t0:("var"{ return { type: "String", data: "var" }; }) __ t1:(head:(t0:(name:IdentifierName { return { type: "Identifier", name: name }; }) __ t1:("="{ return { type: "String", data: "=" }; }) __ t2:AssignmentExpression { return [t0, t1, t2]; }) tail:(__ ", "__ (t0:(name:IdentifierName { return { type: "Identifier", name: name }; }) __ t1:("="{ return { type: "String", data: "=" }; }) __ t2:AssignmentExpression { return [t0, t1, t2]; }))* ellipsis:"..."? !{ return !inTemplate && ellipsis; } { var elements = [head]; for (var i=0; i<tail.length; i++) { elements.push(tail[i][3]); } if (ellipsis) elements.push({ type: "Ellipsis" });  return { type: "Repetition", elements: elements, punctuationMark: "," }; })? { return [t0, t1]; }) __ ")" { return { type: "Paren", elements: t0 }; }) __ t1:("{" __ t0:(t0:(head:Statement tail:(__ Statement)* ellipsis:"..."? !{ return !inTemplate && ellipsis; } { var elements = [head]; for (var i=0; i<tail.length; i++) { elements.push(tail[i][1]); } if (ellipsis) elements.push({ type: "Ellipsis" });  return { type: "Repetition", elements: elements, punctuationMark: "" }; })? { return [t0]; }) __ "}" { return { type: "Block", elements: t0 }; }) { return [t0, t1]; }) { return [t0, t1]; }){ return { type: "letMacroForm", inputForm: form }; }
+ / form:(t0:("let" { return { type: "MacroName", name:"let"}; }) __ t1:(t0:("(" __ ")" { return { type: "Paren", elements: "" }; }) __ t1:("{" __ "}" { return { type: "Block", elements: "" }; }) { return [t0, t1]; }) { return [t0, t1]; }){ return { type: "letMacroForm", inputForm: form }; }
+ / Block
  / VariableStatement
  / EmptyStatement
  / ExpressionStatement
@@ -1908,4 +1916,3 @@ Statement =(t0:"let" __ t1:(t0:("(" __ ")" { return { type: "Paren", elements: "
  / MacroDefinition
  / FunctionDeclaration
  / FunctionExpression
- 
