@@ -38,13 +38,13 @@ statement let {
      })(expr, ...));}
 }
 
-
+/*
 // let マクロの使用
 let (var id1=expr1, id2=expr) {
     var result = id1 + id2;
     return result;
 }
-
+*/
 
 
 // or マクロの定義

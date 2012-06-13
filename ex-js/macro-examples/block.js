@@ -5,11 +5,11 @@ statement block {
     statement: stmt;
     literal: var;
     
-    block {
+    {block {
         var id = expr; ...
         stmt ...
-    } => ((function(id, ...) {
+     } => ((function(id, ...) {
         stmt ...
-    })(expr, ...));
+     })(expr, ...));}
     
 }

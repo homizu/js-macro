@@ -10,7 +10,7 @@ if (argv.length === 4) {
                 function(err, input) {
                     input = '' + input;
                     jsObj = JSON.parse(input);
-                    util.print(jsObj);
+//                    util.print(jsObj);
                     console.log(generator.generate(jsObj));
                 });
 }
