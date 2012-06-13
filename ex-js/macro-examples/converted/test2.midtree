@@ -1,0 +1,23 @@
+{
+  "type": "Program",
+  "elements": [
+    {
+      "type": "Block",
+      "statements": [
+        {
+          "type": "VariableStatement",
+          "declarations": [
+            {
+              "type": "VariableDeclaration",
+              "name": "a",
+              "value": {
+                "type": "NumericLiteral",
+                "value": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

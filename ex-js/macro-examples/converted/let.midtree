@@ -1,0 +1,254 @@
+{
+  "type": "Program",
+  "elements": [
+    {
+      "type": "StatementMacroDefinition",
+      "macroName": "let",
+      "identifiers": [
+        "id"
+      ],
+      "expressions": [
+        "expr"
+      ],
+      "statements": [
+        "stmt"
+      ],
+      "literals": [
+        "var",
+        "and"
+      ],
+      "syntaxRules": [
+        {
+          "pattern": [
+            {
+              "type": "Block",
+              "elements": ""
+            }
+          ],
+          "template": [
+            {
+              "type": "FunctionCall",
+              "name": {
+                "type": "Function",
+                "name": null,
+                "params": [],
+                "elements": []
+              },
+              "arguments": []
+            }
+          ]
+        },
+        {
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": [
+                {
+                  "type": "LiteralKeyword",
+                  "name": "var"
+                },
+                {
+                  "type": "Repetition",
+                  "elements": [
+                    {
+                      "type": "IdentifierVariable",
+                      "name": "id"
+                    },
+                    {
+                      "type": "Punctuator",
+                      "data": "="
+                    },
+                    {
+                      "type": "ExpressionVariable",
+                      "name": "expr"
+                    }
+                  ],
+                  "punctuationMark": "and"
+                }
+              ]
+            },
+            {
+              "type": "Block",
+              "elements": [
+                {
+                  "type": "Repetition",
+                  "elements": {
+                    "type": "StatementVariable",
+                    "name": "stmt"
+                  },
+                  "punctuationMark": ""
+                }
+              ]
+            }
+          ],
+          "template": [
+            {
+              "type": "FunctionCall",
+              "name": {
+                "type": "Function",
+                "name": null,
+                "params": [
+                  "id",
+                  {
+                    "type": "Ellipsis"
+                  }
+                ],
+                "elements": [
+                  {
+                    "type": "BinaryExpression",
+                    "operator": " ",
+                    "left": {
+                      "type": "Variable",
+                      "name": "stmt"
+                    },
+                    "right": {
+                      "type": "Ellipsis"
+                    }
+                  }
+                ]
+              },
+              "arguments": [
+                {
+                  "type": "Variable",
+                  "name": "expr"
+                },
+                {
+                  "type": "Ellipsis"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Character",
+      "data": "l"
+    },
+    {
+      "type": "Character",
+      "data": "e"
+    },
+    {
+      "type": "Character",
+      "data": "t"
+    },
+    {
+      "type": "Character",
+      "data": "("
+    },
+    {
+      "type": "Character",
+      "data": "v"
+    },
+    {
+      "type": "Character",
+      "data": "a"
+    },
+    {
+      "type": "Character",
+      "data": "r"
+    },
+    {
+      "type": "Character",
+      "data": "i"
+    },
+    {
+      "type": "Character",
+      "data": "d"
+    },
+    {
+      "type": "Character",
+      "data": "1"
+    },
+    {
+      "type": "Character",
+      "data": "="
+    },
+    {
+      "type": "Character",
+      "data": "1"
+    },
+    {
+      "type": "Character",
+      "data": "a"
+    },
+    {
+      "type": "Character",
+      "data": "n"
+    },
+    {
+      "type": "Character",
+      "data": "d"
+    },
+    {
+      "type": "Character",
+      "data": "i"
+    },
+    {
+      "type": "Character",
+      "data": "d"
+    },
+    {
+      "type": "Character",
+      "data": "2"
+    },
+    {
+      "type": "Character",
+      "data": "="
+    },
+    {
+      "type": "Character",
+      "data": "e"
+    },
+    {
+      "type": "Character",
+      "data": "x"
+    },
+    {
+      "type": "Character",
+      "data": "p"
+    },
+    {
+      "type": "Character",
+      "data": "r"
+    },
+    {
+      "type": "Character",
+      "data": ")"
+    },
+    {
+      "type": "Block",
+      "statements": [
+        {
+          "type": "VariableStatement",
+          "declarations": [
+            {
+              "type": "VariableDeclaration",
+              "name": "result",
+              "value": {
+                "type": "BinaryExpression",
+                "operator": "+",
+                "left": {
+                  "type": "Variable",
+                  "name": "id1"
+                },
+                "right": {
+                  "type": "Variable",
+                  "name": "id2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "ReturnStatement",
+          "value": {
+            "type": "Variable",
+            "name": "result"
+          }
+        }
+      ]
+    }
+  ]
+}
