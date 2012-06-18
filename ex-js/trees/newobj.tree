@@ -5,10 +5,11 @@
       "type": "ExpressionMacroDefinition",
       "macroName": "newobj",
       "identifiers": [
-        "proto",
+        "proto"
+      ],
+      "expressions": [
         "specs"
       ],
-      "expressions": "",
       "statements": "",
       "literals": "",
       "syntaxRules": [
@@ -18,15 +19,15 @@
               "type": "Paren",
               "elements": [
                 {
-                  "type": "Identifier",
+                  "type": "IdentifierVariable",
                   "name": "proto"
                 },
                 {
-                  "type": "PunctuationMark",
+                  "type": "Punctuator",
                   "data": ","
                 },
                 {
-                  "type": "Identifier",
+                  "type": "ExpressionVariable",
                   "name": "specs"
                 }
               ]

@@ -21,10 +21,6 @@
         {
           "pattern": [
             {
-              "type": "Paren",
-              "elements": ""
-            },
-            {
               "type": "Block",
               "elements": ""
             }
@@ -50,7 +46,7 @@
                   "name": "var"
                 },
                 {
-                  "type": "Ellipsis",
+                  "type": "Repetition",
                   "data": [
                     {
                       "type": "IdentifierVariable",
@@ -65,7 +61,7 @@
                       "name": "expr"
                     }
                   ],
-                  "punctuationMark": ","
+                  "punctuationMark": "and"
                 }
               ]
             },
@@ -73,7 +69,7 @@
               "type": "Block",
               "elements": [
                 {
-                  "type": "Ellipsis",
+                  "type": "Repetition",
                   "data": {
                     "type": "StatementVariable",
                     "name": "stmt"
@@ -131,25 +127,6 @@
         [
           {
             "type": "Paren",
-            "elements": ""
-          },
-          {
-            "type": "Block",
-            "elements": ""
-          }
-        ]
-      ]
-    },
-    {
-      "type": "letMacroForm",
-      "inputForm": [
-        {
-          "type": "MacroName",
-          "name": "let"
-        },
-        [
-          {
-            "type": "Paren",
             "elements": [
               {
                 "type": "String",
@@ -168,8 +145,8 @@
                       "data": "="
                     },
                     {
-                      "type": "Variable",
-                      "name": "expr1"
+                      "type": "NumericLiteral",
+                      "value": 1
                     }
                   ],
                   [
@@ -187,7 +164,7 @@
                     }
                   ]
                 ],
-                "punctuationMark": ","
+                "punctuationMark": "and"
               }
             ]
           },

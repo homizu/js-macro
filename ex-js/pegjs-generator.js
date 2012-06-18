@@ -4,10 +4,38 @@ module.exports = (function () {
 
     var pegjsTemplate = 'Template\n = StatementInTemplate\n';
     var pegjsStatement = 'Statement\n = '
-    var pegjsStatements = '\n / Block\n / VariableStatement\n / EmptyStatement\n / ExpressionStatement\n / IfStatement\n / IterationStatement\n / ContinueStatement\n / BreakStatement\n / ReturnStatement\n / WithStatement\n / LabelledStatement\n / SwitchStatement\n / ThrowStatement\n / TryStatement\n / DebuggerStatement\n / MacroDefinition\n / FunctionDeclaration\n / FunctionExpression\n';
+    var pegjsStatements = '\n\
+ / Block\n / VariableStatement\n\
+ / EmptyStatement\n\
+ / ExpressionStatement\n\
+ / IfStatement\n\
+ / IterationStatement\n\
+ / ContinueStatement\n\
+ / BreakStatement\n\
+ / ReturnStatement\n\
+ / WithStatement\n\
+ / LabelledStatement\n\
+ / SwitchStatement\n\
+ / ThrowStatement\n\
+ / TryStatement\n\
+ / DebuggerStatement\n\
+ / MacroDefinition\n\
+ / FunctionDeclaration\n\
+ / FunctionExpression\n';
 
     var pegjsExpression = 'AssignmentExpression =\n '
-    var pegjsExpressions = '\n / left:LeftHandSideExpression __\n operator:AssignmentOperator __\n right:AssignmentExpression {\n return {\n type:     "AssignmentExpression",\n operator: operator,\n left:     left,\n right:    right\n };\n }\n / ConditionalExpression\n';
+    var pegjsExpressions = '\n\
+ / left:LeftHandSideExpression __\n\
+ operator:AssignmentOperator __\n\
+ right:AssignmentExpression {\n\
+   return {\n\
+     type:     "AssignmentExpression",\n\
+     operator: operator,\n\
+     left:     left,\n\
+     right:    right\n\
+   };\n\
+ }\n\
+ / ConditionalExpression\n';
 
     var pegObj = {
 /* 定義通りに実装したもの       

@@ -1,11 +1,11 @@
-// let マクロの定義(イメージ)
+// let マクロの定義
 statement let {
     identifier: id;
     expression: expr;
     statement: stmt;
     literal: var, and;
     
-    {let {} => ((function() {})());}
+    {let () {} => ((function() {})());}
 
     {let (var [#id = expr#] and ...) {
         stmt ...
@@ -13,8 +13,6 @@ statement let {
         stmt ...
      })(expr, ...));}
 }
-
-
 
 
 

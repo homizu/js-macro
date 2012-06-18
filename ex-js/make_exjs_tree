@@ -1,5 +1,13 @@
 #!/opt/local/bin/node
 
+/* 
+   引数に指定されたJSファイルをパーズし、JSONを生成するプログラム。
+   引数のJSファイルが存在するフォルダにconvertedというフォルダを作成し、以下の3ファイルを生成する(XXXはファイル名)。
+   - XXX.midtree： 1回目のパーズで生成されるJSONを出力したもの
+   - XXX.pegjs  ： JSONから生成したPEG.jsのコードを出力したもの
+   - XXX.tree   ： 拡張後のパーサーでパーズした結果、生成されるJSONを出力したもの
+*/
+
 var fs = require('fs');
 var util = require('util');
 var PEG = require('pegjs');

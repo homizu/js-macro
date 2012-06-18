@@ -1226,7 +1226,7 @@ Statement
   / MacroDefinition      // add
   / FunctionDeclaration
   / FunctionExpression
-  / !("expression" / "statement" / EOS) char:.
+  / !EOS char:.
      { return { type: "Character", data: char }; }
 
 Block

@@ -23,15 +23,15 @@
                   "type": "Paren",
                   "elements": [
                     {
-                      "type": "Identifier",
+                      "type": "ExpressionVariable",
                       "name": "pred1"
                     },
                     {
-                      "type": "PunctuationMark",
+                      "type": "Punctuator",
                       "data": ","
                     },
                     {
-                      "type": "Identifier",
+                      "type": "ExpressionVariable",
                       "name": "exp1"
                     }
                   ]
@@ -66,46 +66,43 @@
                   "type": "Paren",
                   "elements": [
                     {
-                      "type": "Identifier",
+                      "type": "ExpressionVariable",
                       "name": "pred1"
                     },
                     {
-                      "type": "PunctuationMark",
+                      "type": "Punctuator",
                       "data": ","
                     },
                     {
-                      "type": "Identifier",
+                      "type": "ExpressionVariable",
                       "name": "exp1"
                     }
                   ]
                 },
                 {
-                  "type": "PunctuationMark",
+                  "type": "Punctuator",
                   "data": ","
                 },
                 {
-                  "type": "Paren",
-                  "elements": [
-                    {
-                      "type": "Identifier",
-                      "name": "pred2"
-                    },
-                    {
-                      "type": "PunctuationMark",
-                      "data": ","
-                    },
-                    {
-                      "type": "Identifier",
-                      "name": "exp2"
-                    }
-                  ]
-                },
-                {
-                  "type": "PunctuationMark",
-                  "data": ","
-                },
-                {
-                  "type": "Ellipsis"
+                  "type": "Repetition",
+                  "data": {
+                    "type": "Paren",
+                    "elements": [
+                      {
+                        "type": "ExpressionVariable",
+                        "name": "pred2"
+                      },
+                      {
+                        "type": "Punctuator",
+                        "data": ","
+                      },
+                      {
+                        "type": "ExpressionVariable",
+                        "name": "exp2"
+                      }
+                    ]
+                  },
+                  "punctuationMark": ","
                 }
               ]
             }

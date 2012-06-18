@@ -21,6 +21,10 @@
         {
           "pattern": [
             {
+              "type": "Paren",
+              "elements": ""
+            },
+            {
               "type": "Block",
               "elements": ""
             }

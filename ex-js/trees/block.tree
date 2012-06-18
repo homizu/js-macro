@@ -23,11 +23,11 @@
               "type": "Block",
               "elements": [
                 {
-                  "type": "Identifier",
+                  "type": "LiteralKeyword",
                   "name": "var"
                 },
                 {
-                  "type": "Identifier",
+                  "type": "IdentifierVariable",
                   "name": "id"
                 },
                 {
@@ -35,22 +35,20 @@
                   "data": "="
                 },
                 {
-                  "type": "Identifier",
-                  "name": "expr"
+                  "type": "Repetition",
+                  "data": {
+                    "type": "ExpressionVariable",
+                    "name": "expr"
+                  },
+                  "punctuationMark": ";"
                 },
                 {
-                  "type": "PunctuationMark",
-                  "data": ";"
-                },
-                {
-                  "type": "Ellipsis"
-                },
-                {
-                  "type": "Identifier",
-                  "name": "stmt"
-                },
-                {
-                  "type": "Ellipsis"
+                  "type": "Repetition",
+                  "data": {
+                    "type": "StatementVariable",
+                    "name": "stmt"
+                  },
+                  "punctuationMark": ""
                 }
               ]
             }
@@ -67,15 +65,17 @@
                 }
               ],
               "elements": [
-                [
-                  {
+                {
+                  "type": "BinaryExpression",
+                  "operator": " ",
+                  "left": {
                     "type": "Variable",
                     "name": "stmt"
                   },
-                  {
+                  "right": {
                     "type": "Ellipsis"
                   }
-                ]
+                }
               ]
             },
             "arguments": [
