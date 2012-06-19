@@ -1,0 +1,15 @@
+#!/usr/local/bin/racket
+#lang racket
+
+(require (planet dherman/json:4:=0))
+
+(define (convert-json js-file-path)
+  (let* ((in (open-input-file js-file-path))
+         (jsexpr (read-json in)))
+    (display jsexpr)
+    (close-input-port in)))
+
+(define (main args)
+  (convert-json (vector-ref args 0)))
+
+(main (current-command-line-arguments))
