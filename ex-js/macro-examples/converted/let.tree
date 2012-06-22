@@ -19,6 +19,7 @@
       ],
       "syntaxRules": [
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -41,6 +42,7 @@
           }
         },
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -149,8 +151,16 @@
                       "data": "="
                     },
                     {
-                      "type": "NumericLiteral",
-                      "value": 1
+                      "type": "BinaryExpression",
+                      "operator": "/",
+                      "left": {
+                        "type": "NumericLiteral",
+                        "value": 1
+                      },
+                      "right": {
+                        "type": "NumericLiteral",
+                        "value": 2
+                      }
                     }
                   ],
                   [
@@ -163,8 +173,8 @@
                       "data": "="
                     },
                     {
-                      "type": "Variable",
-                      "name": "expr"
+                      "type": "NumericLiteral",
+                      "value": 1000000000000
                     }
                   ]
                 ],

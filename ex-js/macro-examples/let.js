@@ -17,7 +17,7 @@ statement let {
 
 
 // let マクロの使用
-let (var id1=1 and id2=expr) {
+let (var id1=1/2 and id2=100E10) {
     var result = id1 + id2;
     return result;
 }

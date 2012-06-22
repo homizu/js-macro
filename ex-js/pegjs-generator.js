@@ -421,7 +421,7 @@ module.exports = (function () {
                 var syntaxRules = macroDef.syntaxRules;
                 var patterns = [];
                 for (var j=0; j<syntaxRules.length; j++) {
-                    patterns.unshift(pegObj.macroForm(macroName, convertToPegObj(syntaxRules[j].pattern)));
+                    patterns.push(pegObj.macroForm(macroName, convertToPegObj(syntaxRules[j].pattern)));
                 }
                 patterns = pegObj.choice(patterns);
                 if (macroDef.type.indexOf('Expression') >= 0)

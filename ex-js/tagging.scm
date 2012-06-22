@@ -1,0 +1,71 @@
+(define-syntax Program
+  (syntax-rules (elements)
+    ((_ (elements "")) (begin ""))
+    ((_ (elements (e ...))) (begin e ...))))
+
+;; NumericLiteral
+;; StringLiteral
+;; NullLiteral
+;; BooleanLiteral
+;; RegularExpressionLiteral
+;; This
+;; Variable
+;; ArrayLiteral
+;; ObjectLiteral
+;; PropertyAssignment
+;; GetterDefinition
+;; SetterDefinition
+;; NewOperator
+;; PropertyAccess
+;; FunctionCall
+;; FunctionCallArguments
+;; PropertyAccessProperty
+;; PostfixExpression
+;; UnaryExpression
+;; BinaryExpression
+;; ConditionalExpression
+;; AssignmentExpression
+;; Block
+;; VariableStatement
+;; VariableDeclaration
+;; EmptyStatement
+;; IfStatement
+;; DoWhileStatement
+;; WhileStatement
+;; ForStatement
+;; ForInStatement
+;; ContinueStatement
+;; BreakStatement
+;; ReturnStatement
+;; WithStatement
+;; SwitchStatement
+;; CaseClause
+;; DefaultClause
+;; LabelledStatement
+;; ThrowStatement
+;; TryStatement
+;; Catch
+;; Finally
+;; DebuggerStatement
+;; Function
+;; Program
+
+;; ExpressionMacroDefinition
+;; StatementMacroDefinition
+;; SyntaxRule
+;; Punctuator
+;; Repetition
+;; Block
+;; Paren
+;; Bracket
+;; LiteralKeyword
+;; IdentifierVariable
+;; ExpressionVariable
+;; StatementVariable
+;; Character
+;; Ellipsis
+
+;; Number
+;; Identifier
+;; MacroName
+;; MacroForm

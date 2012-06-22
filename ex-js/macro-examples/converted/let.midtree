@@ -19,6 +19,7 @@
       ],
       "syntaxRules": [
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -43,6 +44,7 @@
           ]
         },
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -175,6 +177,14 @@
     },
     {
       "type": "Character",
+      "data": "/"
+    },
+    {
+      "type": "Character",
+      "data": "2"
+    },
+    {
+      "type": "Character",
       "data": "a"
     },
     {
@@ -203,19 +213,27 @@
     },
     {
       "type": "Character",
-      "data": "e"
+      "data": "1"
     },
     {
       "type": "Character",
-      "data": "x"
+      "data": "0"
     },
     {
       "type": "Character",
-      "data": "p"
+      "data": "0"
     },
     {
       "type": "Character",
-      "data": "r"
+      "data": "E"
+    },
+    {
+      "type": "Character",
+      "data": "1"
+    },
+    {
+      "type": "Character",
+      "data": "0"
     },
     {
       "type": "Character",

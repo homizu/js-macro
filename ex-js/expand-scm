@@ -1,0 +1,27 @@
+#!/usr/local/bin/ypsilon
+
+(import (pregexp))
+(load "tagging.scm")
+
+(define (expand-scm scm-file-path)
+  (let* ((file-name (car (pregexp-split "-1\\.scm" scm-file-path)))
+         (in (transcoded-port (open-file-input-port scm-file-path)
+                              (make-transcoder (utf-8-codec))))
+         (out (transcoded-port (open-file-output-port
+                                (string-append file-name "-2.scm")
+                                (file-options no-fail))
+                               (make-transcoder (utf-8-codec))))
+         (sform (read in)))
+    (display sform)
+    (newline)
+    (newline)
+    (let ((expanded-sform (macro-expand sform)))
+      (write expanded-sform out)
+      (display expanded-sform))
+    (close-input-port in)
+    (close-output-port out)))
+
+(define (main args)
+  (expand-scm (cadr args)))
+
+(main (command-line))

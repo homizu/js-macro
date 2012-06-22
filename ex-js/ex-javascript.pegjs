@@ -1707,7 +1707,9 @@ SyntaxRuleList
 SyntaxRule
   = "{" __ pat:Pattern __ ("=>" { inTemplate = true; })  __ temp:Template "}" {
         inTemplate = false;       
-        return { pattern: pat, template: temp };
+        return { type: "SyntaxRule",
+                 pattern: pat,
+                 template: temp };
     }
 
 // パターン

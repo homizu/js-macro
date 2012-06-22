@@ -4,10 +4,32 @@
 (require (planet dherman/json:4:=0))
 
 (define (convert-json js-file-path)
-  (let* ((in (open-input-file js-file-path))
-         (jsexpr (read-json in)))
+  (let* ((file-name (list-ref (regexp-split #rx"\\.tree" js-file-path) 0))
+         (in (open-input-file js-file-path))
+         (out (open-output-file (string-append file-name "-1.scm") #:exists 'truncate/replace))
+         (jsexpr (read-json in))
+         (sform (generalize-jsexpr jsexpr)))
     (display jsexpr)
-    (close-input-port in)))
+    (newline)
+    (newline)
+    (display sform)
+    (newline)
+    (newline)
+    (write sform out)
+    (close-input-port in)
+    (close-output-port out)))
+
+
+(define (generalize-jsexpr jsexpr)
+  (cond ((hash? jsexpr) ;; hash table
+         (let* ((result (list (string->symbol (hash-ref jsexpr 'type))))
+                (rest (hash-remove jsexpr 'type)))
+           (append result
+                   (hash-map rest 
+                             (lambda (key value) (list key (generalize-jsexpr value)))))))
+        ((list? jsexpr) ;; list
+         (map (lambda (element) (generalize-jsexpr element)) jsexpr))
+        (jsexpr)))
 
 (define (main args)
   (convert-json (vector-ref args 0)))
