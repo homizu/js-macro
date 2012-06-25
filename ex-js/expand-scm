@@ -4,11 +4,11 @@
 (load "tagging.scm")
 
 (define (expand-scm scm-file-path)
-  (let* ((file-name (car (pregexp-split "-1\\.scm" scm-file-path)))
+  (let* ((file-name (car (pregexp-split "-sform\\.scm" scm-file-path)))
          (in (transcoded-port (open-file-input-port scm-file-path)
                               (make-transcoder (utf-8-codec))))
          (out (transcoded-port (open-file-output-port
-                                (string-append file-name "-2.scm")
+                                (string-append file-name "-tagged.scm")
                                 (file-options no-fail))
                                (make-transcoder (utf-8-codec))))
          (sform (read in)))

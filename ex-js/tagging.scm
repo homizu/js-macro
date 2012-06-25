@@ -3,13 +3,61 @@
     ((_ (elements "")) (begin ""))
     ((_ (elements (e ...))) (begin e ...))))
 
+(define-syntax StatementMacroDefinition
+  (syntax-rules (macroName identifiers expression statements literals syntaxRules)
+    ((_ 
+      (macroName name)
+      (identifiers ids)
+      (expressions exprs)
+      (statements stmts)
+      (literals lits)
+      (syntaxRules
+       ((SyntaxRule
+         (pattern (p ...))
+         (template t)) ...)))
+     (begin
+       (Define-Syntax test
+         (Syntax-Rules '()
+           ((test p ...) t)
+           ...))))
+))
+
+;; (define-syntax StatementMacroDefinition
+;;   (syntax-rules (macroName identifiers expression statements literals syntaxRules)
+;; ))
+
 ;; NumericLiteral
+(define-syntax NumericLiteral
+  (syntax-rules (value)
+    ((_ (value v)) (JS number v))))
+
 ;; StringLiteral
+(define-syntax StringLiteral
+  (syntax-rules (value)
+    ((_ (value v)) (JS const v)))) 
+
 ;; NullLiteral
+(define-syntax NullLiteral
+  (syntax-rules ()
+    ((_) (JS const "null"))))
+
 ;; BooleanLiteral
+(define-syntax BooleanLiteral
+  (syntax-rules (value)
+    ((_ (value v)) (JS const v))))
+
 ;; RegularExpressionLiteral
+(define-syntax RegularExpressionLiteral
+  (syntax-rules (value body flags)
+    ((_ (body b) (flags f)) (JS const (string-append "/" b "/" f)))))
+
 ;; This
+(define-syntax This
+  (syntax-rules ()
+    ((_) (JS const "this"))))
+
 ;; Variable
+
 ;; ArrayLiteral
 ;; ObjectLiteral
 ;; PropertyAssignment

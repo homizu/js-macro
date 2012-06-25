@@ -19,6 +19,7 @@
       ],
       "syntaxRules": [
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -41,6 +42,7 @@
           }
         },
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -51,21 +53,21 @@
                 },
                 {
                   "type": "Repetition",
-                  "data": [
+                  "elements": [
                     {
                       "type": "IdentifierVariable",
                       "name": "id"
                     },
                     {
                       "type": "Punctuator",
-                      "data": "="
+                      "value": "="
                     },
                     {
                       "type": "ExpressionVariable",
                       "name": "expr"
                     }
                   ],
-                  "punctuationMark": ","
+                  "punctuationMark": "and"
                 }
               ]
             },
@@ -74,7 +76,7 @@
               "elements": [
                 {
                   "type": "Repetition",
-                  "data": {
+                  "elements": {
                     "type": "StatementVariable",
                     "name": "stmt"
                   },
@@ -122,6 +124,99 @@
       ]
     },
     {
+      "type": "letMacroForm",
+      "inputForm": [
+        {
+          "type": "MacroName",
+          "name": "let"
+        },
+        [
+          {
+            "type": "Paren",
+            "elements": [
+              {
+                "type": "LiteralKeyword",
+                "value": "var"
+              },
+              {
+                "type": "Repetition",
+                "elements": [
+                  [
+                    {
+                      "type": "Identifier",
+                      "name": "id1"
+                    },
+                    {
+                      "type": "Punctuator",
+                      "value": "="
+                    },
+                    {
+                      "type": "StringLiteral",
+                      "value": "expr1"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "Identifier",
+                      "name": "id2"
+                    },
+                    {
+                      "type": "Punctuator",
+                      "value": "="
+                    },
+                    {
+                      "type": "NumericLiteral",
+                      "value": 1000
+                    }
+                  ]
+                ],
+                "punctuationMark": "and"
+              }
+            ]
+          },
+          {
+            "type": "Block",
+            "elements": [
+              {
+                "type": "Repetition",
+                "elements": [
+                  {
+                    "type": "VariableStatement",
+                    "declarations": [
+                      {
+                        "type": "VariableDeclaration",
+                        "name": "result",
+                        "value": {
+                          "type": "BinaryExpression",
+                          "operator": "+",
+                          "left": {
+                            "type": "Variable",
+                            "name": "id1"
+                          },
+                          "right": {
+                            "type": "Variable",
+                            "name": "id2"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "ReturnStatement",
+                    "value": {
+                      "type": "Variable",
+                      "name": "result"
+                    }
+                  }
+                ],
+                "punctuationMark": ""
+              }
+            ]
+          }
+        ]
+      ]
+    },
+    {
       "type": "ExpressionMacroDefinition",
       "macroName": "or",
       "identifiers": [
@@ -135,6 +230,7 @@
       "literals": "",
       "syntaxRules": [
         {
+          "type": "SyntaxRule",
           "pattern": "",
           "template": {
             "type": "BooleanLiteral",
@@ -142,6 +238,7 @@
           }
         },
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -159,6 +256,7 @@
           }
         },
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -169,11 +267,11 @@
                 },
                 {
                   "type": "Punctuator",
-                  "data": ","
+                  "value": ","
                 },
                 {
                   "type": "Repetition",
-                  "data": {
+                  "elements": {
                     "type": "ExpressionVariable",
                     "name": "exp2"
                   },
@@ -194,8 +292,8 @@
                   "type": "Paren",
                   "elements": [
                     {
-                      "type": "String",
-                      "data": "var"
+                      "type": "LiteralKeyword",
+                      "value": "var"
                     },
                     {
                       "type": "Repetition",
@@ -206,8 +304,8 @@
                             "name": "temp"
                           },
                           {
-                            "type": "String",
-                            "data": "="
+                            "type": "Punctuator",
+                            "value": "="
                           },
                           {
                             "type": "Variable",
@@ -215,7 +313,7 @@
                           }
                         ]
                       ],
-                      "punctuationMark": ","
+                      "punctuationMark": "and"
                     }
                   ]
                 },

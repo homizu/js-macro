@@ -62,7 +62,7 @@
                     },
                     {
                       "type": "Punctuator",
-                      "data": "="
+                      "value": "="
                     },
                     {
                       "type": "ExpressionVariable",
@@ -129,115 +129,115 @@
     },
     {
       "type": "Character",
-      "data": "l"
+      "value": "l"
     },
     {
       "type": "Character",
-      "data": "e"
+      "value": "e"
     },
     {
       "type": "Character",
-      "data": "t"
+      "value": "t"
     },
     {
       "type": "Character",
-      "data": "("
+      "value": "("
     },
     {
       "type": "Character",
-      "data": "v"
+      "value": "v"
     },
     {
       "type": "Character",
-      "data": "a"
+      "value": "a"
     },
     {
       "type": "Character",
-      "data": "r"
+      "value": "r"
     },
     {
       "type": "Character",
-      "data": "i"
+      "value": "i"
     },
     {
       "type": "Character",
-      "data": "d"
+      "value": "d"
     },
     {
       "type": "Character",
-      "data": "1"
+      "value": "1"
     },
     {
       "type": "Character",
-      "data": "="
+      "value": "="
     },
     {
       "type": "Character",
-      "data": "1"
+      "value": "1"
     },
     {
       "type": "Character",
-      "data": "/"
+      "value": "/"
     },
     {
       "type": "Character",
-      "data": "2"
+      "value": "2"
     },
     {
       "type": "Character",
-      "data": "a"
+      "value": "a"
     },
     {
       "type": "Character",
-      "data": "n"
+      "value": "n"
     },
     {
       "type": "Character",
-      "data": "d"
+      "value": "d"
     },
     {
       "type": "Character",
-      "data": "i"
+      "value": "i"
     },
     {
       "type": "Character",
-      "data": "d"
+      "value": "d"
     },
     {
       "type": "Character",
-      "data": "2"
+      "value": "2"
     },
     {
       "type": "Character",
-      "data": "="
+      "value": "="
     },
     {
       "type": "Character",
-      "data": "1"
+      "value": "1"
     },
     {
       "type": "Character",
-      "data": "0"
+      "value": "0"
     },
     {
       "type": "Character",
-      "data": "0"
+      "value": "0"
     },
     {
       "type": "Character",
-      "data": "E"
+      "value": "E"
     },
     {
       "type": "Character",
-      "data": "1"
+      "value": "1"
     },
     {
       "type": "Character",
-      "data": "0"
+      "value": "0"
     },
     {
       "type": "Character",
-      "data": ")"
+      "value": ")"
     },
     {
       "type": "Block",

@@ -31,20 +31,20 @@ statement let {
     
     {let () {} => ((function() {})());}
 
-    {let (var [#id = expr#], ...) {
+    {let (var [#id = expr#]and ...) {
         stmt ...
      } => ((function (id, ...) {
         stmt ...
      })(expr, ...));}
 }
 
-/*
+
 // let マクロの使用
-let (var id1=expr1, id2=expr) {
+let (var id1="expr1" and id2=1E3) {
     var result = id1 + id2;
     return result;
 }
-*/
+
 
 
 // or マクロの定義

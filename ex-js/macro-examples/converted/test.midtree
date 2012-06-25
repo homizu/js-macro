@@ -19,6 +19,7 @@
       ],
       "syntaxRules": [
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -43,6 +44,7 @@
           ]
         },
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -53,21 +55,21 @@
                 },
                 {
                   "type": "Repetition",
-                  "data": [
+                  "elements": [
                     {
                       "type": "IdentifierVariable",
                       "name": "id"
                     },
                     {
                       "type": "Punctuator",
-                      "data": "="
+                      "value": "="
                     },
                     {
                       "type": "ExpressionVariable",
                       "name": "expr"
                     }
                   ],
-                  "punctuationMark": ","
+                  "punctuationMark": "and"
                 }
               ]
             },
@@ -76,7 +78,7 @@
               "elements": [
                 {
                   "type": "Repetition",
-                  "data": {
+                  "elements": {
                     "type": "StatementVariable",
                     "name": "stmt"
                   },
@@ -126,6 +128,155 @@
       ]
     },
     {
+      "type": "Character",
+      "value": "l"
+    },
+    {
+      "type": "Character",
+      "value": "e"
+    },
+    {
+      "type": "Character",
+      "value": "t"
+    },
+    {
+      "type": "Character",
+      "value": "("
+    },
+    {
+      "type": "Character",
+      "value": "v"
+    },
+    {
+      "type": "Character",
+      "value": "a"
+    },
+    {
+      "type": "Character",
+      "value": "r"
+    },
+    {
+      "type": "Character",
+      "value": "i"
+    },
+    {
+      "type": "Character",
+      "value": "d"
+    },
+    {
+      "type": "Character",
+      "value": "1"
+    },
+    {
+      "type": "Character",
+      "value": "="
+    },
+    {
+      "type": "Character",
+      "value": "\""
+    },
+    {
+      "type": "Character",
+      "value": "e"
+    },
+    {
+      "type": "Character",
+      "value": "x"
+    },
+    {
+      "type": "Character",
+      "value": "p"
+    },
+    {
+      "type": "Character",
+      "value": "r"
+    },
+    {
+      "type": "Character",
+      "value": "1"
+    },
+    {
+      "type": "Character",
+      "value": "\""
+    },
+    {
+      "type": "Character",
+      "value": "a"
+    },
+    {
+      "type": "Character",
+      "value": "n"
+    },
+    {
+      "type": "Character",
+      "value": "d"
+    },
+    {
+      "type": "Character",
+      "value": "i"
+    },
+    {
+      "type": "Character",
+      "value": "d"
+    },
+    {
+      "type": "Character",
+      "value": "2"
+    },
+    {
+      "type": "Character",
+      "value": "="
+    },
+    {
+      "type": "Character",
+      "value": "1"
+    },
+    {
+      "type": "Character",
+      "value": "E"
+    },
+    {
+      "type": "Character",
+      "value": "3"
+    },
+    {
+      "type": "Character",
+      "value": ")"
+    },
+    {
+      "type": "Block",
+      "statements": [
+        {
+          "type": "VariableStatement",
+          "declarations": [
+            {
+              "type": "VariableDeclaration",
+              "name": "result",
+              "value": {
+                "type": "BinaryExpression",
+                "operator": "+",
+                "left": {
+                  "type": "Variable",
+                  "name": "id1"
+                },
+                "right": {
+                  "type": "Variable",
+                  "name": "id2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "ReturnStatement",
+          "value": {
+            "type": "Variable",
+            "name": "result"
+          }
+        }
+      ]
+    },
+    {
       "type": "ExpressionMacroDefinition",
       "macroName": "or",
       "identifiers": [
@@ -139,6 +290,7 @@
       "literals": "",
       "syntaxRules": [
         {
+          "type": "SyntaxRule",
           "pattern": "",
           "template": [
             {
@@ -148,6 +300,7 @@
           ]
         },
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -167,6 +320,7 @@
           ]
         },
         {
+          "type": "SyntaxRule",
           "pattern": [
             {
               "type": "Paren",
@@ -177,11 +331,11 @@
                 },
                 {
                   "type": "Punctuator",
-                  "data": ","
+                  "value": ","
                 },
                 {
                   "type": "Repetition",
-                  "data": {
+                  "elements": {
                     "type": "ExpressionVariable",
                     "name": "exp2"
                   },
@@ -193,91 +347,91 @@
           "template": [
             {
               "type": "Character",
-              "data": "l"
+              "value": "l"
             },
             {
               "type": "Character",
-              "data": "e"
+              "value": "e"
             },
             {
               "type": "Character",
-              "data": "t"
+              "value": "t"
             },
             {
               "type": "Character",
-              "data": " "
+              "value": " "
             },
             {
               "type": "Character",
-              "data": "("
+              "value": "("
             },
             {
               "type": "Character",
-              "data": "v"
+              "value": "v"
             },
             {
               "type": "Character",
-              "data": "a"
+              "value": "a"
             },
             {
               "type": "Character",
-              "data": "r"
+              "value": "r"
             },
             {
               "type": "Character",
-              "data": " "
+              "value": " "
             },
             {
               "type": "Character",
-              "data": "t"
+              "value": "t"
             },
             {
               "type": "Character",
-              "data": "e"
+              "value": "e"
             },
             {
               "type": "Character",
-              "data": "m"
+              "value": "m"
             },
             {
               "type": "Character",
-              "data": "p"
+              "value": "p"
             },
             {
               "type": "Character",
-              "data": " "
+              "value": " "
             },
             {
               "type": "Character",
-              "data": "="
+              "value": "="
             },
             {
               "type": "Character",
-              "data": " "
+              "value": " "
             },
             {
               "type": "Character",
-              "data": "e"
+              "value": "e"
             },
             {
               "type": "Character",
-              "data": "x"
+              "value": "x"
             },
             {
               "type": "Character",
-              "data": "p"
+              "value": "p"
             },
             {
               "type": "Character",
-              "data": "1"
+              "value": "1"
             },
             {
               "type": "Character",
-              "data": ")"
+              "value": ")"
             },
             {
               "type": "Character",
-              "data": " "
+              "value": " "
             },
             {
               "type": "Block",

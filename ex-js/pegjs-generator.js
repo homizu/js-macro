@@ -96,12 +96,12 @@ module.exports = (function () {
 */
 
         // Tag (Label)
-        tag: function(tag, data) {
+        tag: function(tag, value) {
             return {
                 type: 'Tag',
-                data: data,
+                value: value,
                 tag: tag,
-                toString: function() { return tag + ':' + this.data; }
+                toString: function() { return tag + ':' + this.value; }
             };
         },
 
@@ -111,7 +111,7 @@ module.exports = (function () {
                 type: 'Repetition',
                 elements: elements,
                 mark: mark,
-                toString: function() { return '(head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:"..."? !{ return !inTemplate && ellipsis; } { var elements = [head]; for (var i=0; i<tail.length; i++) { elements.push(tail[i][' + (mark? 3 : 1) + ']); } if (ellipsis) elements.push({ type: "Ellipsis" });  return { type: "Repetition", elements: elements, punctuationMark: "' + mark + '" }; })?'; }
+                toString: function() { return '(head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:"..."? !{ return !inTemplate && ellipsis; } { var elements = [head]; for (var i=0; i<tail.length; i++) { elements.push(tail[i][' + (mark? 3 : 1) + ']); } if (ellipsis) elements.push({ type: "Ellipsis" });  return { type: "Repetition", elements: elements, punctuationMark: "' + mark + '" }; })?'; }
             };
             
         },
@@ -161,20 +161,46 @@ module.exports = (function () {
         },
         
         // Literal string
-        string: function(data, type) {
-            return {
-                type: (type ? type : 'String'),
-                data: data,
-                toString: function() { return (type? '(' : '') + '"' + this.data + '"' + (type? '{ return { type: "' + this.type + '", data: "' + this.data + '" }; })' : ''); }
-            };
+        string: function(type, value) {
+            if (type === 'StringLiteral') {
+                return {
+                    type: 'StringLiteral',
+                    value: value,
+                    toString: function() { return '("\"'+ this.value + '\"" { return { type: "StringLiteral", value: "' + this.value + '" }; })'; }
+                };
+            } else if (type === 'RegularExpressionLiteral') {
+                return {
+                    type: 'RegularExpressionLiteral',
+                    value: value,
+                    toString: function() { return '("/" "' + value.body + '" "/" "' + value.flags + '" { return { type: "RegularExpressionLiteral", body: "' + this.value.body + '", flags: "' + this.value.flags + '" }; })'; } 
+                };
+            } else if (type === 'NullLiteral') {
+                return {
+                    type: 'NullLiteral',
+                    value: value,
+                    toString: function() { return '(NullToken { return { type: "NullLiteral" }; })'; }
+                };
+            } else if (type) {
+                return {
+                    type: type,
+                    value: value,
+                    toString: function() { return '("'+ this.value + '" { return { type: "' + this.type + '", value: "' + this.value + '" }; })'; }
+                };
+            } else {
+                return {
+                    type: 'String',
+                    value: value,
+                    toString: function() { return '"' + this.value + '"'; }
+                };
+            }
         },
         
         // Literal number
-        number: function(data) {
+        number: function(value) {
             return {
                 type: 'Number',
-                data: data,
-                toString: function() { return '(number:NumericLiteral &{ return (number - 0) === ' + this.data + '; } { return { type: "Number", data: number }; })'; }
+                value: value,
+                toString: function() { return '(number:NumericLiteral &{ return (number - 0) === ' + this.value + '; } { return { type: "NumericLiteral", value: number }; })'; }
             };
         },
         
@@ -213,12 +239,12 @@ module.exports = (function () {
 
         // Enclosing
         enclosing: function(type, elements) {
-            var lefts = { Block: pegObj.string('{'),
-                          Paren: pegObj.string('('),
-                          Bracket: pegObj.string(']') };
-            var rights = { Block: pegObj.string('}'),
-                           Paren: pegObj.string(')'),
-                           Bracket: pegObj.string(']') };
+            var lefts = { Block: pegObj.string(null, '{'),
+                          Paren: pegObj.string(null, '('),
+                          Bracket: pegObj.string(null, ']') };
+            var rights = { Block: pegObj.string(null, '}'),
+                           Paren: pegObj.string(null, ')'),
+                           Bracket: pegObj.string(null, ']') };
             var isNull = elements.type.charAt(0) === '-';
             if (!isNull)
                 elements = pegObj.tag('t0', elements);
@@ -326,7 +352,7 @@ module.exports = (function () {
         { type: 'LiteralKeyword',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj.string(obj.name, this.type);
+              return pegObj.string(this.type, obj.name);
           }
         },
 
@@ -334,7 +360,7 @@ module.exports = (function () {
         { type: 'Punctuator',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj.string(obj.data, this.type);
+              return pegObj.string(this.type, obj.value);
           }
         },
 
@@ -342,7 +368,7 @@ module.exports = (function () {
         { type: 'BooleanLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj.string(obj.value, this.type);
+              return pegObj.string(this.type, obj.value);
           }
         },
 
@@ -358,7 +384,7 @@ module.exports = (function () {
         { type: 'StringLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj.string('\"'+ obj.value + '\"', this.type);
+              return pegObj.string(this.type, obj.value);
           }
         },
 
@@ -366,7 +392,7 @@ module.exports = (function () {
         { type: 'NullLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj.string('null', this.type);
+              return pegObj.string(this.type, null);
           }
         },
         
@@ -374,7 +400,7 @@ module.exports = (function () {
         { type: 'RegularExpressionLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj.string('/' + obj.body + '/' + obj.flags, this.type);
+              return pegObj.string(this.type, { body: obj.body, flags: obj.flags });
           }
         }
     ];

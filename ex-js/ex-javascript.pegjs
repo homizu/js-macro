@@ -1227,7 +1227,7 @@ Statement
   / FunctionDeclaration
   / FunctionExpression
   / !EOS char:.
-     { return { type: "Character", data: char }; }
+     { return { type: "Character", value: char }; }
 
 Block
   = "{" __ statements:(StatementList __)? "}" {
@@ -1721,7 +1721,7 @@ SubPatternList
         var result = [head];
         for (var i=0; i<tail.length; i++) {
             if (tail[i][1])
-               result.push({ type: "Punctuator", data: "," });
+               result.push({ type: "Punctuator", value: "," });
             result.push(tail[i][3]);
         }
         return result;
@@ -1777,8 +1777,8 @@ SubPattern
         }
         return result;                    
       }
-  / data:Literal ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = data;
+  / value:Literal ellipsis:(__ PunctuationMark? __ "...")? {
+        var result = value;
         if (ellipsis[3]) {
            result = {
              type: "Repetition",
@@ -1820,7 +1820,7 @@ SubPattern
   / punc:PatternPunctuator {
         return {
            type: "Punctuator",
-           data: punc
+           value: punc
         };
     }
 
@@ -1886,7 +1886,7 @@ Template
                  elements: result };
       }
   / Statement
-  / !"}" char:. { return { type: "Character", data: char }; })*
+  / !"}" char:. { return { type: "Character", value: char }; })*
 
 StatementInTemplate
   = "{" __ head:Statement tail:(__ Statement __ "..."?)* __ "}" {

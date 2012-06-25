@@ -2,22 +2,26 @@
 #lang racket
 
 (require (planet dherman/json:4:=0))
+(require racket/pretty)
 
 (define (convert-json js-file-path)
   (let* ((file-name (list-ref (regexp-split #rx"\\.tree" js-file-path) 0))
          (in (open-input-file js-file-path))
-         (out (open-output-file (string-append file-name "-1.scm") #:exists 'truncate/replace))
+         (out-jsexpr (open-output-file (string-append file-name "-jsexpr.scm") #:exists 'truncate/replace))
+         (out-sform (open-output-file (string-append file-name "-sform.scm") #:exists 'truncate/replace))
          (jsexpr (read-json in))
          (sform (generalize-jsexpr jsexpr)))
-    (display jsexpr)
+    (pretty-display jsexpr)
+    (pretty-write jsexpr out-jsexpr)
     (newline)
     (newline)
-    (display sform)
+    (pretty-display sform)
     (newline)
     (newline)
-    (write sform out)
+    (pretty-write sform out-sform)
     (close-input-port in)
-    (close-output-port out)))
+    (close-output-port out-jsexpr)
+    (close-output-port out-sform)))
 
 
 (define (generalize-jsexpr jsexpr)
@@ -29,7 +33,8 @@
                              (lambda (key value) (list key (generalize-jsexpr value)))))))
         ((list? jsexpr) ;; list
          (map (lambda (element) (generalize-jsexpr element)) jsexpr))
-        (jsexpr)))
+        (#t ;; other
+        jsexpr)))
 
 (define (main args)
   (convert-json (vector-ref args 0)))

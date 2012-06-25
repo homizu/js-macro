@@ -60,7 +60,7 @@
                     },
                     {
                       "type": "Punctuator",
-                      "data": "="
+                      "value": "="
                     },
                     {
                       "type": "ExpressionVariable",
@@ -136,7 +136,7 @@
             "elements": [
               {
                 "type": "LiteralKeyword",
-                "data": "var"
+                "value": "var"
               },
               {
                 "type": "Repetition",
@@ -148,7 +148,7 @@
                     },
                     {
                       "type": "Punctuator",
-                      "data": "="
+                      "value": "="
                     },
                     {
                       "type": "BinaryExpression",
@@ -170,7 +170,7 @@
                     },
                     {
                       "type": "Punctuator",
-                      "data": "="
+                      "value": "="
                     },
                     {
                       "type": "NumericLiteral",
