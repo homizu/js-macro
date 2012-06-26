@@ -3,25 +3,71 @@
 (import (pregexp))
 (load "tagging.scm")
 
-(define (expand-scm scm-file-path)
-  (let* ((file-name (car (pregexp-split "-sform\\.scm" scm-file-path)))
-         (in (transcoded-port (open-file-input-port scm-file-path)
+(define in '())
+(define out '())
+(define sform '())
+(define mid-expanded-sform '())
+(define expanded-sform '())
+
+(define (mid-expand-scm scm-file-path)
+  (let ((file-name (car (pregexp-split "-sform\\.scm" scm-file-path))))
+    (set! in (transcoded-port (open-file-input-port scm-file-path)
                               (make-transcoder (utf-8-codec))))
-         (out (transcoded-port (open-file-output-port
+    (set! out (transcoded-port (open-file-output-port
                                 (string-append file-name "-tagged.scm")
                                 (file-options no-fail))
                                (make-transcoder (utf-8-codec))))
-         (sform (read in)))
+    (set! sform (read in))
     (display sform)
     (newline)
+;;    (display (symbol? sform))
     (newline)
-    (let ((expanded-sform (macro-expand sform)))
-      (write expanded-sform out)
-      (display expanded-sform))
-    (close-input-port in)
-    (close-output-port out)))
+    (newline)
+    (set! mid-expanded-sform (macro-expand sform))
+    (write mid-expanded-sform out)
+    (display mid-expanded-sform)
+    (newline)
+    (newline)))
 
 (define (main args)
-  (expand-scm (cadr args)))
+  (mid-expand-scm (cadr args)))
 
 (main (command-line))
+
+;; (define-syntax LiteralKeyword
+;;   (syntax-rules ()
+;;     ((_ (name (quote n))) n)))
+
+
+(define-syntax ExpressionMacroDefinition
+  (syntax-rules (quote macroName literals syntaxRules SyntaxRule pattern template)
+    ((_ (macroName (quote name))
+        (literals ((quote literal) ...))
+        (syntaxRules ((SyntaxRule (pattern (p ...))
+                                  (template t))
+                      ...)))
+     (define-syntax name
+       (syntax-rules (literal ...)
+         ((_ p ...) t) ...)))))
+
+(define-syntax StatementMacroDefinition
+  (syntax-rules (quote)
+    ((_ (macroName (quote name))
+        (literals ((quote literal) ...))
+        (syntaxRules ((SyntaxRule (pattern (p ...))
+                                  (template t))
+                      ...)))
+     (define-syntax name
+       (syntax-rules (literal ...)
+         ((_ p ...) t) ...)))))
+
+(set! expanded-sform (macro-expand mid-expanded-sform))
+(display expanded-sform)
+(close-input-port in)
+(close-output-port out)
+
+(display (macro-expand '(let ("JS" "paren") ("JS" "block"))))
+(newline)
+(display (macro-expand '(let ("JS" "paren" 'and))))
+
+

@@ -23,22 +23,25 @@ statement test {
 }
 */
 // let マクロの定義(イメージ)
-statement let {
+expression let {
     identifier: id;
     expression: expr;
     statement: stmt;
-    literal: var, and;
+    literal: var, &;
     
-    {let () {} => ((function() {})());}
+    {let () {} => false;}
 
-    {let (var [#id = expr#]and ...) {
+    {let (var [#id = expr#] & ...) {
         stmt ...
      } => ((function (id, ...) {
         stmt ...
      })(expr, ...));}
+    
 }
 
+let () {}
 
+/*
 // let マクロの使用
 let (var id1="expr1" and id2=1E3) {
     var result = id1 + id2;
@@ -57,3 +60,4 @@ expression or {
     {or(exp1, exp2, ...) => let (var temp = exp1) { return temp? temp : or(exp2, ...); }}
 
 }
+*/

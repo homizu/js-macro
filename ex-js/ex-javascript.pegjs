@@ -1666,10 +1666,10 @@ MacroDefinition
           literalKeywordNames = [];
           return { type: (type === "expression" ? "Expression" : "Statement" ) + "MacroDefinition",
                    macroName: macroName,
-                   identifiers: idList,
-                   expressions: exprList,
-                   statements: stmtList,
-                   literals: literalList,
+//                   identifiers: idList,
+//                   expressions: exprList,
+//                   statements: stmtList,
+                   literals: literalList || [],
                    syntaxRules: syntaxRules }; }
 
 VariableList
@@ -1869,7 +1869,7 @@ Template
         return { type: "Block",
                  elements: result };
        }
-  / "(" (__ Statement)* __ ")"
+  / "(" elements:(__ Statement)* __ ")"
      { var result = [];
         for (var i=0; i<elements.length; i++) {
             result.push(elements[i][1]);
@@ -1877,7 +1877,7 @@ Template
         return { type: "Paren",
                  elements: result };
       }
-  / "[" (__ Statement)* __ "]"
+  / "[" elements:(__ Statement)* __ "]"
      { var result = [];
         for (var i=0; i<elements.length; i++) {
             result.push(elements[i][1]);
