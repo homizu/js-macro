@@ -1227,7 +1227,7 @@ Statement
   / FunctionDeclaration
   / FunctionExpression
   / !EOS char:.
-     { return { type: "Character", value: char }; }
+     { return { type: "Characterstmt", value: char }; }
 
 Block
   = "{" __ statements:(StatementList __)? "}" {
@@ -1886,7 +1886,7 @@ Template
                  elements: result };
       }
   / Statement
-  / !"}" char:. { return { type: "Character", value: char }; })*
+  / !"}" char:. { return { type: "Charactertemp", value: char }; })*
 
 StatementInTemplate
   = "{" __ head:Statement tail:(__ Statement __ "..."?)* __ "}" {

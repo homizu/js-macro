@@ -113,28 +113,370 @@
       ]
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "l"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "e"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "t"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "("
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": ")"
     },
     {
       "type": "Block",
       "statements": []
+    },
+    {
+      "type": "Characterstmt",
+      "value": "l"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "e"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "t"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "("
+    },
+    {
+      "type": "Characterstmt",
+      "value": "v"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "a"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "r"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "i"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "d"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "1"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "="
+    },
+    {
+      "type": "Characterstmt",
+      "value": "\""
+    },
+    {
+      "type": "Characterstmt",
+      "value": "e"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "x"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "p"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "r"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "1"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "\""
+    },
+    {
+      "type": "Characterstmt",
+      "value": "a"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "n"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "d"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "i"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "d"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "2"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "="
+    },
+    {
+      "type": "Characterstmt",
+      "value": "1"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "E"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "3"
+    },
+    {
+      "type": "Characterstmt",
+      "value": ")"
+    },
+    {
+      "type": "Block",
+      "statements": [
+        {
+          "type": "VariableStatement",
+          "declarations": [
+            {
+              "type": "VariableDeclaration",
+              "name": "result",
+              "value": {
+                "type": "BinaryExpression",
+                "operator": "+",
+                "left": {
+                  "type": "Variable",
+                  "name": "id1"
+                },
+                "right": {
+                  "type": "Variable",
+                  "name": "id2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "ReturnStatement",
+          "value": {
+            "type": "Variable",
+            "name": "result"
+          }
+        }
+      ]
+    },
+    {
+      "type": "ExpressionMacroDefinition",
+      "macroName": "or",
+      "literals": [],
+      "syntaxRules": [
+        {
+          "type": "SyntaxRule",
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": ""
+            }
+          ],
+          "template": [
+            {
+              "type": "BooleanLiteral",
+              "value": false
+            }
+          ]
+        },
+        {
+          "type": "SyntaxRule",
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": [
+                {
+                  "type": "ExpressionVariable",
+                  "name": "exp1"
+                }
+              ]
+            }
+          ],
+          "template": [
+            {
+              "type": "Variable",
+              "name": "exp1"
+            }
+          ]
+        },
+        {
+          "type": "SyntaxRule",
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": [
+                {
+                  "type": "ExpressionVariable",
+                  "name": "exp1"
+                },
+                {
+                  "type": "Punctuator",
+                  "value": ","
+                },
+                {
+                  "type": "Repetition",
+                  "elements": {
+                    "type": "ExpressionVariable",
+                    "name": "exp2"
+                  },
+                  "punctuationMark": ","
+                }
+              ]
+            }
+          ],
+          "template": [
+            {
+              "type": "Characterstmt",
+              "value": "l"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "e"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "t"
+            },
+            {
+              "type": "Characterstmt",
+              "value": " "
+            },
+            {
+              "type": "Characterstmt",
+              "value": "("
+            },
+            {
+              "type": "Characterstmt",
+              "value": "v"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "a"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "r"
+            },
+            {
+              "type": "Characterstmt",
+              "value": " "
+            },
+            {
+              "type": "Characterstmt",
+              "value": "t"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "e"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "m"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "p"
+            },
+            {
+              "type": "Characterstmt",
+              "value": " "
+            },
+            {
+              "type": "Characterstmt",
+              "value": "="
+            },
+            {
+              "type": "Characterstmt",
+              "value": " "
+            },
+            {
+              "type": "Characterstmt",
+              "value": "e"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "x"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "p"
+            },
+            {
+              "type": "Characterstmt",
+              "value": "1"
+            },
+            {
+              "type": "Characterstmt",
+              "value": ")"
+            },
+            {
+              "type": "Characterstmt",
+              "value": " "
+            },
+            {
+              "type": "Block",
+              "elements": [
+                {
+                  "type": "ReturnStatement",
+                  "value": {
+                    "type": "ConditionalExpression",
+                    "condition": {
+                      "type": "Variable",
+                      "name": "temp"
+                    },
+                    "trueExpression": {
+                      "type": "Variable",
+                      "name": "temp"
+                    },
+                    "falseExpression": {
+                      "type": "FunctionCall",
+                      "name": {
+                        "type": "Variable",
+                        "name": "or"
+                      },
+                      "arguments": [
+                        {
+                          "type": "Variable",
+                          "name": "exp2"
+                        },
+                        {
+                          "type": "Ellipsis"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -5,7 +5,8 @@ module.exports = (function () {
     var pegjsTemplate = 'Template\n = StatementInTemplate\n';
     var pegjsStatement = 'Statement\n = '
     var pegjsStatements = '\n\
- / Block\n / VariableStatement\n\
+   Block\n\
+ / VariableStatement\n\
  / EmptyStatement\n\
  / ExpressionStatement\n\
  / IfStatement\n\
@@ -180,6 +181,12 @@ module.exports = (function () {
                     value: value,
                     toString: function() { return '(NullToken { return { type: "NullLiteral" }; })'; }
                 };
+            } else if (type === 'LiteralKeyword') {
+                return {
+                    type: 'LiteralKeyword',
+                    name: value,
+                    toString: function() { return '("'+ this.name + '" { return { type: "' + this.type + '", name: "' + this.name + '" }; })'; }
+                };
             } else if (type) {
                 return {
                     type: type,
@@ -208,7 +215,7 @@ module.exports = (function () {
         identifier: function() {
             return {
                 type: 'Identifier',
-                toString: function() { return '(name:IdentifierName { return { type: "' + this.type + '", name: name }; })'; }
+                toString: function() { return '(name:IdentifierName { return { type: "Variable", name: name }; })'; }
             };
         },
         
@@ -279,7 +286,7 @@ module.exports = (function () {
                 name: name.name,
                 inputForm: form,
                 toString: function() {
-                    return 'form:' + form + '{ return { type: "' + this.name + this.type + '", inputForm: form }; }';
+                    return 'form:' + form + '{ return { type: "' + this.type + '", inputForm: form }; }';
                 }
             };
         }
@@ -458,7 +465,7 @@ module.exports = (function () {
 
             return pegjsTemplate
                 + (expressionMacros.length > 0 ?  pegjsExpression + pegObj.choice(expressionMacros) + pegjsExpressions : '')
-                + (statementMacros.length > 0 ? pegjsStatement + pegObj.choice(statementMacros) + pegjsStatements : '');
+                + pegjsStatement + (statementMacros.length > 0 ? pegObj.choice(statementMacros) + '/' : '') + pegjsStatements;
                 
         } else {
             return 'error';

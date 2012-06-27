@@ -27,11 +27,11 @@ expression let {
     identifier: id;
     expression: expr;
     statement: stmt;
-    literal: var, &;
+    literal: var, and;
     
     {let () {} => false;}
 
-    {let (var [#id = expr#] & ...) {
+    {let (var [#id = expr#] and ...) {
         stmt ...
      } => ((function (id, ...) {
         stmt ...
@@ -41,7 +41,7 @@ expression let {
 
 let () {}
 
-/*
+
 // let マクロの使用
 let (var id1="expr1" and id2=1E3) {
     var result = id1 + id2;
@@ -55,9 +55,9 @@ expression or {
     identifier: temp;
     expression: exp1, exp2;
     
-    {or => false}
+    {or() => false}
     {or(exp1) => exp1}
     {or(exp1, exp2, ...) => let (var temp = exp1) { return temp? temp : or(exp2, ...); }}
 
 }
-*/
+

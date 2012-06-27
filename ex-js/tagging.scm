@@ -71,7 +71,7 @@
 ;; NullLiteral
 (define-syntax NullLiteral
   (syntax-rules ()
-    ((_) ("JS" "const" "null"))))
+    ((_) ("JS" "const" null))))
 
 ;; BooleanLiteral
 (define-syntax BooleanLiteral
@@ -90,8 +90,15 @@
     ((_) ("JS" "const" "this"))))
 
 ;; Variable
+(define-syntax Variable
+  (syntax-rules ()
+    ((_ (name n)) n)))
 
 ;; ArrayLiteral
+(define-syntax ArrayLiteral
+  (syntax-rules (elements)
+    ((_ (elements (e ...))) ("JS" "array" e ...))))
+    
 ;; ObjectLiteral
 ;; PropertyAssignment
 ;; GetterDefinition
@@ -102,9 +109,25 @@
 ;; FunctionCallArguments
 ;; PropertyAccessProperty
 ;; PostfixExpression
+
 ;; UnaryExpression
+(define-syntax UnaryExpression
+  (syntax-rules (operator expression)
+    ((_ (operator op) (expression e))
+     ("JS" "op1" e))))
+
 ;; BinaryExpression
+(define-syntax BinaryExpression
+  (syntax-rules (operator left right)
+    ((_ (operator op) (left l) (right r))
+     ("JS" "op2" op l r))))
+
 ;; ConditionalExpression
+(define-syntax ConditionalExpression
+  (syntax-rules (condition trueExpression falseExpression)
+    ((_ (condition c) (trueExpression t) (falseExpression f))
+     ("JS" "op3" "?" c t f))))
+
 ;; AssignmentExpression
 ;; Block
 ;; VariableStatement
@@ -131,23 +154,35 @@
 ;; Function
 ;; Program
 
-;; ExpressionMacroDefinition
-;; StatementMacroDefinition
-;; SyntaxRule
+;;;; ExpressionMacroDefinition
+;;;; StatementMacroDefinition
+;;;; SyntaxRule
 ;; Punctuator
 ;; Repetition
-;; Block
-;; Paren
-;; Bracket
-;; LiteralKeyword
-;; IdentifierVariable
-;; ExpressionVariable
-;; StatementVariable
-;; Character
+(define ellipsis '...)
+(define-syntax Repetition
+  (syntax-rules (elements punctuationMark)
+    ((_ (elements e) (punctuationMark mark))
+     `((e mark) ,ellipsis))))
+;;;; Block
+;;;; Paren
+;;;; Bracket
+;;;; LiteralKeyword
+;;;; IdentifierVariable
+;;;; ExpressionVariable
+;;;; StatementVariable
+
+
 ;; Ellipsis
 
-;; Number
-;; Identifier
 ;; MacroName
+(define-syntax MacroName
+  (syntax-rules ()
+    ((_ (name n)) n)))
+
 ;; MacroForm
+(define-syntax MacroForm
+  (syntax-rules ()
+    ((_ (inputForm form)) form)))
+
 
