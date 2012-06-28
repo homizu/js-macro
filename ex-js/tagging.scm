@@ -1,42 +1,21 @@
+;; Program
 (define-syntax Program
   (syntax-rules (elements)
     ((_ (elements "")) (begin ""))
     ((_ (elements (e ...))) (begin e ...))))
 
-;; (define-syntax StatementMacroDefinition
-;;   (syntax-rules (macroName identifiers expression statements literals syntaxRules)
-;;     ((_ 
-;;       (macroName name)
-;;       (identifiers ids)
-;;       (expressions exprs)
-;;       (statements stmts)
-;;       (literals lits)
-;;       (syntaxRules
-;;        ((SyntaxRule
-;;          (pattern (p ...))
-;;          (template t)) ...)))
-;;      (begin
-;;        (Define-Syntax test
-;;          (Syntax-Rules '()
-;;            ((test p ...) t)
-;;            ...))))
-;; ))
-
-;; (define-syntax StatementMacroDefinition
-;;   (syntax-rules (macroName identifiers expression statements literals syntaxRules)
-;; ))
-
 ;; Paren
 (define-syntax Paren
   (syntax-rules (elements)
-    ((_ (elements "")) ("JS" "paren"))
+;;    ((_ (elements "")) ("JS" "paren"))
     ((_ (elements (e ...))) ("JS" "paren" e ...))))
 
 ;; Block
 (define-syntax Block
   (syntax-rules (elements)
-    ((_ (elements "")) ("JS" "block"))
-    ((_ (elemetns (e ...))) ("JS" "block" e ...))))
+;;    ((_ (elements "")) ("JS" "block"))
+    ((_ (elemetns (e ...))) ("JS" "block" e ...))
+    ((_ (statements (e ...))) ("JS" "block" e ...))))
 
 ;; LiteralKeyword
 (define-syntax LiteralKeyword
@@ -100,12 +79,20 @@
     ((_ (elements (e ...))) ("JS" "array" e ...))))
     
 ;; ObjectLiteral
+(define-syntax ObjectLiteral
+  (syntax-rules ()
+    ((_ e ...) ("JS" "object" e ...))))
 ;; PropertyAssignment
 ;; GetterDefinition
 ;; SetterDefinition
 ;; NewOperator
 ;; PropertyAccess
+
 ;; FunctionCall
+(define-syntax FunctionCall
+  (syntax-rules (arguments name)
+    ((_ (arguments (arg ...)) (name n)) ("JS" "application" n arg ...))))
+
 ;; FunctionCallArguments
 ;; PropertyAccessProperty
 ;; PostfixExpression
@@ -129,7 +116,7 @@
      ("JS" "op3" "?" c t f))))
 
 ;; AssignmentExpression
-;; Block
+;;;; Block
 ;; VariableStatement
 ;; VariableDeclaration
 ;; EmptyStatement
@@ -152,18 +139,31 @@
 ;; Finally
 ;; DebuggerStatement
 ;; Function
-;; Program
+(define-syntax Function
+  (syntax-rules (name elements params)
+    ((_ (name #\nul) (elements (e ...)) (params (p ...)))
+     (lambda (p ...) (e ...)))
+    ((_ (name n) (elements (e ...)) (params (p ...)))
+     ("JS" "function" n e ... p ...))))
+
+;;;; Program
 
 ;;;; ExpressionMacroDefinition
 ;;;; StatementMacroDefinition
 ;;;; SyntaxRule
+
 ;; Punctuator
+(define-syntax Punctuator
+  (syntax-rules (value)
+    ((_ (value v)) v)))
+
 ;; Repetition
-(define ellipsis '...)
+;;(define ellipsis '...)
 (define-syntax Repetition
   (syntax-rules (elements punctuationMark)
-    ((_ (elements e) (punctuationMark mark))
-     `((e mark) ,ellipsis))))
+    ((_ (elements (e ...)) (punctuationMark mark))
+     ((e mark) ...))))
+
 ;;;; Block
 ;;;; Paren
 ;;;; Bracket
@@ -183,6 +183,6 @@
 ;; MacroForm
 (define-syntax MacroForm
   (syntax-rules ()
-    ((_ (inputForm form)) form)))
+    ((_ (inputForm (name (form ...)))) (name form ...))))
 
 

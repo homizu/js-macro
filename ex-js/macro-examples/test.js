@@ -22,6 +22,27 @@ statement test {
     }
 }
 */
+
+expression let {
+    identifier: id;
+    expression: expr;
+    statement: stmt;
+    literal: var;
+
+    {let (var id=expr) {
+        stmt
+     } => ((function (id) {
+        stmt
+     })(expr));}
+    
+}
+
+let (var num=1E3) {
+    return num * 3;
+}
+
+
+/*
 // let マクロの定義(イメージ)
 expression let {
     identifier: id;
@@ -31,7 +52,7 @@ expression let {
     
     {let () {} => false;}
 
-    {let (var [#id = expr#] and ...) {
+    {let (var [#id=expr#] and ...) {
         stmt ...
      } => ((function (id, ...) {
         stmt ...
@@ -61,3 +82,4 @@ expression or {
 
 }
 
+*/

@@ -1226,7 +1226,7 @@ Statement
   / MacroDefinition      // add
   / FunctionDeclaration
   / FunctionExpression
-  / !EOS char:.
+  / !(EOS / ExpressionToken / StatementToken) char:.
      { return { type: "Characterstmt", value: char }; }
 
 Block
@@ -1728,7 +1728,7 @@ SubPatternList
      }
 
 SubPattern
-  = "[#" __ patterns:SubPatternList? __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
+  = "[#" __ patterns:SubPatternList __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
          return {
            type: "Repetition",
            elements: patterns,
@@ -1738,12 +1738,12 @@ SubPattern
   / "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = {
           type: "Block",
-          elements: patterns
+          elements: patterns !== "" ? patterns : []
         };
         if (ellipsis[3]) {
            result = {
              type: "Repetition",
-             elements: result,
+             elements: [result],
              punctuationMark: ellipsis[1]
            }
          }
@@ -1752,12 +1752,12 @@ SubPattern
   / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = {
           type: "Paren",
-          elements: patterns
+          elements: patterns !== "" ? patterns : []
         };
         if (ellipsis[3]) {
            result = {
              type: "Repetition",
-             elements: result,
+             elements: [result],
              punctuationMark: ellipsis[1]
            }
         }
@@ -1771,7 +1771,7 @@ SubPattern
         if (ellipsis[3]) {
            result = {
              type: "Repetition",
-             elements: result,
+             elements: [result],
              punctuationMark: ellipsis[1]
            }
         }
@@ -1782,7 +1782,7 @@ SubPattern
         if (ellipsis[3]) {
            result = {
              type: "Repetition",
-             elements: result,
+             elements: [result],
              punctuationMark: ellipsis[1]
            }
         }
@@ -1811,7 +1811,7 @@ SubPattern
         if (ellipsis[3]) {
            result = {
              type: "Repetition",
-             elements: result,
+             elements: [result],
              punctuationMark: ellipsis[1]
            }
         }

@@ -121,7 +121,7 @@ module.exports = (function () {
         sequence: function(array) {
             var newArray = [];
             for (var i=0; i<array.length; i++) {
-                if (array[i].type.charAt(0) !== '=')
+                if (array[i].type.charAt(0) !== '-')
                     newArray.push(array[i]);
             }
             var result = [pegObj.tag('t0', newArray[0])];
@@ -260,7 +260,7 @@ module.exports = (function () {
                 elements: elements,
                 toString: function() {
                     return '(' + lefts[type] + ' ' + pegObj.whitespace() +' ' + (isNull ? '' : ( elements + ' ' +  pegObj.whitespace() + ' ')) +  rights[type]
-                        + ' { return { type: "' + this.type + '", elements: ' + (isNull? '""' : 't0') +' }; })';
+                        + ' { return { type: "' + this.type + '", elements: ' + (isNull? '[]' : 't0') +' }; })';
                 }
             };
         },
@@ -415,6 +415,8 @@ module.exports = (function () {
     var convertToPegObj = function(pattern) {
 
         if (pattern instanceof Array) {
+            if (pattern.length === 0)
+                return pegObj.null();
             var result = [convertToPegObj(pattern[0])];
             for (var i=1; i<pattern.length; i++) {
                 result.push(convertToPegObj(pattern[i]));

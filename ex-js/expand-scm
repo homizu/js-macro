@@ -31,11 +31,11 @@
     (newline)
     (newline)
     (set! mid-expanded-sform (macro-expand sform))
-    (write mid-expanded-sform out-midexpanded)
-    (display mid-expanded-sform)
+    (pretty-print mid-expanded-sform out-midexpanded)
+    (pretty-print mid-expanded-sform)
     (newline)
     (newline)
-    (display form)
+;;    (display form)
     (newline)
     (newline)))
 
@@ -71,13 +71,13 @@
          ((_ p ...) t) ...)))))
 
 (set! expanded-sform (macro-expand mid-expanded-sform))
-(display expanded-sform)
-(write expanded-sform out-expanded)
+(pretty-print expanded-sform)
+(pretty-print expanded-sform out-expanded)
 (close-input-port in)
 (close-output-port out-midexpanded)
 (close-output-port out-expanded)
 
-(display (macro-expand '(let-Macro ("JS" "paren") ("JS" "block"))))
+;;(display (macro-expand '(let-Macro ("JS" "paren") ("JS" "block"))))
 (newline)
 ;;(display (macro-expand '(let-Macro ("JS" "paren" LK-var))))
 

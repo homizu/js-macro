@@ -5,27 +5,9 @@
       "type": "ExpressionMacroDefinition",
       "macroName": "let",
       "literals": [
-        "var",
-        "and"
+        "var"
       ],
       "syntaxRules": [
-        {
-          "type": "SyntaxRule",
-          "pattern": [
-            {
-              "type": "Paren",
-              "elements": ""
-            },
-            {
-              "type": "Block",
-              "elements": ""
-            }
-          ],
-          "template": {
-            "type": "BooleanLiteral",
-            "value": false
-          }
-        },
         {
           "type": "SyntaxRule",
           "pattern": [
@@ -37,22 +19,16 @@
                   "name": "var"
                 },
                 {
-                  "type": "Repetition",
-                  "elements": [
-                    {
-                      "type": "IdentifierVariable",
-                      "name": "id"
-                    },
-                    {
-                      "type": "Punctuator",
-                      "value": "="
-                    },
-                    {
-                      "type": "ExpressionVariable",
-                      "name": "expr"
-                    }
-                  ],
-                  "punctuationMark": "and"
+                  "type": "IdentifierVariable",
+                  "name": "id"
+                },
+                {
+                  "type": "Punctuator",
+                  "value": "="
+                },
+                {
+                  "type": "ExpressionVariable",
+                  "name": "expr"
                 }
               ]
             },
@@ -60,12 +36,8 @@
               "type": "Block",
               "elements": [
                 {
-                  "type": "Repetition",
-                  "elements": {
-                    "type": "StatementVariable",
-                    "name": "stmt"
-                  },
-                  "punctuationMark": ""
+                  "type": "StatementVariable",
+                  "name": "stmt"
                 }
               ]
             }
@@ -76,22 +48,12 @@
               "type": "Function",
               "name": null,
               "params": [
-                "id",
-                {
-                  "type": "Ellipsis"
-                }
+                "id"
               ],
               "elements": [
                 {
-                  "type": "BinaryExpression",
-                  "operator": " ",
-                  "left": {
-                    "type": "Variable",
-                    "name": "stmt"
-                  },
-                  "right": {
-                    "type": "Ellipsis"
-                  }
+                  "type": "Variable",
+                  "name": "stmt"
                 }
               ]
             },
@@ -99,32 +61,10 @@
               {
                 "type": "Variable",
                 "name": "expr"
-              },
-              {
-                "type": "Ellipsis"
               }
             ]
           }
         }
-      ]
-    },
-    {
-      "type": "MacroForm",
-      "inputForm": [
-        {
-          "type": "MacroName",
-          "name": "let"
-        },
-        [
-          {
-            "type": "Paren",
-            "elements": ""
-          },
-          {
-            "type": "Block",
-            "elements": ""
-          }
-        ]
       ]
     },
     {
@@ -143,38 +83,16 @@
                 "name": "var"
               },
               {
-                "type": "Repetition",
-                "elements": [
-                  [
-                    {
-                      "type": "Variable",
-                      "name": "id1"
-                    },
-                    {
-                      "type": "Punctuator",
-                      "value": "="
-                    },
-                    {
-                      "type": "StringLiteral",
-                      "value": "expr1"
-                    }
-                  ],
-                  [
-                    {
-                      "type": "Variable",
-                      "name": "id2"
-                    },
-                    {
-                      "type": "Punctuator",
-                      "value": "="
-                    },
-                    {
-                      "type": "NumericLiteral",
-                      "value": 1000
-                    }
-                  ]
-                ],
-                "punctuationMark": "and"
+                "type": "Variable",
+                "name": "num"
+              },
+              {
+                "type": "Punctuator",
+                "value": "="
+              },
+              {
+                "type": "NumericLiteral",
+                "value": 1000
               }
             ]
           },
@@ -182,187 +100,23 @@
             "type": "Block",
             "elements": [
               {
-                "type": "Repetition",
-                "elements": [
-                  {
-                    "type": "VariableStatement",
-                    "declarations": [
-                      {
-                        "type": "VariableDeclaration",
-                        "name": "result",
-                        "value": {
-                          "type": "BinaryExpression",
-                          "operator": "+",
-                          "left": {
-                            "type": "Variable",
-                            "name": "id1"
-                          },
-                          "right": {
-                            "type": "Variable",
-                            "name": "id2"
-                          }
-                        }
-                      }
-                    ]
+                "type": "ReturnStatement",
+                "value": {
+                  "type": "BinaryExpression",
+                  "operator": "*",
+                  "left": {
+                    "type": "Variable",
+                    "name": "num"
                   },
-                  {
-                    "type": "ReturnStatement",
-                    "value": {
-                      "type": "Variable",
-                      "name": "result"
-                    }
+                  "right": {
+                    "type": "NumericLiteral",
+                    "value": 3
                   }
-                ],
-                "punctuationMark": ""
+                }
               }
             ]
           }
         ]
-      ]
-    },
-    {
-      "type": "ExpressionMacroDefinition",
-      "macroName": "or",
-      "literals": [],
-      "syntaxRules": [
-        {
-          "type": "SyntaxRule",
-          "pattern": [
-            {
-              "type": "Paren",
-              "elements": ""
-            }
-          ],
-          "template": {
-            "type": "BooleanLiteral",
-            "value": false
-          }
-        },
-        {
-          "type": "SyntaxRule",
-          "pattern": [
-            {
-              "type": "Paren",
-              "elements": [
-                {
-                  "type": "ExpressionVariable",
-                  "name": "exp1"
-                }
-              ]
-            }
-          ],
-          "template": {
-            "type": "Variable",
-            "name": "exp1"
-          }
-        },
-        {
-          "type": "SyntaxRule",
-          "pattern": [
-            {
-              "type": "Paren",
-              "elements": [
-                {
-                  "type": "ExpressionVariable",
-                  "name": "exp1"
-                },
-                {
-                  "type": "Punctuator",
-                  "value": ","
-                },
-                {
-                  "type": "Repetition",
-                  "elements": {
-                    "type": "ExpressionVariable",
-                    "name": "exp2"
-                  },
-                  "punctuationMark": ","
-                }
-              ]
-            }
-          ],
-          "template": {
-            "type": "MacroForm",
-            "inputForm": [
-              {
-                "type": "MacroName",
-                "name": "let"
-              },
-              [
-                {
-                  "type": "Paren",
-                  "elements": [
-                    {
-                      "type": "LiteralKeyword",
-                      "name": "var"
-                    },
-                    {
-                      "type": "Repetition",
-                      "elements": [
-                        [
-                          {
-                            "type": "Variable",
-                            "name": "temp"
-                          },
-                          {
-                            "type": "Punctuator",
-                            "value": "="
-                          },
-                          {
-                            "type": "Variable",
-                            "name": "exp1"
-                          }
-                        ]
-                      ],
-                      "punctuationMark": "and"
-                    }
-                  ]
-                },
-                {
-                  "type": "Block",
-                  "elements": [
-                    {
-                      "type": "Repetition",
-                      "elements": [
-                        {
-                          "type": "ReturnStatement",
-                          "value": {
-                            "type": "ConditionalExpression",
-                            "condition": {
-                              "type": "Variable",
-                              "name": "temp"
-                            },
-                            "trueExpression": {
-                              "type": "Variable",
-                              "name": "temp"
-                            },
-                            "falseExpression": {
-                              "type": "FunctionCall",
-                              "name": {
-                                "type": "Variable",
-                                "name": "or"
-                              },
-                              "arguments": [
-                                {
-                                  "type": "Variable",
-                                  "name": "exp2"
-                                },
-                                {
-                                  "type": "Ellipsis"
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "punctuationMark": ""
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        }
       ]
     }
   ]
