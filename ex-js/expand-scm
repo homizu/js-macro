@@ -27,15 +27,10 @@
     (display sform)
     (set! form sform)
     (newline)
-;;    (display (symbol? sform))
-    (newline)
     (newline)
     (set! mid-expanded-sform (macro-expand sform))
     (pretty-print mid-expanded-sform out-midexpanded)
     (pretty-print mid-expanded-sform)
-    (newline)
-    (newline)
-;;    (display form)
     (newline)
     (newline)))
 
@@ -43,10 +38,6 @@
   (mid-expand-scm (cadr args)))
 
 (main (command-line))
-
-;; (define-syntax Ellipsis
-;;   (syntax-rules ()
-;;     ((_) (a ...))))
 
 (define-syntax ExpressionMacroDefinition
   (syntax-rules (macroName literals syntaxRules SyntaxRule pattern template)

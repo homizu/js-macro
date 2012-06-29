@@ -116,7 +116,6 @@
      ("JS" "op3" "?" c t f))))
 
 ;; AssignmentExpression
-;;;; Block
 ;; VariableStatement
 ;; VariableDeclaration
 ;; EmptyStatement
@@ -146,12 +145,6 @@
     ((_ (name n) (elements (e ...)) (params (p ...)))
      ("JS" "function" n e ... p ...))))
 
-;;;; Program
-
-;;;; ExpressionMacroDefinition
-;;;; StatementMacroDefinition
-;;;; SyntaxRule
-
 ;; Punctuator
 (define-syntax Punctuator
   (syntax-rules (value)
@@ -163,15 +156,6 @@
   (syntax-rules (elements punctuationMark)
     ((_ (elements (e ...)) (punctuationMark mark))
      ((e mark) ...))))
-
-;;;; Block
-;;;; Paren
-;;;; Bracket
-;;;; LiteralKeyword
-;;;; IdentifierVariable
-;;;; ExpressionVariable
-;;;; StatementVariable
-
 
 ;; Ellipsis
 

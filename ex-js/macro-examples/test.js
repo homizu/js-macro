@@ -33,7 +33,7 @@ expression let {
         stmt
      } => ((function (id) {
         stmt
-     })(expr));}
+     })(expr))}
     
 }
 
@@ -41,6 +41,7 @@ let (var num=1E3) {
     return num * 3;
 }
 
+function (x) {}
 
 /*
 // let マクロの定義(イメージ)

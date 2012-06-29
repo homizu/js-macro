@@ -1737,7 +1737,7 @@ SubPattern
       }
   / "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = {
-          type: "Block",
+          type: "Brace",
           elements: patterns !== "" ? patterns : []
         };
         if (ellipsis[3]) {
@@ -1866,7 +1866,7 @@ Template
         for (var i=0; i<elements.length; i++) {
             result.push(elements[i][1]);
         }
-        return { type: "Block",
+        return { type: "Brace",
                  elements: result };
        }
   / "(" elements:(__ Statement)* __ ")"

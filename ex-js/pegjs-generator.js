@@ -246,10 +246,10 @@ module.exports = (function () {
 
         // Enclosing
         enclosing: function(type, elements) {
-            var lefts = { Block: pegObj.string(null, '{'),
+            var lefts = { Brace: pegObj.string(null, '{'),
                           Paren: pegObj.string(null, '('),
                           Bracket: pegObj.string(null, ']') };
-            var rights = { Block: pegObj.string(null, '}'),
+            var rights = { Brace: pegObj.string(null, '}'),
                            Paren: pegObj.string(null, ')'),
                            Bracket: pegObj.string(null, ']') };
             var isNull = elements.type.charAt(0) === '-';
@@ -304,8 +304,8 @@ module.exports = (function () {
           }          
         },
 
-        // Block
-        { type: 'Block',
+        // Brace
+        { type: 'Brace',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);

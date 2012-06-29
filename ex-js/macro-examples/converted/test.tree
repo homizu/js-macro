@@ -33,7 +33,7 @@
               ]
             },
             {
-              "type": "Block",
+              "type": "Brace",
               "elements": [
                 {
                   "type": "StatementVariable",
@@ -97,7 +97,7 @@
             ]
           },
           {
-            "type": "Block",
+            "type": "Brace",
             "elements": [
               {
                 "type": "ReturnStatement",
@@ -118,6 +118,14 @@
           }
         ]
       ]
+    },
+    {
+      "type": "Function",
+      "name": null,
+      "params": [
+        "x"
+      ],
+      "elements": []
     }
   ]
 }

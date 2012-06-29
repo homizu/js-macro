@@ -44,13 +44,10 @@
                               (list key (generalize-jsexpr value))))))
         ((eq? type 'MacroName)
          (generalize-variable hash 'name "" "-Macro"))
-        ((eq? type 'Variable)
-         (generalize-variable hash 'name "V-" ""))
-        ((eq? type 'IdentifierVariable)
-         (generalize-variable hash 'name "V-" ""))
-        ((eq? type 'ExpressionVariable)
-         (generalize-variable hash 'name "V-" ""))
-        ((eq? type 'StatementVariable)
+        ((or (eq? type 'Variable)
+             (eq? type 'IdentifierVariable)
+             (eq? type 'ExpressionVariable)
+             (eq? type 'StatementVariable))
          (generalize-variable hash 'name "V-" ""))
         ((eq? type 'LiteralKeyword)
          (generalize-variable hash 'name "LK-" ""))
@@ -68,20 +65,6 @@
          (map (lambda (element) (generalize-jsexpr element)) jsexpr))
         (#t ;; other
          jsexpr)))
-
-
-;; (define (generalize-jsexpr jsexpr)
-;;   (cond ((hash? jsexpr) ;; hash table
-;;          (let* ((result (list (string->symbol (hash-ref jsexpr 'type))))
-;;                 (rest (hash-remove jsexpr 'type)))
-;;            (append result
-;;                    (hash-map rest 
-;;                              (lambda (key value) (list key (generalize-jsexpr value)))))))
-;;         ((list? jsexpr) ;; list
-;;          (map (lambda (element) (generalize-jsexpr element)) jsexpr))
-;;         (#t ;; other
-;;         jsexpr)))
-
 
 (define (main args)
   (convert-json (vector-ref args 0)))

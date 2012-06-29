@@ -1,0 +1,85 @@
+#!/usr/local/bin/racket
+#lang racket
+
+(require (planet dherman/json:4:=0))
+(require racket/pretty)
+
+(define (convert-json js-file-path)
+  (let* ((file-name (list-ref (regexp-split #rx"\\.tree" js-file-path) 0))
+         (in (open-input-file js-file-path))
+         (out-jsexpr (open-output-file (string-append file-name "-jsexpr2.scm") #:exists 'truncate/replace))
+         (out-sform (open-output-file (string-append file-name "-sform2.scm") #:exists 'truncate/replace))
+         (jsexpr (read-json in))
+         (sform (generalize-jsexpr jsexpr)))
+    (pretty-display jsexpr)
+    (pretty-write jsexpr out-jsexpr)
+    (newline)
+    (newline)
+    (pretty-display sform)
+    (newline)
+    (newline)
+    (pretty-write sform out-sform)
+    (close-input-port in)
+    (close-output-port out-jsexpr)
+    (close-output-port out-sform)))
+
+(define (generalize-variable hash key prefix suffix)
+  (string->symbol (string-append prefix (hash-ref hash key) suffix)))
+
+(define (generalize-hash type hash)
+  (cond ((eq? type 'Program) ;; Program
+         `(begin ,@(generalize-jsexpr (hash-ref hash 'elements))))
+        ((or (eq? type 'ExpressionMacroDefinition) ;; MacroDefinition
+             (eq? type 'StatementMacroDefinition))
+         (let* ((macro-name (generalize-variable hash 'macroName "" "-Macro"))
+                (literals (map (lambda (l) (string->symbol (string-append "LK-" l))) (hash-ref hash 'literals)))
+                (rules (generalize-jsexpr (hash-ref hash 'syntaxRules))))
+           `(define-syntax ,macro-name
+              (syntax-rules ,literals ,@rules))))
+        ((eq? type 'SyntaxRule) ;; SyntaxRule
+         `((_ ,@(generalize-jsexpr (hash-ref hash 'pattern))) ,(generalize-jsexpr (hash-ref hash 'template))))
+        ((or (eq? type 'Brace) ;; Brace
+             (eq? type 'Paren) ;; Paren
+             (eq? type 'Bracket)) ;; Bracket
+         `("JS" ,(string-downcase (symbol->string type)) ,@(generalize-jsexpr (hash-ref hash 'elements))))
+        ((eq? type 'Function) ;; Function
+         (let* ((name (hash-ref hash 'name))
+                (body (generalize-jsexpr (hash-ref hash 'elements)))
+                (params (map (lambda (p) (string->symbol (string-append "P-" p))) (hash-ref hash 'params))))
+           (if (eq? name #\nul)
+               `(lambda ,params ,(if (eq? body '()) body `(begin ,@body)))
+               `(define (,name ,@params) ,(if (eq? body '()) body `(begin ,@body))))))
+;;         (hash-map hash (lambda (key value)
+;;                          (if (eq? key 'params)
+;;                              (list key (map (lambda (element) (string->symbol (string-append "P-" element))) value))
+;;                              (list key (generalize-jsexpr value))))))
+        ((eq? type 'MacroName) ;; MacroName
+         (generalize-variable hash 'name "" "-Macro"))
+        ((or (eq? type 'Variable) ;; Variable
+             (eq? type 'IdentifierVariable) ;; IdentifierVariable
+             (eq? type 'ExpressionVariable) ;; ExpressionVariable
+             (eq? type 'StatementVariable)) ;; StatementVariable
+         (generalize-variable hash 'name "V-" ""))
+        ((eq? type 'LiteralKeyword) ;; LiteralKeyword
+         (generalize-variable hash 'name "LK-" ""))
+        ((eq? type 'Punctuator) ;; Punctuator
+         (hash-ref hash 'value))
+        (#t
+         (hash-map hash
+                   (lambda (key value)
+                     (list key (generalize-jsexpr value)))))))
+
+(define (generalize-jsexpr jsexpr)
+  (cond ((hash? jsexpr) ;; hash table
+         (let* ((type (string->symbol (hash-ref jsexpr 'type)))
+                (rest (generalize-hash type (hash-remove jsexpr 'type))))
+           rest))
+        ((list? jsexpr) ;; list
+         (map generalize-jsexpr jsexpr))
+        (#t ;; other
+         jsexpr)))
+
+(define (main args)
+  (convert-json (vector-ref args 0)))
+
+(main (current-command-line-arguments))
