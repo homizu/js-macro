@@ -49,10 +49,10 @@
            (if (eq? name #\nul)
                `(lambda ,params ,(if (eq? body '()) body `(begin ,@body)))
                `(define (,name ,@params) ,(if (eq? body '()) body `(begin ,@body))))))
-;;         (hash-map hash (lambda (key value)
-;;                          (if (eq? key 'params)
-;;                              (list key (map (lambda (element) (string->symbol (string-append "P-" element))) value))
-;;                              (list key (generalize-jsexpr value))))))
+        ((eq? type 'FunctionCall) ;; FunctionCall
+         (let* ((name (generalize-jsexpr (hash-ref hash 'name)))
+                (arguments (generalize-jsexpr (hash-ref hash 'arguments))))
+           `("JS" "application" ,name ,arguments)))
         ((eq? type 'MacroName) ;; MacroName
          (generalize-variable hash 'name "" "-Macro"))
         ((or (eq? type 'Variable) ;; Variable
@@ -62,8 +62,14 @@
          (generalize-variable hash 'name "V-" ""))
         ((eq? type 'LiteralKeyword) ;; LiteralKeyword
          (generalize-variable hash 'name "LK-" ""))
+        ((eq? type 'NumericLiteral)
+         (generalize-jsexpr (hash-ref hash 'value)))
         ((eq? type 'Punctuator) ;; Punctuator
          (hash-ref hash 'value))
+        ((eq? type 'ReturnStatement)
+         (generalize-jsexpr (hash-ref hash 'value)))
+        ((eq? type 'MacroForm) ;; MacroForm
+         (generalize-jsexpr (hash-ref hash 'inputForm)))
         (#t
          (hash-map hash
                    (lambda (key value)

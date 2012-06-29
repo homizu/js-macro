@@ -1,7 +1,7 @@
 #!/usr/local/bin/ypsilon
 
 (import (pregexp))
-(load "tagging.scm")
+;;(load "tagging.scm")
 
 (define in '())
 (define out-midexpanded '())
@@ -39,37 +39,37 @@
 
 (main (command-line))
 
-(define-syntax ExpressionMacroDefinition
-  (syntax-rules (macroName literals syntaxRules SyntaxRule pattern template)
-    ((_ (macroName name)
-        (literals (literal ...))
-        (syntaxRules ((SyntaxRule (pattern (p ...))
-                                  (template t))
-                      ...)))
-     (define-syntax name
-       (syntax-rules (literal ...)
-         ((_ p ...) t) ...)))))
+// (define-syntax ExpressionMacroDefinition
+//   (syntax-rules (macroName literals syntaxRules SyntaxRule pattern template)
+//     ((_ (macroName name)
+//         (literals (literal ...))
+//         (syntaxRules ((SyntaxRule (pattern (p ...))
+//                                   (template t))
+//                       ...)))
+//      (define-syntax name
+//        (syntax-rules (literal ...)
+//          ((_ p ...) t) ...)))))
 
-(define-syntax StatementMacroDefinition
-  (syntax-rules ()
-    ((_ (macroName name)
-        (literals (literal ...))
-        (syntaxRules ((SyntaxRule (pattern (p ...))
-                                  (template t))
-                      ...)))
-     (define-syntax name
-       (syntax-rules (literal ...)
-         ((_ p ...) t) ...)))))
+// (define-syntax StatementMacroDefinition
+//   (syntax-rules ()
+//     ((_ (macroName name)
+//         (literals (literal ...))
+//         (syntaxRules ((SyntaxRule (pattern (p ...))
+//                                   (template t))
+//                       ...)))
+//      (define-syntax name
+//        (syntax-rules (literal ...)
+//          ((_ p ...) t) ...)))))
 
-(set! expanded-sform (macro-expand mid-expanded-sform))
-(pretty-print expanded-sform)
-(pretty-print expanded-sform out-expanded)
-(close-input-port in)
-(close-output-port out-midexpanded)
-(close-output-port out-expanded)
+// (set! expanded-sform (macro-expand mid-expanded-sform))
+// (pretty-print expanded-sform)
+// (pretty-print expanded-sform out-expanded)
+// (close-input-port in)
+// (close-output-port out-midexpanded)
+// (close-output-port out-expanded)
 
-;;(display (macro-expand '(let-Macro ("JS" "paren") ("JS" "block"))))
-(newline)
-;;(display (macro-expand '(let-Macro ("JS" "paren" LK-var))))
+// ;;(display (macro-expand '(let-Macro ("JS" "paren") ("JS" "block"))))
+// (newline)
+// ;;(display (macro-expand '(let-Macro ("JS" "paren" LK-var))))
 
 
