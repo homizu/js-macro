@@ -1718,22 +1718,26 @@ Pattern
 
 SubPatternList
   = head:SubPattern tail:(__ ","? __ SubPattern)* {
-        var result = [head];
+        var result = head;
         for (var i=0; i<tail.length; i++) {
             if (tail[i][1])
                result.push({ type: "Punctuator", value: "," });
-            result.push(tail[i][3]);
+            result = result.concat(tail[i][3]);
         }
         return result;
      }
 
 SubPattern
   = "[#" __ patterns:SubPatternList __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
-         return {
+         return [{
            type: "Repetition",
            elements: patterns,
            punctuationMark: ellipsis[1]
-        };
+        },
+        { type: "Ellipsis" },
+        { type: "PunctuationMark",
+          value: ellipsis[1]
+        }];
       }
   / "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = {
@@ -1741,13 +1745,17 @@ SubPattern
           elements: patterns !== "" ? patterns : []
         };
         if (ellipsis[3]) {
-           result = {
+           return [{
              type: "Repetition",
-             elements: [result],
+             elements: result,
              punctuationMark: ellipsis[1]
-           }
+           },
+           { type: "Ellipsis" },
+           { type: "PunctuationMark",
+             value: ellipsis[1]
+           }];
          }
-        return result;                    
+        return [result];                    
       }
   / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = {
@@ -1755,13 +1763,17 @@ SubPattern
           elements: patterns !== "" ? patterns : []
         };
         if (ellipsis[3]) {
-           result = {
+           return [{
              type: "Repetition",
-             elements: [result],
+             elements: result,
              punctuationMark: ellipsis[1]
-           }
+           },
+           { type: "Ellipsis" },
+           { type: "PunctuationMark",
+             value: ellipsis[1]
+           }];
         }
-        return result;                    
+        return [result];                    
       }
   / "[" __ patterns:SubPatternList? __ "]" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = {
@@ -1769,24 +1781,32 @@ SubPattern
           elements: patterns
         };
         if (ellipsis[3]) {
-           result = {
+           return [{
              type: "Repetition",
-             elements: [result],
+             elements: result,
              punctuationMark: ellipsis[1]
-           }
+           },
+           { type: "Ellipsis"},
+           { type: "PunctuationMark",
+             value: ellipsis[1]
+           }];
         }
-        return result;                    
+        return [result];                    
       }
   / value:Literal ellipsis:(__ PunctuationMark? __ "...")? {
         var result = value;
         if (ellipsis[3]) {
-           result = {
+           return [{
              type: "Repetition",
-             elements: [result],
+             elements: result,
              punctuationMark: ellipsis[1]
-           }
+           },
+           { type: "Ellipsis" },
+           { type: "PunctuationMark",
+             value: ellipsis[1]
+           }];
         }
-        return result;                    
+        return [result];                    
       }
   / name:IdentifierName
     &{ if (identifierNames.indexOf(name) >= 0) {
@@ -1809,19 +1829,23 @@ SubPattern
           name: name
         };
         if (ellipsis[3]) {
-           result = {
+           return [{
              type: "Repetition",
-             elements: [result],
+             elements: result,
              punctuationMark: ellipsis[1]
-           }
+           },
+           { type: "Ellipsis" },
+           { type: "PunctuationMark",
+             value: ellipsis[1]
+           }];
         }
-        return result;                    
+        return [result];                    
       }
   / punc:PatternPunctuator {
-        return {
+        return [{
            type: "Punctuator",
            value: punc
-        };
+        }];
     }
 
 PunctuationMark

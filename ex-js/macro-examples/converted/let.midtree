@@ -61,6 +61,13 @@
                     }
                   ],
                   "punctuationMark": "and"
+                },
+                {
+                  "type": "Ellipsis"
+                },
+                {
+                  "type": "PunctuationMark",
+                  "value": "and"
                 }
               ]
             },
@@ -69,13 +76,18 @@
               "elements": [
                 {
                   "type": "Repetition",
-                  "elements": [
-                    {
-                      "type": "StatementVariable",
-                      "name": "stmt"
-                    }
-                  ],
+                  "elements": {
+                    "type": "StatementVariable",
+                    "name": "stmt"
+                  },
                   "punctuationMark": ""
+                },
+                {
+                  "type": "Ellipsis"
+                },
+                {
+                  "type": "PunctuationMark",
+                  "value": ""
                 }
               ]
             }

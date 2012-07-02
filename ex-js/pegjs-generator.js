@@ -112,7 +112,15 @@ module.exports = (function () {
                 type: 'Repetition',
                 elements: elements,
                 mark: mark,
-                toString: function() { return '(head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:"..."? !{ return !inTemplate && ellipsis; } { var elements = [head]; for (var i=0; i<tail.length; i++) { elements.push(tail[i][' + (mark? 3 : 1) + ']); } if (ellipsis) elements.push({ type: "Ellipsis" });  return { type: "Repetition", elements: elements, punctuationMark: "' + mark + '" }; })?'; }
+                toString: function() { return '((ellipsis:"..." { return { type: "Repeat", elements: [{ type: "Ellipsis" }, { type: "PunctuationMark", value: "' +this. mark + '" }] }; })\
+ / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !inTemplate && ellipsis; }\
+ { var elements = [head];\
+   for (var i=0; i<tail.length; i++) {\
+     elements.push(tail[i][' + (mark? 3 : 1) + ']);\
+   }\
+   if (ellipsis) elements.push({ type: "Ellipsis" });\
+   elements.push({ type: "PunctuationMark", value: "' + this.mark + '" });\
+   return { type: "Repeat", elements: elements }; })?)'; }
             };
             
         },
@@ -445,6 +453,7 @@ module.exports = (function () {
                     return type.toPegObj(pattern);
                 }
             }
+            return pegObj.null();
         }
         return pegObj.null();            
     };

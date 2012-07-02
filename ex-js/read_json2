@@ -27,7 +27,9 @@
   (string->symbol (string-append prefix (hash-ref hash key) suffix)))
 
 (define (generalize-variable-list hash key prefix suffix)
-  (map (lambda (e) (string->symbol (string-append prefix e suffix))) (hash-ref hash key)))
+  (map (lambda (e) (if (string? e)
+                       (string->symbol (string-append prefix e suffix))
+                       `...)) (hash-ref hash key)))
 
 (define (generalize-hash-value hash key)
   (generalize-jsexpr (hash-ref hash key)))
@@ -48,6 +50,29 @@
              (eq? type 'Paren) ;; Paren
              (eq? type 'Bracket)) ;; Bracket
          `("JS" ,(string-downcase (symbol->string type)) ,@(generalize-hash-value hash 'elements)))
+        ((eq? type 'MacroName) ;; MacroName
+         (generalize-variable hash 'name "" "-Macro"))
+        ((or (eq? type 'Variable) ;; Variable
+             (eq? type 'IdentifierVariable) ;; IdentifierVariable
+             (eq? type 'ExpressionVariable) ;; ExpressionVariable
+             (eq? type 'StatementVariable)) ;; StatementVariable
+         (generalize-variable hash 'name "V-" ""))
+        ((eq? type 'LiteralKeyword) ;; LiteralKeyword
+         (generalize-variable hash 'name "LK-" ""))
+        ((eq? type 'Repetition) ;; Repetition (in pattern of MacroDefinition)
+         (generalize-hash-value hash 'elements))
+        ((eq? type 'Repeat) ;; Repeat (in MacroForm)
+         (list->vector (hash-ref hash 'elements)))
+        ((eq? type 'Ellipsis) ;; Ellipsis
+         `...)
+        ((eq? type 'PunctuationMark) ;; PunctuationMark
+         (hash-ref hash 'value))
+        ((eq? type 'Punctuator) ;; Punctuator
+         (hash-ref hash 'value))
+        ((eq? type 'MacroForm) ;; MacroForm
+         (generalize-hash-value hash 'inputForm))
+        ((eq? type 'NumericLiteral) ;; NumericLiteral
+         (generalize-hash-value hash 'value))
         ((eq? type 'Function) ;; Function
          (let* ((name (hash-ref hash 'name))
                 (body (generalize-hash-value hash 'elements))
@@ -59,29 +84,14 @@
          (let* ((name (generalize-hash-value hash 'name))
                 (arguments (generalize-hash-value hash 'arguments)))
            `("JS" "application" ,name ,@arguments)))
-        ((eq? type 'MacroName) ;; MacroName
-         (generalize-variable hash 'name "" "-Macro"))
-        ((or (eq? type 'Variable) ;; Variable
-             (eq? type 'IdentifierVariable) ;; IdentifierVariable
-             (eq? type 'ExpressionVariable) ;; ExpressionVariable
-             (eq? type 'StatementVariable)) ;; StatementVariable
-         (generalize-variable hash 'name "V-" ""))
-        ((eq? type 'LiteralKeyword) ;; LiteralKeyword
-         (generalize-variable hash 'name "LK-" ""))
-        ((eq? type 'NumericLiteral)
-         (generalize-hash-value hash 'value))
-        ((eq? type 'Punctuator) ;; Punctuator
-         (hash-ref hash 'value))
         ((eq? type 'ReturnStatement) ;; ReturnStatement
          `("JS" "return" ,(generalize-hash-value hash 'value)))
-        ((eq? type 'UnaryExpression)
+        ((eq? type 'UnaryExpression) ;; UnaryExpression
          `("JS" "op1" ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'expression)))
         ((eq? type 'BinaryExpression) ;; BinayExpression
          `("JS" "op2" ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'left) ,(generalize-hash-value hash 'right)))
-        ((eq? type 'ConditionalExpression)
+        ((eq? type 'ConditionalExpression) ;; ConditionalExpression
          `("JS" "conditional" ,(generalize-hash-value hash 'condition) ,(generalize-hash-value hash 'trueExpression) ,(generalize-hash-value hash 'falseExpression)))
-        ((eq? type 'MacroForm) ;; MacroForm
-         (generalize-hash-value hash 'inputForm))
         (#t
          (hash-map hash
                    (lambda (key value)
@@ -93,7 +103,18 @@
                 (rest (generalize-hash type (hash-remove jsexpr 'type))))
            rest))
         ((list? jsexpr) ;; list
-         (map generalize-jsexpr jsexpr))
+         (let ((result '()))
+           (for-each (lambda (e)
+                       (let ((v (generalize-jsexpr e)))
+                         (if (vector? v)
+                             (begin
+                               (set! result (reverse (append (reverse result) (generalize-jsexpr (vector->list v)))))
+                               (display v)
+                               (newline)
+                               (display result))
+                             (set! result (cons v result)))))
+                     jsexpr)
+           (reverse result)))
         (#t ;; other
          jsexpr)))
 
