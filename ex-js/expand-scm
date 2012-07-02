@@ -1,75 +1,29 @@
 #!/usr/local/bin/ypsilon
 
 (import (pregexp))
-;;(load "tagging.scm")
 
-(define in '())
-(define out-midexpanded '())
-(define out-expanded '())
-(define sform '())
-(define mid-expanded-sform '())
-(define expanded-sform '())
-(define form '())
-
-(define (mid-expand-scm scm-file-path)
-  (let ((file-name (car (pregexp-split "-sform\\.scm" scm-file-path))))
-    (set! in (transcoded-port (open-file-input-port scm-file-path)
+(define (expand-scm scm-file-path)
+  (let* ((file-name (car (pregexp-split "-sform\\.scm" scm-file-path)))
+         (in (transcoded-port (open-file-input-port scm-file-path)
                               (make-transcoder (utf-8-codec))))
-    (set! out-midexpanded (transcoded-port (open-file-output-port
-                                    (string-append file-name "-midexpanded.scm")
-                                    (file-options no-fail))
-                                   (make-transcoder (utf-8-codec))))
-    (set! out-expanded (transcoded-port (open-file-output-port
-                                       (string-append file-name "-expanded.scm")
-                                       (file-options no-fail))
-                                      (make-transcoder (utf-8-codec))))
-    (set! sform (read in))
-    (display sform)
-    (set! form sform)
+         (out (transcoded-port (open-file-output-port
+                                (string-append file-name "-expanded.scm")
+                                (file-options no-fail))
+                               (make-transcoder (utf-8-codec))))
+         (sform (read in))
+         (expanded (macro-expand sform)))
+    (pretty-print expanded out)
+    (pretty-print sform)
     (newline)
     (newline)
-    (set! mid-expanded-sform (macro-expand sform))
-    (pretty-print mid-expanded-sform out-midexpanded)
-    (pretty-print mid-expanded-sform)
+    (pretty-print expanded)
     (newline)
-    (newline)))
+    (close-input-port in)
+    (close-output-port out)))
 
 (define (main args)
-  (mid-expand-scm (cadr args)))
+  (expand-scm (cadr args)))
 
 (main (command-line))
-
-// (define-syntax ExpressionMacroDefinition
-//   (syntax-rules (macroName literals syntaxRules SyntaxRule pattern template)
-//     ((_ (macroName name)
-//         (literals (literal ...))
-//         (syntaxRules ((SyntaxRule (pattern (p ...))
-//                                   (template t))
-//                       ...)))
-//      (define-syntax name
-//        (syntax-rules (literal ...)
-//          ((_ p ...) t) ...)))))
-
-// (define-syntax StatementMacroDefinition
-//   (syntax-rules ()
-//     ((_ (macroName name)
-//         (literals (literal ...))
-//         (syntaxRules ((SyntaxRule (pattern (p ...))
-//                                   (template t))
-//                       ...)))
-//      (define-syntax name
-//        (syntax-rules (literal ...)
-//          ((_ p ...) t) ...)))))
-
-// (set! expanded-sform (macro-expand mid-expanded-sform))
-// (pretty-print expanded-sform)
-// (pretty-print expanded-sform out-expanded)
-// (close-input-port in)
-// (close-output-port out-midexpanded)
-// (close-output-port out-expanded)
-
-// ;;(display (macro-expand '(let-Macro ("JS" "paren") ("JS" "block"))))
-// (newline)
-// ;;(display (macro-expand '(let-Macro ("JS" "paren" LK-var))))
 
 

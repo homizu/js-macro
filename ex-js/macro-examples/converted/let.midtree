@@ -4,15 +4,6 @@
     {
       "type": "StatementMacroDefinition",
       "macroName": "let",
-      "identifiers": [
-        "id"
-      ],
-      "expressions": [
-        "expr"
-      ],
-      "statements": [
-        "stmt"
-      ],
       "literals": [
         "var",
         "and"
@@ -23,11 +14,11 @@
           "pattern": [
             {
               "type": "Paren",
-              "elements": ""
+              "elements": []
             },
             {
-              "type": "Block",
-              "elements": ""
+              "type": "Brace",
+              "elements": []
             }
           ],
           "template": [
@@ -74,14 +65,16 @@
               ]
             },
             {
-              "type": "Block",
+              "type": "Brace",
               "elements": [
                 {
                   "type": "Repetition",
-                  "elements": {
-                    "type": "StatementVariable",
-                    "name": "stmt"
-                  },
+                  "elements": [
+                    {
+                      "type": "StatementVariable",
+                      "name": "stmt"
+                    }
+                  ],
                   "punctuationMark": ""
                 }
               ]
@@ -128,115 +121,115 @@
       ]
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "l"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "e"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "t"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "("
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "v"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "a"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "r"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "i"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "d"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "1"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "="
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "1"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "/"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "2"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "a"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "n"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "d"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "i"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "d"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "2"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "="
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "1"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "0"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "0"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "E"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "1"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": "0"
     },
     {
-      "type": "Character",
+      "type": "Characterstmt",
       "value": ")"
     },
     {

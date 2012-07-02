@@ -7,8 +7,8 @@
 (define (convert-json js-file-path)
   (let* ((file-name (list-ref (regexp-split #rx"\\.tree" js-file-path) 0))
          (in (open-input-file js-file-path))
-         (out-jsexpr (open-output-file (string-append file-name "-jsexpr2.scm") #:exists 'truncate/replace))
-         (out-sform (open-output-file (string-append file-name "-sform2.scm") #:exists 'truncate/replace))
+         (out-jsexpr (open-output-file (string-append file-name "-jsexpr.scm") #:exists 'truncate/replace))
+         (out-sform (open-output-file (string-append file-name "-sform.scm") #:exists 'truncate/replace))
          (jsexpr (read-json in))
          (sform (generalize-jsexpr jsexpr)))
     (pretty-display jsexpr)
@@ -26,33 +26,39 @@
 (define (generalize-variable hash key prefix suffix)
   (string->symbol (string-append prefix (hash-ref hash key) suffix)))
 
+(define (generalize-variable-list hash key prefix suffix)
+  (map (lambda (e) (string->symbol (string-append prefix e suffix))) (hash-ref hash key)))
+
+(define (generalize-hash-value hash key)
+  (generalize-jsexpr (hash-ref hash key)))
+
 (define (generalize-hash type hash)
   (cond ((eq? type 'Program) ;; Program
-         `(begin ,@(generalize-jsexpr (hash-ref hash 'elements))))
+         `(begin ,@(generalize-hash-value hash 'elements)))
         ((or (eq? type 'ExpressionMacroDefinition) ;; MacroDefinition
              (eq? type 'StatementMacroDefinition))
          (let* ((macro-name (generalize-variable hash 'macroName "" "-Macro"))
-                (literals (map (lambda (l) (string->symbol (string-append "LK-" l))) (hash-ref hash 'literals)))
-                (rules (generalize-jsexpr (hash-ref hash 'syntaxRules))))
+                (literals (generalize-variable-list hash 'literals "LK-" ""))
+                (rules (generalize-hash-value hash 'syntaxRules)))
            `(define-syntax ,macro-name
               (syntax-rules ,literals ,@rules))))
         ((eq? type 'SyntaxRule) ;; SyntaxRule
-         `((_ ,@(generalize-jsexpr (hash-ref hash 'pattern))) ,(generalize-jsexpr (hash-ref hash 'template))))
+         `((_ ,@(generalize-hash-value hash 'pattern)) ,(generalize-hash-value hash 'template)))
         ((or (eq? type 'Brace) ;; Brace
              (eq? type 'Paren) ;; Paren
              (eq? type 'Bracket)) ;; Bracket
-         `("JS" ,(string-downcase (symbol->string type)) ,@(generalize-jsexpr (hash-ref hash 'elements))))
+         `("JS" ,(string-downcase (symbol->string type)) ,@(generalize-hash-value hash 'elements)))
         ((eq? type 'Function) ;; Function
          (let* ((name (hash-ref hash 'name))
-                (body (generalize-jsexpr (hash-ref hash 'elements)))
-                (params (map (lambda (p) (string->symbol (string-append "P-" p))) (hash-ref hash 'params))))
+                (body (generalize-hash-value hash 'elements))
+                (params (generalize-variable-list hash 'params "V-" "")))
            (if (eq? name #\nul)
-               `(lambda ,params ,(if (eq? body '()) body `(begin ,@body)))
-               `(define (,name ,@params) ,(if (eq? body '()) body `(begin ,@body))))))
+               `(lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body)))
+               `(define (,name ,@params) ,(if (eq? body '()) `(quote ,body) `(begin ,@body))))))
         ((eq? type 'FunctionCall) ;; FunctionCall
-         (let* ((name (generalize-jsexpr (hash-ref hash 'name)))
-                (arguments (generalize-jsexpr (hash-ref hash 'arguments))))
-           `("JS" "application" ,name ,arguments)))
+         (let* ((name (generalize-hash-value hash 'name))
+                (arguments (generalize-hash-value hash 'arguments)))
+           `("JS" "application" ,name ,@arguments)))
         ((eq? type 'MacroName) ;; MacroName
          (generalize-variable hash 'name "" "-Macro"))
         ((or (eq? type 'Variable) ;; Variable
@@ -63,13 +69,19 @@
         ((eq? type 'LiteralKeyword) ;; LiteralKeyword
          (generalize-variable hash 'name "LK-" ""))
         ((eq? type 'NumericLiteral)
-         (generalize-jsexpr (hash-ref hash 'value)))
+         (generalize-hash-value hash 'value))
         ((eq? type 'Punctuator) ;; Punctuator
          (hash-ref hash 'value))
-        ((eq? type 'ReturnStatement)
-         (generalize-jsexpr (hash-ref hash 'value)))
+        ((eq? type 'ReturnStatement) ;; ReturnStatement
+         `("JS" "return" ,(generalize-hash-value hash 'value)))
+        ((eq? type 'UnaryExpression)
+         `("JS" "op1" ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'expression)))
+        ((eq? type 'BinaryExpression) ;; BinayExpression
+         `("JS" "op2" ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'left) ,(generalize-hash-value hash 'right)))
+        ((eq? type 'ConditionalExpression)
+         `("JS" "conditional" ,(generalize-hash-value hash 'condition) ,(generalize-hash-value hash 'trueExpression) ,(generalize-hash-value hash 'falseExpression)))
         ((eq? type 'MacroForm) ;; MacroForm
-         (generalize-jsexpr (hash-ref hash 'inputForm)))
+         (generalize-hash-value hash 'inputForm))
         (#t
          (hash-map hash
                    (lambda (key value)

@@ -4,15 +4,6 @@
     {
       "type": "StatementMacroDefinition",
       "macroName": "let",
-      "identifiers": [
-        "id"
-      ],
-      "expressions": [
-        "expr"
-      ],
-      "statements": [
-        "stmt"
-      ],
       "literals": [
         "var",
         "and"
@@ -23,11 +14,11 @@
           "pattern": [
             {
               "type": "Paren",
-              "elements": ""
+              "elements": []
             },
             {
-              "type": "Block",
-              "elements": ""
+              "type": "Brace",
+              "elements": []
             }
           ],
           "template": {
@@ -72,14 +63,16 @@
               ]
             },
             {
-              "type": "Block",
+              "type": "Brace",
               "elements": [
                 {
                   "type": "Repetition",
-                  "elements": {
-                    "type": "StatementVariable",
-                    "name": "stmt"
-                  },
+                  "elements": [
+                    {
+                      "type": "StatementVariable",
+                      "name": "stmt"
+                    }
+                  ],
                   "punctuationMark": ""
                 }
               ]
@@ -124,70 +117,70 @@
       ]
     },
     {
-      "type": "letMacroForm",
+      "type": "MacroForm",
       "inputForm": [
         {
           "type": "MacroName",
           "name": "let"
         },
-        [
-          {
-            "type": "Paren",
-            "elements": [
-              {
-                "type": "LiteralKeyword",
-                "value": "var"
-              },
-              {
-                "type": "Repetition",
-                "elements": [
-                  [
-                    {
-                      "type": "Identifier",
-                      "name": "id1"
-                    },
-                    {
-                      "type": "Punctuator",
-                      "value": "="
-                    },
-                    {
-                      "type": "BinaryExpression",
-                      "operator": "/",
-                      "left": {
-                        "type": "NumericLiteral",
-                        "value": 1
-                      },
-                      "right": {
-                        "type": "NumericLiteral",
-                        "value": 2
-                      }
-                    }
-                  ],
-                  [
-                    {
-                      "type": "Identifier",
-                      "name": "id2"
-                    },
-                    {
-                      "type": "Punctuator",
-                      "value": "="
-                    },
-                    {
+        {
+          "type": "Paren",
+          "elements": [
+            {
+              "type": "LiteralKeyword",
+              "name": "var"
+            },
+            {
+              "type": "Repetition",
+              "elements": [
+                [
+                  {
+                    "type": "Variable",
+                    "name": "id1"
+                  },
+                  {
+                    "type": "Punctuator",
+                    "value": "="
+                  },
+                  {
+                    "type": "BinaryExpression",
+                    "operator": "/",
+                    "left": {
                       "type": "NumericLiteral",
-                      "value": 1000000000000
+                      "value": 1
+                    },
+                    "right": {
+                      "type": "NumericLiteral",
+                      "value": 2
                     }
-                  ]
+                  }
                 ],
-                "punctuationMark": "and"
-              }
-            ]
-          },
-          {
-            "type": "Block",
-            "elements": [
-              {
-                "type": "Repetition",
-                "elements": [
+                [
+                  {
+                    "type": "Variable",
+                    "name": "id2"
+                  },
+                  {
+                    "type": "Punctuator",
+                    "value": "="
+                  },
+                  {
+                    "type": "NumericLiteral",
+                    "value": 1000000000000
+                  }
+                ]
+              ],
+              "punctuationMark": "and"
+            }
+          ]
+        },
+        {
+          "type": "Brace",
+          "elements": [
+            {
+              "type": "Repetition",
+              "elements": [
+                [
                   {
                     "type": "VariableStatement",
                     "declarations": [
@@ -208,7 +201,9 @@
                         }
                       }
                     ]
-                  },
+                  }
+                ],
+                [
                   {
                     "type": "ReturnStatement",
                     "value": {
@@ -216,12 +211,12 @@
                       "name": "result"
                     }
                   }
-                ],
-                "punctuationMark": ""
-              }
-            ]
-          }
-        ]
+                ]
+              ],
+              "punctuationMark": ""
+            }
+          ]
+        }
       ]
     }
   ]

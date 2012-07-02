@@ -74,49 +74,47 @@
           "type": "MacroName",
           "name": "let"
         },
-        [
-          {
-            "type": "Paren",
-            "elements": [
-              {
-                "type": "LiteralKeyword",
-                "name": "var"
-              },
-              {
-                "type": "Variable",
-                "name": "num"
-              },
-              {
-                "type": "Punctuator",
-                "value": "="
-              },
-              {
-                "type": "NumericLiteral",
-                "value": 1000
-              }
-            ]
-          },
-          {
-            "type": "Brace",
-            "elements": [
-              {
-                "type": "ReturnStatement",
-                "value": {
-                  "type": "BinaryExpression",
-                  "operator": "*",
-                  "left": {
-                    "type": "Variable",
-                    "name": "num"
-                  },
-                  "right": {
-                    "type": "NumericLiteral",
-                    "value": 3
-                  }
+        {
+          "type": "Paren",
+          "elements": [
+            {
+              "type": "LiteralKeyword",
+              "name": "var"
+            },
+            {
+              "type": "Variable",
+              "name": "num"
+            },
+            {
+              "type": "Punctuator",
+              "value": "="
+            },
+            {
+              "type": "NumericLiteral",
+              "value": 1000
+            }
+          ]
+        },
+        {
+          "type": "Brace",
+          "elements": [
+            {
+              "type": "ReturnStatement",
+              "value": {
+                "type": "BinaryExpression",
+                "operator": "*",
+                "left": {
+                  "type": "Variable",
+                  "name": "num"
+                },
+                "right": {
+                  "type": "NumericLiteral",
+                  "value": 3
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       ]
     },
     {

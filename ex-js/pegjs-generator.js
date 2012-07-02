@@ -275,18 +275,34 @@ module.exports = (function () {
         },
         
         // Macro input form
+        // macroForm: function(name, body) {
+        //     var form;
+        //     if (body.type.charAt(0) === '-')
+        //         form = name;
+        //     else
+        //         form = pegObj.sequence([name, body]);
+        //     return {
+        //         type: 'MacroForm',
+        //         name: name.name,
+        //         inputForm: form,
+        //         toString: function() {
+        //             return 'form:' + form + '{ return { type: "' + this.type + '", inputForm: form }; }';
+        //         }
+        //     };
+        // }
+
         macroForm: function(name, body) {
-            var form;
-            if (body.type.charAt(0) === '-')
-                form = name;
-            else
-                form = pegObj.sequence([name, body]);
+            var form = [name];
+            for (var i=0; i<body.length; i++) {
+                form.push(convertToPegObj(body[i]));
+            }
+            form = pegObj.sequence(form);
             return {
                 type: 'MacroForm',
                 name: name.name,
                 inputForm: form,
                 toString: function() {
-                    return 'form:' + form + '{ return { type: "' + this.type + '", inputForm: form }; }';
+                    return 'form:' + form + ' { return { type: "' +this.type + '", inputForm: form }; }';
                 }
             };
         }
@@ -456,7 +472,8 @@ module.exports = (function () {
                 var syntaxRules = macroDef.syntaxRules;
                 var patterns = [];
                 for (var j=0; j<syntaxRules.length; j++) {
-                    patterns.push(pegObj.macroForm(macroName, convertToPegObj(syntaxRules[j].pattern)));
+//                    patterns.push(pegObj.macroForm(macroName, convertToPegObj(syntaxRules[j].pattern)));
+                    patterns.push(pegObj.macroForm(macroName, syntaxRules[j].pattern));
                 }
                 patterns = pegObj.choice(patterns);
                 if (macroDef.type.indexOf('Expression') >= 0)
