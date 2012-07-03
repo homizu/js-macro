@@ -64,10 +64,6 @@
                 },
                 {
                   "type": "Ellipsis"
-                },
-                {
-                  "type": "PunctuationMark",
-                  "value": "and"
                 }
               ]
             },
@@ -84,10 +80,6 @@
                 },
                 {
                   "type": "Ellipsis"
-                },
-                {
-                  "type": "PunctuationMark",
-                  "value": ""
                 }
               ]
             }

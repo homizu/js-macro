@@ -62,10 +62,6 @@
                 },
                 {
                   "type": "Ellipsis"
-                },
-                {
-                  "type": "PunctuationMark",
-                  "value": "and"
                 }
               ]
             },
@@ -82,10 +78,6 @@
                 },
                 {
                   "type": "Ellipsis"
-                },
-                {
-                  "type": "PunctuationMark",
-                  "value": ""
                 }
               ]
             }
@@ -180,11 +172,7 @@
                     "type": "NumericLiteral",
                     "value": 1000000000000
                   }
-                ],
-                {
-                  "type": "PunctuationMark",
-                  "value": "and"
-                }
+                ]
               ]
             }
           ]
@@ -222,10 +210,6 @@
                     "type": "Variable",
                     "name": "result"
                   }
-                },
-                {
-                  "type": "PunctuationMark",
-                  "value": ""
                 }
               ]
             }

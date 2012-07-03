@@ -1721,7 +1721,7 @@ SubPatternList
         var result = head;
         for (var i=0; i<tail.length; i++) {
             if (tail[i][1])
-               result.push({ type: "Punctuator", value: "," });
+               result.push({ type: "PunctuationMark", value: "," });
             result = result.concat(tail[i][3]);
         }
         return result;
@@ -1734,10 +1734,11 @@ SubPattern
            elements: patterns,
            punctuationMark: ellipsis[1]
         },
-        { type: "Ellipsis" },
-        { type: "PunctuationMark",
-          value: ellipsis[1]
-        }];
+        { type: "Ellipsis" }
+//        { type: "PunctuationMark",
+//          value: ellipsis[1]
+//        }
+];
       }
   / "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
         var result = {
@@ -1750,10 +1751,11 @@ SubPattern
              elements: result,
              punctuationMark: ellipsis[1]
            },
-           { type: "Ellipsis" },
-           { type: "PunctuationMark",
-             value: ellipsis[1]
-           }];
+           { type: "Ellipsis" }
+//           { type: "PunctuationMark",
+//             value: ellipsis[1]
+//           }
+];
          }
         return [result];                    
       }
@@ -1768,10 +1770,11 @@ SubPattern
              elements: result,
              punctuationMark: ellipsis[1]
            },
-           { type: "Ellipsis" },
-           { type: "PunctuationMark",
-             value: ellipsis[1]
-           }];
+           { type: "Ellipsis" }
+//           { type: "PunctuationMark",
+//             value: ellipsis[1]
+//           }
+];
         }
         return [result];                    
       }
@@ -1786,10 +1789,11 @@ SubPattern
              elements: result,
              punctuationMark: ellipsis[1]
            },
-           { type: "Ellipsis"},
-           { type: "PunctuationMark",
-             value: ellipsis[1]
-           }];
+           { type: "Ellipsis"}
+//           { type: "PunctuationMark",
+//             value: ellipsis[1]
+//           }
+];
         }
         return [result];                    
       }
@@ -1801,10 +1805,11 @@ SubPattern
              elements: result,
              punctuationMark: ellipsis[1]
            },
-           { type: "Ellipsis" },
-           { type: "PunctuationMark",
-             value: ellipsis[1]
-           }];
+           { type: "Ellipsis" }
+//           { type: "PunctuationMark",
+//             value: ellipsis[1]
+//           }
+];
         }
         return [result];                    
       }
@@ -1834,10 +1839,11 @@ SubPattern
              elements: result,
              punctuationMark: ellipsis[1]
            },
-           { type: "Ellipsis" },
-           { type: "PunctuationMark",
-             value: ellipsis[1]
-           }];
+           { type: "Ellipsis" }
+//           { type: "PunctuationMark",
+//             value: ellipsis[1]
+//           }
+];
         }
         return [result];                    
       }
@@ -1859,11 +1865,11 @@ PatternPunctuator
   =  puncs:Punctuator2+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
 
 // 区切り記号 '"', "'" は除く
-Punctuator
-  = Punctuator1 / Punctuator2
+//Punctuator
+//  = Punctuator1 / Punctuator2
 
-Punctuator1
-  = "." / ";" / ","
+//Punctuator1
+//  = "." / ";" / ","
 
 Punctuator2
   = "<" / ">" / "=" / "!" / "+"

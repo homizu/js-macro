@@ -112,14 +112,13 @@ module.exports = (function () {
                 type: 'Repetition',
                 elements: elements,
                 mark: mark,
-                toString: function() { return '((ellipsis:"..." { return { type: "Repeat", elements: [{ type: "Ellipsis" }, { type: "PunctuationMark", value: "' +this. mark + '" }] }; })\
+                toString: function() { return '((ellipsis:"..." { return { type: "Repeat", elements: [{ type: "Ellipsis" }] }; })\
  / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !inTemplate && ellipsis; }\
  { var elements = [head];\
    for (var i=0; i<tail.length; i++) {\
      elements.push(tail[i][' + (mark? 3 : 1) + ']);\
    }\
    if (ellipsis) elements.push({ type: "Ellipsis" });\
-   elements.push({ type: "PunctuationMark", value: "' + this.mark + '" });\
    return { type: "Repeat", elements: elements }; })?)'; }
             };
             
@@ -389,6 +388,14 @@ module.exports = (function () {
 
         // Punctuator
         { type: 'Punctuator',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.string(this.type, obj.value);
+          }
+        },
+
+        // PunctuationMark
+        { type: 'PunctuationMark',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               return pegObj.string(this.type, obj.value);

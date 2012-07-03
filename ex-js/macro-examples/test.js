@@ -41,7 +41,11 @@ let (var num=1E3) {
     return num * 3;
 }
 
-function (x) {}
+for (var i=1;i<10;i++) {
+    if (i==5)
+        break;
+    console.log("true");
+}
 
 /*
 // let マクロの定義(イメージ)

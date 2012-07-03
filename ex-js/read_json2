@@ -5,7 +5,7 @@
 (require racket/pretty)
 
 (define (convert-json js-file-path)
-  (let* ((file-name (list-ref (regexp-split #rx"\\.tree" js-file-path) 0))
+  (let* ((file-name (first (regexp-split #rx"\\.tree" js-file-path)))
          (in (open-input-file js-file-path))
          (out-jsexpr (open-output-file (string-append file-name "-jsexpr.scm") #:exists 'truncate/replace))
          (out-sform (open-output-file (string-append file-name "-sform.scm") #:exists 'truncate/replace))
@@ -52,6 +52,8 @@
          `("JS" ,(string-downcase (symbol->string type)) ,@(generalize-hash-value hash 'elements)))
         ((eq? type 'MacroName) ;; MacroName
          (generalize-variable hash 'name "" "-Macro"))
+        ((eq? type 'MacroForm) ;; MacroForm
+         (generalize-hash-value hash 'inputForm))
         ((or (eq? type 'Variable) ;; Variable
              (eq? type 'IdentifierVariable) ;; IdentifierVariable
              (eq? type 'ExpressionVariable) ;; ExpressionVariable
@@ -66,13 +68,24 @@
         ((eq? type 'Ellipsis) ;; Ellipsis
          `...)
         ((eq? type 'PunctuationMark) ;; PunctuationMark
-         (hash-ref hash 'value))
+         'ignore)
         ((eq? type 'Punctuator) ;; Punctuator
          (hash-ref hash 'value))
-        ((eq? type 'MacroForm) ;; MacroForm
-         (generalize-hash-value hash 'inputForm))
         ((eq? type 'NumericLiteral) ;; NumericLiteral
-         (generalize-hash-value hash 'value))
+         `("JS" "number" ,(generalize-hash-value hash 'value)))
+        ((or (eq? type 'StringLiteral) ;; StringLiteral
+             (eq? type 'NullLiteral)) ;; NullLiteral
+         `("JS" "const" ,(hash-ref hash 'value)))
+        ((eq? type 'BooleanLiteral) ;; BooleanLiteral
+         `("JS" "const" ,(if (hash-ref hash 'value) "true" "false")))
+        ((eq? type 'RegularExpressionLiteral) ;; RegularExpressionLiteral
+         `("JS" "const" ,(string-append "/" (hash-ref hash 'body) "/" (hash-ref hash 'flags))))
+        ((eq? type 'ArrayLiteral) ;; ArrayLiteral
+         `("JS" "array" ,@(generalize-hash-value hash 'elements)))
+        ((eq? type 'ObjectLiteral) ;; ObjectLiteral
+         `("JS" "object" ,@(generalize-hash-value hash 'elements)))
+        ((eq? type 'This) ;; This
+         `("JS" "const" "this"))
         ((eq? type 'Function) ;; Function
          (let* ((name (hash-ref hash 'name))
                 (body (generalize-hash-value hash 'elements))
@@ -84,14 +97,54 @@
          (let* ((name (generalize-hash-value hash 'name))
                 (arguments (generalize-hash-value hash 'arguments)))
            `("JS" "application" ,name ,@arguments)))
-        ((eq? type 'ReturnStatement) ;; ReturnStatement
-         `("JS" "return" ,(generalize-hash-value hash 'value)))
         ((eq? type 'UnaryExpression) ;; UnaryExpression
          `("JS" "op1" ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'expression)))
         ((eq? type 'BinaryExpression) ;; BinayExpression
          `("JS" "op2" ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'left) ,(generalize-hash-value hash 'right)))
         ((eq? type 'ConditionalExpression) ;; ConditionalExpression
          `("JS" "conditional" ,(generalize-hash-value hash 'condition) ,(generalize-hash-value hash 'trueExpression) ,(generalize-hash-value hash 'falseExpression)))
+        ((eq? type 'Block) ;; Block
+         `("JS" "block" ,@(generalize-hash-value hash 'statements)))
+        ((eq? type 'VariableStatement) ;; VariableStatement
+         `(begin ,@(generalize-hash-value hash 'declarations)))
+        ((eq? type 'VariableDeclaration) ;; VariableDecralation
+         `(define ,(generalize-variable hash 'name "V-" "") ,(generalize-hash-value hash 'value)))
+        ((eq? type 'EmptyStatement) ;; EmptyStatement
+         `("JS" "empty"))
+        ((eq? type 'IfStatement) ;; IfStatement
+         `("JS" "if" ,(generalize-hash-value hash 'condition) ,(generalize-hash-value hash 'ifStatement) ,(generalize-hash-value hash 'elseStatement)))
+        ((or (eq? type 'DoWhileStatement) ;; DoWhileStatement
+             (eq? type 'WhileStatement)) ;; WhileStatement
+         `("JS" ,(string-downcase (first (regexp-split #rx"Statement" (symbol->string type)))) ,(generalize-hash-value hash 'condition) ,(generalize-hash-value hash 'statement)))
+        ((eq? type 'ForStatement) ;; ForStatement
+         `("JS" "for" ,(generalize-hash-value hash 'initializer) ,(generalize-hash-value hash 'test) ,(generalize-hash-value hash 'counter) ,(generalize-hash-value hash 'statement)))
+        ((eq? type 'ForInStatement) ;; ForInStatement
+         `("JS" "forin" ,(generalize-hash-value hash 'iterator) ,(generalize-hash-value hash 'collection) ,(generalize-hash-value hash 'statement)))
+        ((or (eq? type 'ContinueStatement) ;; ContinueStatement
+             (eq? type 'BreakStatement)) ;; BreakStatement
+         `("JS" ,(string-downcase (first (regexp-split #rx"Statement" (symbol->string type)))) ,(hash-ref hash 'label)))
+        ((eq? type 'ReturnStatement) ;; ReturnStatement
+         `("JS" "return" ,(generalize-hash-value hash 'value)))
+        ((eq? type 'WithStatement) ;; WithStatement
+         `("JS" "with" ,(generalize-hash-value hash 'environment) ,(generalize-hash-value hash 'statement)))
+        ((eq? type 'SwitchStatement) ;; SwitchStatement
+         `("JS" "switch" ,(generalize-hash-value hash 'expression) ,(generalize-hash-value hash 'clauses)))
+        ((eq? type 'CaseClause) ;; CaseClause
+         `("JS" "case" ,(generalize-hash-value hash 'selector) ,@(generalize-hash-value hash 'statements)))
+        ((eq? type 'DefaultClause) ;; DefaultClause
+         `("JS" "default" ,@(generalize-hash-value hash 'statements)))
+        ((eq? type 'LabelledStatement) ;; LabelledStatement
+         `("JS" "labelled" ,(hash-ref hash 'label) ,(generalize-hash-value hash 'statement)))
+        ((eq? type 'ThrowStatement) ;; ThrowStatement
+         `("JS" "throw" ,(generalize-hash-value hash 'exception)))
+        ((eq? type 'TryStatement) ;; TryStatement
+         `("JS" "try" ,(generalize-hash-value hash 'block) ,(generalize-hash-value hash 'catch) ,(generalize-hash-value hash 'finally)))
+        ((eq? type 'Catch) ;; Catch
+         `("JS" "catch" ,(generalize-variable hash 'identifier "V-" "") ,(generalize-hash-value hash 'block)))
+        ((eq? type 'Finally) ;; Finally
+         `("JS" "finally" ,(generalize-hash-value hash 'block)))
+        ((eq? type 'DebuggerStatement) ;; DebuggerStatement
+         `("JS" "debugger"))
         (#t
          (hash-map hash
                    (lambda (key value)
@@ -107,12 +160,8 @@
            (for-each (lambda (e)
                        (let ((v (generalize-jsexpr e)))
                          (if (vector? v)
-                             (begin
-                               (set! result (reverse (append (reverse result) (generalize-jsexpr (vector->list v)))))
-                               (display v)
-                               (newline)
-                               (display result))
-                             (set! result (cons v result)))))
+                             (set! result (reverse (append (reverse result) (generalize-jsexpr (vector->list v)))))
+                             (if (eq? v 'ignore) '() (set! result (cons v result))))))
                      jsexpr)
            (reverse result)))
         (#t ;; other

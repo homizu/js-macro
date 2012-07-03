@@ -150,12 +150,82 @@
       ]
     },
     {
-      "type": "Function",
-      "name": null,
-      "params": [
-        "x"
-      ],
-      "elements": []
+      "type": "ForStatement",
+      "initializer": {
+        "type": "VariableStatement",
+        "declarations": [
+          {
+            "type": "VariableDeclaration",
+            "name": "i",
+            "value": {
+              "type": "NumericLiteral",
+              "value": 1
+            }
+          }
+        ]
+      },
+      "test": {
+        "type": "BinaryExpression",
+        "operator": "<",
+        "left": {
+          "type": "Variable",
+          "name": "i"
+        },
+        "right": {
+          "type": "NumericLiteral",
+          "value": 10
+        }
+      },
+      "counter": {
+        "type": "PostfixExpression",
+        "operator": "++",
+        "expression": {
+          "type": "Variable",
+          "name": "i"
+        }
+      },
+      "statement": {
+        "type": "Block",
+        "statements": [
+          {
+            "type": "IfStatement",
+            "condition": {
+              "type": "BinaryExpression",
+              "operator": "==",
+              "left": {
+                "type": "Variable",
+                "name": "i"
+              },
+              "right": {
+                "type": "NumericLiteral",
+                "value": 5
+              }
+            },
+            "ifStatement": {
+              "type": "BreakStatement",
+              "label": null
+            },
+            "elseStatement": null
+          },
+          {
+            "type": "FunctionCall",
+            "name": {
+              "type": "PropertyAccess",
+              "base": {
+                "type": "Variable",
+                "name": "console"
+              },
+              "name": "log"
+            },
+            "arguments": [
+              {
+                "type": "StringLiteral",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
