@@ -19,8 +19,10 @@ expression or {
     
     {or() => false}
     {or(exp1) => exp1}
-    {or(exp1, exp2, exp3, ...) => let (var temp = exp1) { return temp? temp : or(exp2, exp3, ...); }}
+    {or(exp1, exp2, ...) => let (var temp = exp1) { return temp? temp : or(exp2, ...); }}
 
 }
 
-or (1, 2, 3)
+let (var fi = false and temp = 'okay') {
+    return or(fi, temp);
+}

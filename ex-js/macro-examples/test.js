@@ -22,6 +22,7 @@ statement test {
     }
 }
 */
+var pi = 3.14;
 
 expression let {
     identifier: id;
@@ -33,7 +34,7 @@ expression let {
         stmt
      } => ((function (id) {
         stmt
-     })(expr))}
+     })(expr*pi))}
     
 }
 
@@ -41,11 +42,56 @@ let (var num=1E3) {
     return num * 3;
 }
 
+{
+    function hoge (x) { return x; }
+    hoge(10);
+}
+/*
 for (var i=1;i<10;i++) {
     if (i==5)
         break;
     console.log("true");
 }
+*/
+statement test {
+    identifier: x;
+    
+    {test(x)=>{
+        var x = 10;
+        var y = 20;
+        (function dec (i) {
+         if (i===0) return 0;
+         else {
+            console.log(i);
+            return dec(i-1);
+         } })(10)
+    }}
+}
+
+test(z)
+
+expression test2 {
+    identifier: yyy;
+    
+    { test2(yyy) => function(yyy) {
+        var xxx = 10;
+        console.log(xxx);
+        var t = function() {
+        console.log(yyy);
+        console.log(xxx);
+        var xxx = 30;
+        var yyy = 20;
+        console.log(xxx, yyy);
+        };
+        t();
+        console.log(yyy);
+        console.log(xxx);
+    }}
+    }
+    
+var zzz = 1;
+var f = test2(zzz);
+f(zzz);
 
 /*
 // let マクロの定義(イメージ)

@@ -2,6 +2,19 @@
   "type": "Program",
   "elements": [
     {
+      "type": "VariableStatement",
+      "declarations": [
+        {
+          "type": "VariableDeclaration",
+          "name": "pi",
+          "value": {
+            "type": "NumericLiteral",
+            "value": 3.14
+          }
+        }
+      ]
+    },
+    {
       "type": "ExpressionMacroDefinition",
       "macroName": "let",
       "literals": [
@@ -60,8 +73,16 @@
               },
               "arguments": [
                 {
-                  "type": "Variable",
-                  "name": "expr"
+                  "type": "BinaryExpression",
+                  "operator": "*",
+                  "left": {
+                    "type": "Variable",
+                    "name": "expr"
+                  },
+                  "right": {
+                    "type": "Variable",
+                    "name": "pi"
+                  }
                 }
               ]
             }
@@ -150,82 +171,440 @@
       ]
     },
     {
-      "type": "ForStatement",
-      "initializer": {
-        "type": "VariableStatement",
-        "declarations": [
-          {
-            "type": "VariableDeclaration",
-            "name": "i",
-            "value": {
-              "type": "NumericLiteral",
-              "value": 1
-            }
-          }
-        ]
-      },
-      "test": {
-        "type": "BinaryExpression",
-        "operator": "<",
-        "left": {
-          "type": "Variable",
-          "name": "i"
-        },
-        "right": {
-          "type": "NumericLiteral",
-          "value": 10
-        }
-      },
-      "counter": {
-        "type": "PostfixExpression",
-        "operator": "++",
-        "expression": {
-          "type": "Variable",
-          "name": "i"
-        }
-      },
-      "statement": {
-        "type": "Block",
-        "statements": [
-          {
-            "type": "IfStatement",
-            "condition": {
-              "type": "BinaryExpression",
-              "operator": "==",
-              "left": {
+      "type": "Block",
+      "statements": [
+        {
+          "type": "Function",
+          "name": "hoge",
+          "params": [
+            "x"
+          ],
+          "elements": [
+            {
+              "type": "ReturnStatement",
+              "value": {
                 "type": "Variable",
-                "name": "i"
-              },
-              "right": {
-                "type": "NumericLiteral",
-                "value": 5
+                "name": "x"
               }
-            },
-            "ifStatement": {
-              "type": "BreakStatement",
-              "label": null
-            },
-            "elseStatement": null
+            }
+          ]
+        },
+        {
+          "type": "FunctionCall",
+          "name": {
+            "type": "Variable",
+            "name": "hoge"
           },
-          {
+          "arguments": [
+            {
+              "type": "NumericLiteral",
+              "value": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "StatementMacroDefinition",
+      "macroName": "test",
+      "literals": [],
+      "syntaxRules": [
+        {
+          "type": "SyntaxRule",
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": [
+                {
+                  "type": "IdentifierVariable",
+                  "name": "x"
+                }
+              ]
+            }
+          ],
+          "template": [
+            {
+              "type": "Brace",
+              "elements": [
+                {
+                  "type": "VariableStatement",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclaration",
+                      "name": "x",
+                      "value": {
+                        "type": "NumericLiteral",
+                        "value": 10
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "VariableStatement",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclaration",
+                      "name": "y",
+                      "value": {
+                        "type": "NumericLiteral",
+                        "value": 20
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "FunctionCall",
+                  "name": {
+                    "type": "Function",
+                    "name": "dec",
+                    "params": [
+                      "i"
+                    ],
+                    "elements": [
+                      {
+                        "type": "IfStatement",
+                        "condition": {
+                          "type": "BinaryExpression",
+                          "operator": "===",
+                          "left": {
+                            "type": "Variable",
+                            "name": "i"
+                          },
+                          "right": {
+                            "type": "NumericLiteral",
+                            "value": 0
+                          }
+                        },
+                        "ifStatement": {
+                          "type": "ReturnStatement",
+                          "value": {
+                            "type": "NumericLiteral",
+                            "value": 0
+                          }
+                        },
+                        "elseStatement": {
+                          "type": "Block",
+                          "statements": [
+                            {
+                              "type": "FunctionCall",
+                              "name": {
+                                "type": "PropertyAccess",
+                                "base": {
+                                  "type": "Variable",
+                                  "name": "console"
+                                },
+                                "name": "log"
+                              },
+                              "arguments": [
+                                {
+                                  "type": "Variable",
+                                  "name": "i"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "ReturnStatement",
+                              "value": {
+                                "type": "FunctionCall",
+                                "name": {
+                                  "type": "Variable",
+                                  "name": "dec"
+                                },
+                                "arguments": [
+                                  {
+                                    "type": "BinaryExpression",
+                                    "operator": "-",
+                                    "left": {
+                                      "type": "Variable",
+                                      "name": "i"
+                                    },
+                                    "right": {
+                                      "type": "NumericLiteral",
+                                      "value": 1
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "arguments": [
+                    {
+                      "type": "NumericLiteral",
+                      "value": 10
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "FunctionCall",
+      "name": {
+        "type": "Variable",
+        "name": "test"
+      },
+      "arguments": [
+        {
+          "type": "Variable",
+          "name": "z"
+        }
+      ]
+    },
+    {
+      "type": "ExpressionMacroDefinition",
+      "macroName": "test2",
+      "literals": [],
+      "syntaxRules": [
+        {
+          "type": "SyntaxRule",
+          "pattern": [
+            {
+              "type": "Paren",
+              "elements": [
+                {
+                  "type": "IdentifierVariable",
+                  "name": "yyy"
+                }
+              ]
+            }
+          ],
+          "template": [
+            {
+              "type": "Function",
+              "name": null,
+              "params": [
+                "yyy"
+              ],
+              "elements": [
+                {
+                  "type": "VariableStatement",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclaration",
+                      "name": "xxx",
+                      "value": {
+                        "type": "NumericLiteral",
+                        "value": 10
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "FunctionCall",
+                  "name": {
+                    "type": "PropertyAccess",
+                    "base": {
+                      "type": "Variable",
+                      "name": "console"
+                    },
+                    "name": "log"
+                  },
+                  "arguments": [
+                    {
+                      "type": "Variable",
+                      "name": "xxx"
+                    }
+                  ]
+                },
+                {
+                  "type": "VariableStatement",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclaration",
+                      "name": "t",
+                      "value": {
+                        "type": "Function",
+                        "name": null,
+                        "params": [],
+                        "elements": [
+                          {
+                            "type": "FunctionCall",
+                            "name": {
+                              "type": "PropertyAccess",
+                              "base": {
+                                "type": "Variable",
+                                "name": "console"
+                              },
+                              "name": "log"
+                            },
+                            "arguments": [
+                              {
+                                "type": "Variable",
+                                "name": "yyy"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "FunctionCall",
+                            "name": {
+                              "type": "PropertyAccess",
+                              "base": {
+                                "type": "Variable",
+                                "name": "console"
+                              },
+                              "name": "log"
+                            },
+                            "arguments": [
+                              {
+                                "type": "Variable",
+                                "name": "xxx"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "VariableStatement",
+                            "declarations": [
+                              {
+                                "type": "VariableDeclaration",
+                                "name": "xxx",
+                                "value": {
+                                  "type": "NumericLiteral",
+                                  "value": 30
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "VariableStatement",
+                            "declarations": [
+                              {
+                                "type": "VariableDeclaration",
+                                "name": "yyy",
+                                "value": {
+                                  "type": "NumericLiteral",
+                                  "value": 20
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "FunctionCall",
+                            "name": {
+                              "type": "PropertyAccess",
+                              "base": {
+                                "type": "Variable",
+                                "name": "console"
+                              },
+                              "name": "log"
+                            },
+                            "arguments": [
+                              {
+                                "type": "Variable",
+                                "name": "xxx"
+                              },
+                              {
+                                "type": "Variable",
+                                "name": "yyy"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "FunctionCall",
+                  "name": {
+                    "type": "Variable",
+                    "name": "t"
+                  },
+                  "arguments": []
+                },
+                {
+                  "type": "FunctionCall",
+                  "name": {
+                    "type": "PropertyAccess",
+                    "base": {
+                      "type": "Variable",
+                      "name": "console"
+                    },
+                    "name": "log"
+                  },
+                  "arguments": [
+                    {
+                      "type": "Variable",
+                      "name": "yyy"
+                    }
+                  ]
+                },
+                {
+                  "type": "FunctionCall",
+                  "name": {
+                    "type": "PropertyAccess",
+                    "base": {
+                      "type": "Variable",
+                      "name": "console"
+                    },
+                    "name": "log"
+                  },
+                  "arguments": [
+                    {
+                      "type": "Variable",
+                      "name": "xxx"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "VariableStatement",
+      "declarations": [
+        {
+          "type": "VariableDeclaration",
+          "name": "zzz",
+          "value": {
+            "type": "NumericLiteral",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "VariableStatement",
+      "declarations": [
+        {
+          "type": "VariableDeclaration",
+          "name": "f",
+          "value": {
             "type": "FunctionCall",
             "name": {
-              "type": "PropertyAccess",
-              "base": {
-                "type": "Variable",
-                "name": "console"
-              },
-              "name": "log"
+              "type": "Variable",
+              "name": "test2"
             },
             "arguments": [
               {
-                "type": "StringLiteral",
-                "value": "true"
+                "type": "Variable",
+                "name": "zzz"
               }
             ]
           }
-        ]
-      }
+        }
+      ]
+    },
+    {
+      "type": "FunctionCall",
+      "name": {
+        "type": "Variable",
+        "name": "f"
+      },
+      "arguments": [
+        {
+          "type": "Variable",
+          "name": "zzz"
+        }
+      ]
     }
   ]
 }

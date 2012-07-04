@@ -2,7 +2,7 @@
 ;;  ;;   not implemented
 ;;  x    unconfirmed
 
-;;;; Program
+
 
 ;;;; MacroDefinition
 ;;;; SyntaxRule
@@ -34,21 +34,19 @@
 ;;;; NullLiteral x
 ;;;; BooleanLiteral
 ;;;; RegularExpressionLiteral x
-;;;; ArrayLiteral x
-;;;; ObjectLiteral x
 
 ;;;; This x
+
+;;;; ArrayLiteral x
+;;;; ObjectLiteral x
 
 ;; PropertyAssignment
 ;; GetterDefinition
 ;; SetterDefinition
 ;; NewOperator
-;; PropertyAccess
+;; PropertyAccess x
 
-;;;; Function
-;;;; FunctionCall
-
-
+;; FunctionCall
 ;; FunctionCallArguments
 ;; PropertyAccessProperty
 ;; PostfixExpression
@@ -56,12 +54,11 @@
 ;;;; UnaryExpression
 ;;;; BinaryExpression
 ;;;; ConditionalExpression
-
-;; AssignmentExpression
+;;;; AssignmentExpression x
 
 ;;;; Block x
-;;;; VariableStatement x
-;;;; VariableDeclaration x
+;;;; VariableStatement xx
+;;;; VariableDeclaration xx
 ;;;; EmptyStatement x
 ;;;; IfStatement
 ;;;; DoWhileStatement x
@@ -82,7 +79,9 @@
 ;;;; Finally x
 ;;;; DebuggerStatement x
 
+;;;; Function xx
 
+;;;; Program
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

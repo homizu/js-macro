@@ -35,9 +35,7 @@
   (generalize-jsexpr (hash-ref hash key)))
 
 (define (generalize-hash type hash)
-  (cond ((eq? type 'Program) ;; Program
-         `(begin ,@(generalize-hash-value hash 'elements)))
-        ((or (eq? type 'ExpressionMacroDefinition) ;; MacroDefinition
+  (cond ((or (eq? type 'ExpressionMacroDefinition) ;; MacroDefinition
              (eq? type 'StatementMacroDefinition))
          (let* ((macro-name (generalize-variable hash 'macroName "" "-Macro"))
                 (literals (generalize-variable-list hash 'literals "LK-" ""))
@@ -80,35 +78,46 @@
          `("JS" "const" ,(if (hash-ref hash 'value) "true" "false")))
         ((eq? type 'RegularExpressionLiteral) ;; RegularExpressionLiteral
          `("JS" "const" ,(string-append "/" (hash-ref hash 'body) "/" (hash-ref hash 'flags))))
+        ((eq? type 'This) ;; This
+         `("JS" "const" "this"))
         ((eq? type 'ArrayLiteral) ;; ArrayLiteral
          `("JS" "array" ,@(generalize-hash-value hash 'elements)))
         ((eq? type 'ObjectLiteral) ;; ObjectLiteral
-         `("JS" "object" ,@(generalize-hash-value hash 'elements)))
-        ((eq? type 'This) ;; This
-         `("JS" "const" "this"))
-        ((eq? type 'Function) ;; Function
-         (let* ((name (hash-ref hash 'name))
-                (body (generalize-hash-value hash 'elements))
-                (params (generalize-variable-list hash 'params "V-" "")))
-           (if (eq? name #\nul)
-               `(lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body)))
-               `(define (,name ,@params) ,(if (eq? body '()) `(quote ,body) `(begin ,@body))))))
+         `("JS" "object" ,@(generalize-hash-value hash 'properties)))
+        ((eq? type 'PropertyAssignment) ;; PropertyAssignment
+         `("JS" "propAssign" ,(generalize-hash-value hash 'name) ,(generalize-hash-value hash 'value)))
+        ((eq? type 'GetterDefinition) ;; GetterDefinition
+         `("JS" "getter" ,(generalize-hash-value hash 'name) ,(generalize-hash-value hash 'body)))
+        ((eq? type 'SetterDefinition) ;; SetterDefinition
+         `("JS" "setter" ,(generalize-hash-value hash 'name) ,(generalize-hash-value hash 'param) ,(generalize-hash-value hash 'body)))
+        ((eq? type 'NewOperator) ;; NewOperator
+         `("JS" "new" ,(generalize-hash-value hash 'constructor) ,@(generalize-hash-value hash 'arguments)))
+        ((eq? type 'PropertyAccess) ;; PropertyAccess
+         `("JS" "propAccess" ,(generalize-hash-value hash 'base) ,(generalize-hash-value hash 'name)))
         ((eq? type 'FunctionCall) ;; FunctionCall
          (let* ((name (generalize-hash-value hash 'name))
                 (arguments (generalize-hash-value hash 'arguments)))
-           `("JS" "application" ,name ,@arguments)))
-        ((eq? type 'UnaryExpression) ;; UnaryExpression
-         `("JS" "op1" ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'expression)))
-        ((eq? type 'BinaryExpression) ;; BinayExpression
-         `("JS" "op2" ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'left) ,(generalize-hash-value hash 'right)))
+           `("JS" "funcCall" ,name ,@arguments)))
+;;        ((eq? type 'FunctionCallArguments) ;; FunctionCallArguments 補助タイプ
+;;         `())
+;;        ((eq? type 'PropertyAccessProperty) ;; PropertyAccessProperty
+;;         `("JS" "propAccessProp" ,(generalize-hash-value hash 'name)))
+        ((or (eq? type 'PostfixExpression) ;; PostfixExpression
+             (eq? type 'UnaryExpression)) ;; UnaryExpression
+         `("JS" ,(string-downcase (first (regexp-split #rx"Expression" (symbol->string type)))) ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'expression)))
+        ((or (eq? type 'BinaryExpression) ;; BinayExpression
+             (eq? type 'AssignmentExpression)) ;; AssignmentExpression
+         `("JS" ,(string-downcase (first (regexp-split #rx"Expression" (symbol->string type)))) ,(hash-ref hash 'operator) ,(generalize-hash-value hash 'left) ,(generalize-hash-value hash 'right)))
         ((eq? type 'ConditionalExpression) ;; ConditionalExpression
          `("JS" "conditional" ,(generalize-hash-value hash 'condition) ,(generalize-hash-value hash 'trueExpression) ,(generalize-hash-value hash 'falseExpression)))
         ((eq? type 'Block) ;; Block
          `("JS" "block" ,@(generalize-hash-value hash 'statements)))
         ((eq? type 'VariableStatement) ;; VariableStatement
-         `(begin ,@(generalize-hash-value hash 'declarations)))
+         `("JS" "variable" ,@(generalize-hash-value hash 'declarations)))
+;;         `(begin ,@(generalize-hash-value hash 'declarations)))
         ((eq? type 'VariableDeclaration) ;; VariableDecralation
-         `(define ,(generalize-variable hash 'name "V-" "") ,(generalize-hash-value hash 'value)))
+         `(,(generalize-variable hash 'name "V-" "") ,(generalize-hash-value hash 'value)))
+;;         `(define ,(generalize-variable hash 'name "V-" "") ,(generalize-hash-value hash 'value)))
         ((eq? type 'EmptyStatement) ;; EmptyStatement
          `("JS" "empty"))
         ((eq? type 'IfStatement) ;; IfStatement
@@ -145,6 +154,16 @@
          `("JS" "finally" ,(generalize-hash-value hash 'block)))
         ((eq? type 'DebuggerStatement) ;; DebuggerStatement
          `("JS" "debugger"))
+        ((eq? type 'Function) ;; Function
+         (let* ((name (hash-ref hash 'name))
+                (body (generalize-hash-value hash 'elements))
+                (params (generalize-variable-list hash 'params "V-" "")))
+           (if (eq? name #\nul)
+               `(lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body)))
+;;               `(define (,name ,@params) ,(if (eq? body '()) `(quote ,body) `(begin ,@body))))))
+               `("JS" "function" ,(string-append "V-" name) (lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body)))))))
+        ((eq? type 'Program) ;; Program
+         `(begin ,@(generalize-hash-value hash 'elements)))
         (#t
          (hash-map hash
                    (lambda (key value)
