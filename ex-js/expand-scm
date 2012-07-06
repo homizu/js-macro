@@ -1,6 +1,7 @@
 #!/usr/local/bin/ypsilon
 
 (import (pregexp))
+(load "./scheme-to-js.scm")
 
 (define (expand-scm scm-file-path)
   (let* ((file-name (car (pregexp-split "-sform\\.scm" scm-file-path)))
@@ -13,10 +14,15 @@
          (sform (read in))
          (expanded (macro-expand sform)))
     (pretty-print expanded out)
+    (put-string out (format #f "~s" 'V-i\x60;22\x60;23*))
     (pretty-print sform)
     (newline)
     (newline)
     (pretty-print expanded)
+    (newline)
+    (newline)
+    (display "JS\n")
+    (display (scheme-to-javascript expanded))
     (newline)
     (close-input-port in)
     (close-output-port out)))

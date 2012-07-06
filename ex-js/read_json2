@@ -71,8 +71,9 @@
          (hash-ref hash 'value))
         ((eq? type 'NumericLiteral) ;; NumericLiteral
          `("JS" "number" ,(generalize-hash-value hash 'value)))
-        ((or (eq? type 'StringLiteral) ;; StringLiteral
-             (eq? type 'NullLiteral)) ;; NullLiteral
+        ((eq? type 'StringLiteral) ;; StringLiteral
+         `("JS" "const" ,(string-append "\"" (hash-ref hash 'value) "\""))
+        ((eq? type 'NullLiteral) ;; NullLiteral
          `("JS" "const" ,(hash-ref hash 'value)))
         ((eq? type 'BooleanLiteral) ;; BooleanLiteral
          `("JS" "const" ,(if (hash-ref hash 'value) "true" "false")))
