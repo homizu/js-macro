@@ -18,7 +18,10 @@ statement let {
 
 // let マクロの使用
 let (var id1=1/2 and id2=100E10) {
-    var result = id1 + id2;
+    var hoge,result = id1 + id2;
+    result = result * 2;
     return result;
 }
 
+1,2,3
+1,(2,3)

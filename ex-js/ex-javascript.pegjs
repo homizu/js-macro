@@ -1104,65 +1104,94 @@ AssignmentOperator
   / "|="
 
 /* Expression and ExpressionNoIn changed by homizu */
+// Expression
+//   = head:(exp:AssignmentExpression { lastExpr = exp; return exp; })
+//     tail:(__ delimiter:(comma:(","/"") &{
+//               return comma[0] || inTemplate; } { return comma[0] || " "; })
+//           __ exp:AssignmentExpression &{
+//               if (delimiter) {
+//                   return delimiter;
+//               } else {
+//                   lastExpr = exp;
+//                   return lastExpr.type === "Variable" && statementNames.indexOf(lastExpr.name) >= 0
+//               }
+//           } { return [delimiter, exp]; })*
+//     ellipsis:(!{ return inTemplate; }
+//                   / (&{ return inTemplate; } (__ (","/";")? __ "...")?)) {
+//       var result = head;
+//       for (var i = 0; i < tail.length; i++) {
+//         result = {
+//           type:     "BinaryExpression",
+//           operator: tail[i][0],
+//           left:     result,
+//           right:    tail[i][1]
+//         };
+//       }
+//       if (ellipsis[1]) {
+//          result = {
+//            type:     "BinaryExpression",
+//            operator: ellipsis[1][1] || " ",
+//            left:     result,
+//            right:    { type: "Ellipsis" }
+//          }
+// //        result = [result];
+// //        result.push({ type: "Ellipsis" });
+//       }
+//       return result;
+//     }
+
 Expression
-  = head:(exp:AssignmentExpression { lastExpr = exp; return exp; })
-    tail:(__ delimiter:(comma:(","/"") &{
-              return comma[0] || inTemplate; } { return comma[0] || " "; })
-          __ exp:AssignmentExpression &{
-              if (delimiter) {
-                  return delimiter;
-              } else {
-                  lastExpr = exp;
-                  return lastExpr.type === "Variable" && statementNames.indexOf(lastExpr.name) >= 0
-              }
-          } { return [delimiter, exp]; })*
+  = &{ return inTemplate; }
+    head:IdentifierName &{ return statementNames.indexOf(head) >= 0;}
+    tail:(__ name:IdentifierName &{ return statementNames.indexOf(name) >= 0; })* __
+    ellipsis: "..."? {
+      var elements = [head];
+      for (var i=0; i<tail.length; i++)
+          elements.push(tail[i][1]);
+      if (ellipsis)
+          elements.push({ type: "Ellipsis" });
+      return {
+        type: "Statements",
+        elements: elements
+      };
+    }
+/ head:AssignmentExpression
+    tail:(__ "," __ AssignmentExpression)*
     ellipsis:(!{ return inTemplate; }
-                  / (&{ return inTemplate; } (__ (","/";")? __ "...")?)) {
+                  / (&{ return inTemplate; } (__ "," __ "...")?)) {
       var result = head;
-      for (var i = 0; i < tail.length; i++) {
-        result = {
-          type:     "BinaryExpression",
-          operator: tail[i][0],
-          left:     result,
-          right:    tail[i][1]
-        };
-      }
-      if (ellipsis[1]) {
-         result = {
-           type:     "BinaryExpression",
-           operator: ellipsis[1][1] || " ",
-           left:     result,
-           right:    { type: "Ellipsis" }
-         }
-//        result = [result];
-//        result.push({ type: "Ellipsis" });
+//      console.log(head, tail);
+      if (tail.length > 0) {
+        result = [result];
+        for (var i = 0; i < tail.length; i++)
+          result.push(tail[i][3]);
+        if (ellipsis[1])
+          result.push({ type: "Ellipsis" });
+        result =  {
+          type: "Expressions",
+          elements: result
+        }; 
       }
       return result;
     }
+
 
 ExpressionNoIn  // for in で使う
   = head:AssignmentExpressionNoIn
     tail:(__ "," __ AssignmentExpressionNoIn)*
     ellipsis:(!{ return inTemplate; }
                   / (&{ return inTemplate; } (__ "," __ "...")?)) {
-      var result = head;
-      for (var i = 0; i < tail.length; i++) {
-        result = {
-          type:     "BinaryExpression",
-          operator: tail[i][1],
-          left:     result,
-          right:    tail[i][3]
-        };
-      }
-      if (ellipsis[1]) {
-         result = {
-           type:     "BinaryExpression",
-           operator: ",",
-           left:     result,
-           right:    { type: "Ellipsis" }
-         }
-//         result = [result];
-//         result.push({ type: "Ellipsis" });
+       var result = head;
+      if (tail.length > 0) {
+        result = [result];
+        for (var i = 0; i < tail.length; i++)
+          result.push(tail[i][3]);
+        if (ellipsis[1])
+          result.push({ type: "Ellipsis" });
+        result =  {
+          type: "Expressions",
+          elements: result
+        }; 
       }
       return result;
     }

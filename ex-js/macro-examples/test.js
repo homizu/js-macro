@@ -22,6 +22,7 @@ statement test {
     }
 }
 */
+/*
 var pi = 3.14;
 
 expression let {
@@ -46,13 +47,13 @@ let (var num=1E3) {
     function hoge (x) { return x; }
     hoge(10);
 }
-/*
+
 for (var i=1;i<10;i++) {
     if (i==5)
         break;
     console.log("true");
 }
-*/
+
 statement test {
     identifier: x;
     
@@ -92,6 +93,48 @@ expression test2 {
 var zzz = 1;
 var f = test2(zzz);
 f(zzz);
+*/
+
+
+
+if (1)
+    then1;
+
+if (2) {
+    then2;
+}
+
+if (3)
+    then3;
+else
+    else3;
+
+if (4)
+    then4;
+else {
+    else4;
+}
+
+if (5) {
+    then5;
+} else
+    else5;
+
+if (6) {
+    then6;
+} else {
+    else6;
+}
+
+if (7)
+    then7;
+else if (72)
+    then72;
+else if (73)
+    then73;
+else
+    else7;
+
 
 /*
 // let マクロの定義(イメージ)

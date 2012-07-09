@@ -2,583 +2,150 @@
   "type": "Program",
   "elements": [
     {
-      "type": "VariableStatement",
-      "declarations": [
-        {
-          "type": "VariableDeclaration",
-          "name": "pi",
-          "value": {
-            "type": "NumericLiteral",
-            "value": 3.14
-          }
-        }
-      ]
-    },
-    {
-      "type": "ExpressionMacroDefinition",
-      "macroName": "let",
-      "literals": [
-        "var"
-      ],
-      "syntaxRules": [
-        {
-          "type": "SyntaxRule",
-          "pattern": [
-            {
-              "type": "Paren",
-              "elements": [
-                {
-                  "type": "LiteralKeyword",
-                  "name": "var"
-                },
-                {
-                  "type": "IdentifierVariable",
-                  "name": "id"
-                },
-                {
-                  "type": "Punctuator",
-                  "value": "="
-                },
-                {
-                  "type": "ExpressionVariable",
-                  "name": "expr"
-                }
-              ]
-            },
-            {
-              "type": "Brace",
-              "elements": [
-                {
-                  "type": "StatementVariable",
-                  "name": "stmt"
-                }
-              ]
-            }
-          ],
-          "template": {
-            "type": "FunctionCall",
-            "name": {
-              "type": "Function",
-              "name": null,
-              "params": [
-                "id"
-              ],
-              "elements": [
-                {
-                  "type": "Variable",
-                  "name": "stmt"
-                }
-              ]
-            },
-            "arguments": [
-              {
-                "type": "BinaryExpression",
-                "operator": "*",
-                "left": {
-                  "type": "Variable",
-                  "name": "expr"
-                },
-                "right": {
-                  "type": "Variable",
-                  "name": "pi"
-                }
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "type": "MacroForm",
-      "inputForm": [
-        {
-          "type": "MacroName",
-          "name": "let"
-        },
-        {
-          "type": "Paren",
-          "elements": [
-            {
-              "type": "LiteralKeyword",
-              "name": "var"
-            },
-            {
-              "type": "Variable",
-              "name": "num"
-            },
-            {
-              "type": "Punctuator",
-              "value": "="
-            },
-            {
-              "type": "NumericLiteral",
-              "value": 1000
-            }
-          ]
-        },
-        {
-          "type": "Brace",
-          "elements": [
-            {
-              "type": "ReturnStatement",
-              "value": {
-                "type": "BinaryExpression",
-                "operator": "*",
-                "left": {
-                  "type": "Variable",
-                  "name": "num"
-                },
-                "right": {
-                  "type": "NumericLiteral",
-                  "value": 3
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "Block",
-      "statements": [
-        {
-          "type": "Function",
-          "name": "hoge",
-          "params": [
-            "x"
-          ],
-          "elements": [
-            {
-              "type": "ReturnStatement",
-              "value": {
-                "type": "Variable",
-                "name": "x"
-              }
-            }
-          ]
-        },
-        {
-          "type": "FunctionCall",
-          "name": {
-            "type": "Variable",
-            "name": "hoge"
-          },
-          "arguments": [
-            {
-              "type": "NumericLiteral",
-              "value": 10
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "StatementMacroDefinition",
-      "macroName": "test",
-      "literals": [],
-      "syntaxRules": [
-        {
-          "type": "SyntaxRule",
-          "pattern": [
-            {
-              "type": "Paren",
-              "elements": [
-                {
-                  "type": "IdentifierVariable",
-                  "name": "x"
-                }
-              ]
-            }
-          ],
-          "template": {
-            "type": "Block",
-            "statements": [
-              {
-                "type": "VariableStatement",
-                "declarations": [
-                  {
-                    "type": "VariableDeclaration",
-                    "name": "x",
-                    "value": {
-                      "type": "NumericLiteral",
-                      "value": 10
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "VariableStatement",
-                "declarations": [
-                  {
-                    "type": "VariableDeclaration",
-                    "name": "y",
-                    "value": {
-                      "type": "NumericLiteral",
-                      "value": 20
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "FunctionCall",
-                "name": {
-                  "type": "Function",
-                  "name": "dec",
-                  "params": [
-                    "i"
-                  ],
-                  "elements": [
-                    {
-                      "type": "IfStatement",
-                      "condition": {
-                        "type": "BinaryExpression",
-                        "operator": "===",
-                        "left": {
-                          "type": "Variable",
-                          "name": "i"
-                        },
-                        "right": {
-                          "type": "NumericLiteral",
-                          "value": 0
-                        }
-                      },
-                      "ifStatement": {
-                        "type": "ReturnStatement",
-                        "value": {
-                          "type": "NumericLiteral",
-                          "value": 0
-                        }
-                      },
-                      "elseStatement": {
-                        "type": "Block",
-                        "statements": [
-                          {
-                            "type": "FunctionCall",
-                            "name": {
-                              "type": "PropertyAccess",
-                              "base": {
-                                "type": "Variable",
-                                "name": "console"
-                              },
-                              "name": "log"
-                            },
-                            "arguments": [
-                              {
-                                "type": "Variable",
-                                "name": "i"
-                              }
-                            ]
-                          },
-                          {
-                            "type": "ReturnStatement",
-                            "value": {
-                              "type": "FunctionCall",
-                              "name": {
-                                "type": "Variable",
-                                "name": "dec"
-                              },
-                              "arguments": [
-                                {
-                                  "type": "BinaryExpression",
-                                  "operator": "-",
-                                  "left": {
-                                    "type": "Variable",
-                                    "name": "i"
-                                  },
-                                  "right": {
-                                    "type": "NumericLiteral",
-                                    "value": 1
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                "arguments": [
-                  {
-                    "type": "NumericLiteral",
-                    "value": 10
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "type": "MacroForm",
-      "inputForm": [
-        {
-          "type": "MacroName",
-          "name": "test"
-        },
-        {
-          "type": "Paren",
-          "elements": [
-            {
-              "type": "Variable",
-              "name": "z"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "ExpressionMacroDefinition",
-      "macroName": "test2",
-      "literals": [],
-      "syntaxRules": [
-        {
-          "type": "SyntaxRule",
-          "pattern": [
-            {
-              "type": "Paren",
-              "elements": [
-                {
-                  "type": "IdentifierVariable",
-                  "name": "yyy"
-                }
-              ]
-            }
-          ],
-          "template": {
-            "type": "Function",
-            "name": null,
-            "params": [
-              "yyy"
-            ],
-            "elements": [
-              {
-                "type": "VariableStatement",
-                "declarations": [
-                  {
-                    "type": "VariableDeclaration",
-                    "name": "xxx",
-                    "value": {
-                      "type": "NumericLiteral",
-                      "value": 10
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "FunctionCall",
-                "name": {
-                  "type": "PropertyAccess",
-                  "base": {
-                    "type": "Variable",
-                    "name": "console"
-                  },
-                  "name": "log"
-                },
-                "arguments": [
-                  {
-                    "type": "Variable",
-                    "name": "xxx"
-                  }
-                ]
-              },
-              {
-                "type": "VariableStatement",
-                "declarations": [
-                  {
-                    "type": "VariableDeclaration",
-                    "name": "t",
-                    "value": {
-                      "type": "Function",
-                      "name": null,
-                      "params": [],
-                      "elements": [
-                        {
-                          "type": "FunctionCall",
-                          "name": {
-                            "type": "PropertyAccess",
-                            "base": {
-                              "type": "Variable",
-                              "name": "console"
-                            },
-                            "name": "log"
-                          },
-                          "arguments": [
-                            {
-                              "type": "Variable",
-                              "name": "yyy"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "name": {
-                            "type": "PropertyAccess",
-                            "base": {
-                              "type": "Variable",
-                              "name": "console"
-                            },
-                            "name": "log"
-                          },
-                          "arguments": [
-                            {
-                              "type": "Variable",
-                              "name": "xxx"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "VariableStatement",
-                          "declarations": [
-                            {
-                              "type": "VariableDeclaration",
-                              "name": "xxx",
-                              "value": {
-                                "type": "NumericLiteral",
-                                "value": 30
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "type": "VariableStatement",
-                          "declarations": [
-                            {
-                              "type": "VariableDeclaration",
-                              "name": "yyy",
-                              "value": {
-                                "type": "NumericLiteral",
-                                "value": 20
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "name": {
-                            "type": "PropertyAccess",
-                            "base": {
-                              "type": "Variable",
-                              "name": "console"
-                            },
-                            "name": "log"
-                          },
-                          "arguments": [
-                            {
-                              "type": "Variable",
-                              "name": "xxx"
-                            },
-                            {
-                              "type": "Variable",
-                              "name": "yyy"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "FunctionCall",
-                "name": {
-                  "type": "Variable",
-                  "name": "t"
-                },
-                "arguments": []
-              },
-              {
-                "type": "FunctionCall",
-                "name": {
-                  "type": "PropertyAccess",
-                  "base": {
-                    "type": "Variable",
-                    "name": "console"
-                  },
-                  "name": "log"
-                },
-                "arguments": [
-                  {
-                    "type": "Variable",
-                    "name": "yyy"
-                  }
-                ]
-              },
-              {
-                "type": "FunctionCall",
-                "name": {
-                  "type": "PropertyAccess",
-                  "base": {
-                    "type": "Variable",
-                    "name": "console"
-                  },
-                  "name": "log"
-                },
-                "arguments": [
-                  {
-                    "type": "Variable",
-                    "name": "xxx"
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "type": "VariableStatement",
-      "declarations": [
-        {
-          "type": "VariableDeclaration",
-          "name": "zzz",
-          "value": {
-            "type": "NumericLiteral",
-            "value": 1
-          }
-        }
-      ]
-    },
-    {
-      "type": "VariableStatement",
-      "declarations": [
-        {
-          "type": "VariableDeclaration",
-          "name": "f",
-          "value": {
-            "type": "MacroForm",
-            "inputForm": [
-              {
-                "type": "MacroName",
-                "name": "test2"
-              },
-              {
-                "type": "Paren",
-                "elements": [
-                  {
-                    "type": "Variable",
-                    "name": "zzz"
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "type": "FunctionCall",
-      "name": {
-        "type": "Variable",
-        "name": "f"
+      "type": "IfStatement",
+      "condition": {
+        "type": "NumericLiteral",
+        "value": 1
       },
-      "arguments": [
-        {
+      "ifStatement": {
+        "type": "Variable",
+        "name": "then1"
+      },
+      "elseStatement": null
+    },
+    {
+      "type": "IfStatement",
+      "condition": {
+        "type": "NumericLiteral",
+        "value": 2
+      },
+      "ifStatement": {
+        "type": "Block",
+        "statements": [
+          {
+            "type": "Variable",
+            "name": "then2"
+          }
+        ]
+      },
+      "elseStatement": null
+    },
+    {
+      "type": "IfStatement",
+      "condition": {
+        "type": "NumericLiteral",
+        "value": 3
+      },
+      "ifStatement": {
+        "type": "Variable",
+        "name": "then3"
+      },
+      "elseStatement": {
+        "type": "Variable",
+        "name": "else3"
+      }
+    },
+    {
+      "type": "IfStatement",
+      "condition": {
+        "type": "NumericLiteral",
+        "value": 4
+      },
+      "ifStatement": {
+        "type": "Variable",
+        "name": "then4"
+      },
+      "elseStatement": {
+        "type": "Block",
+        "statements": [
+          {
+            "type": "Variable",
+            "name": "else4"
+          }
+        ]
+      }
+    },
+    {
+      "type": "IfStatement",
+      "condition": {
+        "type": "NumericLiteral",
+        "value": 5
+      },
+      "ifStatement": {
+        "type": "Block",
+        "statements": [
+          {
+            "type": "Variable",
+            "name": "then5"
+          }
+        ]
+      },
+      "elseStatement": {
+        "type": "Variable",
+        "name": "else5"
+      }
+    },
+    {
+      "type": "IfStatement",
+      "condition": {
+        "type": "NumericLiteral",
+        "value": 6
+      },
+      "ifStatement": {
+        "type": "Block",
+        "statements": [
+          {
+            "type": "Variable",
+            "name": "then6"
+          }
+        ]
+      },
+      "elseStatement": {
+        "type": "Block",
+        "statements": [
+          {
+            "type": "Variable",
+            "name": "else6"
+          }
+        ]
+      }
+    },
+    {
+      "type": "IfStatement",
+      "condition": {
+        "type": "NumericLiteral",
+        "value": 7
+      },
+      "ifStatement": {
+        "type": "Variable",
+        "name": "then7"
+      },
+      "elseStatement": {
+        "type": "IfStatement",
+        "condition": {
+          "type": "NumericLiteral",
+          "value": 72
+        },
+        "ifStatement": {
           "type": "Variable",
-          "name": "zzz"
+          "name": "then72"
+        },
+        "elseStatement": {
+          "type": "IfStatement",
+          "condition": {
+            "type": "NumericLiteral",
+            "value": 73
+          },
+          "ifStatement": {
+            "type": "Variable",
+            "name": "then73"
+          },
+          "elseStatement": {
+            "type": "Variable",
+            "name": "else7"
+          }
         }
-      ]
+      }
     }
   ]
 }

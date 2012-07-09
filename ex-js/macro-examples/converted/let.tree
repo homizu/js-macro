@@ -95,15 +95,13 @@
               ],
               "elements": [
                 {
-                  "type": "BinaryExpression",
-                  "operator": " ",
-                  "left": {
-                    "type": "Variable",
-                    "name": "stmt"
-                  },
-                  "right": {
-                    "type": "Ellipsis"
-                  }
+                  "type": "Statements",
+                  "elements": [
+                    "stmt",
+                    {
+                      "type": "Ellipsis"
+                    }
+                  ]
                 }
               ]
             },
@@ -188,6 +186,11 @@
                   "declarations": [
                     {
                       "type": "VariableDeclaration",
+                      "name": "hoge",
+                      "value": null
+                    },
+                    {
+                      "type": "VariableDeclaration",
                       "name": "result",
                       "value": {
                         "type": "BinaryExpression",
@@ -205,6 +208,26 @@
                   ]
                 },
                 {
+                  "type": "AssignmentExpression",
+                  "operator": "=",
+                  "left": {
+                    "type": "Variable",
+                    "name": "result"
+                  },
+                  "right": {
+                    "type": "BinaryExpression",
+                    "operator": "*",
+                    "left": {
+                      "type": "Variable",
+                      "name": "result"
+                    },
+                    "right": {
+                      "type": "NumericLiteral",
+                      "value": 2
+                    }
+                  }
+                },
+                {
                   "type": "ReturnStatement",
                   "value": {
                     "type": "Variable",
@@ -212,6 +235,45 @@
                   }
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Expressions",
+      "elements": [
+        {
+          "type": "NumericLiteral",
+          "value": 1
+        },
+        {
+          "type": "NumericLiteral",
+          "value": 2
+        },
+        {
+          "type": "NumericLiteral",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "type": "Expressions",
+      "elements": [
+        {
+          "type": "NumericLiteral",
+          "value": 1
+        },
+        {
+          "type": "Expressions",
+          "elements": [
+            {
+              "type": "NumericLiteral",
+              "value": 2
+            },
+            {
+              "type": "NumericLiteral",
+              "value": 3
             }
           ]
         }

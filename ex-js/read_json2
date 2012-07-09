@@ -69,10 +69,14 @@
          'ignore)
         ((eq? type 'Punctuator) ;; Punctuator
          (hash-ref hash 'value))
+        ((eq? type 'Expressions) ;; Expressions (AssignmentExpression, AssignmentExpression, ...)
+         `("JS" "expressions" ,@(generalize-hash-value hash 'elements)))
+        ((eq? type 'Statements) ;; Statements (StatementVariable StatementVariable ...)
+         `(begin ,@(generalize-variable-list hash 'elements "V-" ""))) 
         ((eq? type 'NumericLiteral) ;; NumericLiteral
          `("JS" "number" ,(generalize-hash-value hash 'value)))
         ((eq? type 'StringLiteral) ;; StringLiteral
-         `("JS" "const" ,(string-append "\"" (hash-ref hash 'value) "\""))
+         `("JS" "const" ,(string-append "\"" (hash-ref hash 'value) "\"")))
         ((eq? type 'NullLiteral) ;; NullLiteral
          `("JS" "const" ,(hash-ref hash 'value)))
         ((eq? type 'BooleanLiteral) ;; BooleanLiteral
@@ -180,7 +184,7 @@
            (for-each (lambda (e)
                        (let ((v (generalize-jsexpr e)))
                          (if (vector? v)
-                             (set! result (reverse (append (reverse result) (generalize-jsexpr (vector->list v)))))
+                             (set! result (reverse (append (reverse result) (generalize-jsexpr (vector->list v))))) ;; 繰り返し部分がリストにならないように
                              (if (eq? v 'ignore) '() (set! result (cons v result))))))
                      jsexpr)
            (reverse result)))
