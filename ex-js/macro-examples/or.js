@@ -1,3 +1,4 @@
+// let マクロの定義
 expression let {
     identifier: id;
     expression: expr;
@@ -15,7 +16,7 @@ expression let {
 // or マクロの定義
 expression or {
     identifier: temp;
-    expression: exp1, exp2, exp3;
+    expression: exp1, exp2;
     
     {or() => false}
     {or(exp1) => exp1}
@@ -23,6 +24,6 @@ expression or {
 
 }
 
-let (var fi = false and temp = 'okay') {
-    return or(fi, temp);
+let (var let = false and temp = 'okay') {
+    return or(let, temp);
 }

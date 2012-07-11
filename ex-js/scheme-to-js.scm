@@ -78,10 +78,13 @@
   (bformat "[ ") (bseparating s2j ", " e) (bformat " ]"))
 
 (define (do-object e)
-  '())
+  (bformat "{ ")
+  (bseparating s2j ", " e)
+  (bformat " }"))
 
 (define (do-propAssign e)
-  '())
+  (bformat "~a: " (car e))
+  (s2j (cadr e)))
 
 (define (do-getter e)
   '())
@@ -93,7 +96,10 @@
   '())
 
 (define (do-propAccess e)
-  '())
+  (s2j (car e))
+  (bformat "[")
+  (s2j (cadr e))
+  (bformat "]"))
 
 (define (do-funcCall e)
   (let ((name (car e))
@@ -142,6 +148,15 @@
     (bformat ") : (") (s2j e3)
     (bformat "))")))
 
+(define (do-statement e)
+  (if (and (list? e) (>= (length e) 2) (eq? (cadr e) "block"))
+      (begin
+        (do-block (cddr e))
+        #t)
+      (begin
+        (s2j e)
+        #f)))
+
 (define (do-block e)
   (bformat "{")
   (bnewline 2)
@@ -167,23 +182,17 @@
 )
 
 (define (do-if e)
-  (letrec ((e1 (car e))
-           (e2 (cadr e))
-           (e3 (caddr e))
-           (block #t)
-           (do-stmt (lambda (s)
-                      (if (and (list? s) (>= (length s) 2) (eq? (cadr s) "block"))
-                          (do-block (cddr s))
-                          (begin
-                            (set! block #f)
-                            (bnewline 2) (s2j s) (bindent -2))))))
-    (bformat "if (") (s2j e1) (bformat ") ")
-    (do-stmt e2)
-    (if (not (eq? e3 #\nul))
+  (let ((e1 (car e))
+        (e2 (cadr e))
+        (e3 (caddr e))
+        (block #t))
+    (bformat "if (") (s2j e1) (bformat ") ") ;; condition
+    (set! block (do-statement e2)) ;; then
+    (if (not (eq? e3 #\nul)) ;; else
         (begin
           (if block (bformat " ") (bnewline))
           (bformat "else ")
-          (do-stmt e3)))))
+          (do-statement e3)))))
 
 (define (do-dowhile e)
   '())
@@ -195,7 +204,25 @@
   '())
 
 (define (do-forin e)
-  '())
+  (let ((e1 (car e))
+        (e2 (cadr e))
+        (e3 (caddr e)))
+     (bformat "for (")
+     (if (and (list? e1) (symbol? (car e1)) (pregexp-match "^V-" (symbol->string (car e1))))
+         (let ((name (car e1))
+               (value (cadr e1)))
+           (bformat "var ")
+           (do-symbol name)
+           (if (not (eq? value #\nul))
+               (begin
+                 (bformat " = ")
+                 (s2j value))
+               '()))
+         (s2j e1))
+     (bformat " in ")
+     (s2j e2)
+     (bformat ") ")
+     (do-statement e3)))
 
 (define (do-return e)
   (bformat "return ")

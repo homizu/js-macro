@@ -14,31 +14,6 @@
           "pattern": [
             {
               "type": "Paren",
-              "elements": []
-            },
-            {
-              "type": "Brace",
-              "elements": []
-            }
-          ],
-          "template": [
-            {
-              "type": "FunctionCall",
-              "name": {
-                "type": "Function",
-                "name": null,
-                "params": [],
-                "elements": []
-              },
-              "arguments": []
-            }
-          ]
-        },
-        {
-          "type": "SyntaxRule",
-          "pattern": [
-            {
-              "type": "Paren",
               "elements": [
                 {
                   "type": "LiteralKeyword",
@@ -242,11 +217,6 @@
           "declarations": [
             {
               "type": "VariableDeclaration",
-              "name": "hoge",
-              "value": null
-            },
-            {
-              "type": "VariableDeclaration",
               "name": "result",
               "value": {
                 "type": "BinaryExpression",
@@ -289,45 +259,6 @@
             "type": "Variable",
             "name": "result"
           }
-        }
-      ]
-    },
-    {
-      "type": "Expressions",
-      "elements": [
-        {
-          "type": "NumericLiteral",
-          "value": 1
-        },
-        {
-          "type": "NumericLiteral",
-          "value": 2
-        },
-        {
-          "type": "NumericLiteral",
-          "value": 3
-        }
-      ]
-    },
-    {
-      "type": "Expressions",
-      "elements": [
-        {
-          "type": "NumericLiteral",
-          "value": 1
-        },
-        {
-          "type": "Expressions",
-          "elements": [
-            {
-              "type": "NumericLiteral",
-              "value": 2
-            },
-            {
-              "type": "NumericLiteral",
-              "value": 3
-            }
-          ]
         }
       ]
     }
