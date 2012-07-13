@@ -1185,31 +1185,49 @@ AssignmentOperator
 
 Expression
   = &{ return inTemplate; }
-    head:IdentifierName &{ return statementNames.indexOf(head) >= 0;}
-    tail:(__ name:IdentifierName &{ return statementNames.indexOf(name) >= 0; })* __
-    ellipsis: "..."? {
+    head:IdentifierName &{ return statementNames.indexOf(head) >= 0;} ellipsis:(__ "...")?
+    tail:(__ name:IdentifierName &{ return statementNames.indexOf(name) >= 0; } (__ "...")?)* {
       var elements = [head];
-      for (var i=0; i<tail.length; i++)
-          elements.push(tail[i][1]);
       if (ellipsis)
-          elements.push({ type: "Ellipsis" });
+         elements.push({ type: "Ellipsis" });
+      for (var i=0; i<tail.length; i++) {
+        elements.push(tail[i][1]);
+        if (tail[i][3])
+           elements.push({ type: "Ellipsis" });
+      }
       return {
         type: "Statements",
         elements: elements
       };
     }
-/ head:AssignmentExpression
-    tail:(__ "," __ AssignmentExpression)*
-    ellipsis:(!{ return inTemplate; }
-                  / (&{ return inTemplate; } (__ "," __ "...")?)) {
+  / &{ return inTemplate; }
+    head:AssignmentExpression ellipsis:(__ "," __ "...")?
+    tail:(__ "," __ AssignmentExpression (__ "," __ "...")?)* {
       var result = head;
-//      console.log(head, tail);
+      if (ellipsis)
+         result = [result, { type: "Ellipsis" }];
+      if (tail.length > 0) {
+        if (!(result instanceof Array)) result = [result];
+        for (var i = 0; i < tail.length; i++) {
+          result.push(tail[i][3]);
+          if (tail[i][4])
+             result.push({ type: "Ellipsis" });
+        }
+      }
+      if (result instanceof Array)
+          result =  {
+            type: "Expressions",
+            elements: result
+          }; 
+      return result;
+    }
+  / head:AssignmentExpression
+    tail:(__ "," __ AssignmentExpression)* {
+      var result = head;
       if (tail.length > 0) {
         result = [result];
         for (var i = 0; i < tail.length; i++)
           result.push(tail[i][3]);
-        if (ellipsis[1])
-          result.push({ type: "Ellipsis" });
         result =  {
           type: "Expressions",
           elements: result
@@ -1219,18 +1237,36 @@ Expression
     }
 
 
+
 ExpressionNoIn  // for in で使う
-  = head:AssignmentExpressionNoIn
-    tail:(__ "," __ AssignmentExpressionNoIn)*
-    ellipsis:(!{ return inTemplate; }
-                  / (&{ return inTemplate; } (__ "," __ "...")?)) {
-       var result = head;
+  = &{ return inTemplate; }
+    head:AssignmentExpressionNoIn ellipsis:(__ "," __ "...")?
+    tail:(__ "," __ AssignmentExpressionNoIn (__ "," __ "...")?)* {
+      var result = head;
+      if (ellipsis)
+         result = [result, { type: "Ellipsis" }];
+      if (tail.length > 0) {
+         if (!(result instanceof Array)) result = [result];
+        for (var i = 0; i < tail.length; i++) {
+          result.push(tail[i][3]);
+          if (tail[i][4])
+             result.push({ type: "Ellipsis" });
+        }
+      }
+      if (result instanceof Array)
+         result =  {
+           type: "Expressions",
+           elements: result
+         }; 
+      return result;
+    }
+  / head:AssignmentExpressionNoIn
+    tail:(__ "," __ AssignmentExpressionNoIn)* {
+        var result = head;
       if (tail.length > 0) {
         result = [result];
         for (var i = 0; i < tail.length; i++)
           result.push(tail[i][3]);
-        if (ellipsis[1])
-          result.push({ type: "Ellipsis" });
         result =  {
           type: "Expressions",
           elements: result
@@ -1340,28 +1376,46 @@ VariableStatement
     }
 
 VariableDeclarationList
-  = head:VariableDeclaration tail:(__ "," __ VariableDeclaration)*
-    ellipsis:(!{ return inTemplate; }
-                  / (&{ return inTemplate; }(__ "," __ "...")?)) {
+  = &{ return inTemplate; }
+    head:VariableDeclaration ellipsis:(__ "," __ "...")?
+    tail:(__ "," __ VariableDeclaration (__ "," __ "...")?)* {
+      var result = [head];
+      if (ellipsis)
+         result.push({ type: "Ellipsis" });
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][3]);
+        if (tail[i][4])
+           result.push({ type: "Ellipsis" });
+      }
+      return result;
+    }
+  / head:VariableDeclaration tail:(__ "," __ VariableDeclaration)* {
       var result = [head];
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][3]);
       }
-      if (ellipsis[1])
-        result.push({ type: "Ellipsis" });
       return result;
     }
 
 VariableDeclarationListNoIn
-  = head:VariableDeclarationNoIn tail:(__ "," __ VariableDeclarationNoIn)*
-    ellipsis:(!{ return inTemplate; }
-                  / (&{ return inTemplate; }(__ "," __ "...")?)) {
+  = &{ return inTemplate; }
+    head:VariableDeclarationNoIn ellipsis:(__ "," __ "...")?
+    tail:(__ "," __ VariableDeclarationNoIn (__ "," __ "...")?)* {
+      var result = [head];
+      if (ellipsis)
+         result.push({ type: "Ellipsis" });
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][3]);
+        if (tail[i][4])
+           result.push({ type: "Ellipsis" });
+      }
+      return result;
+    }
+  / head:VariableDeclarationNoIn tail:(__ "," __ VariableDeclarationNoIn)* {
       var result = [head];
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][3]);
       }
-      if (ellipsis[1])
-        result.push({ type: "Ellipsis" });
       return result;
     }
 
