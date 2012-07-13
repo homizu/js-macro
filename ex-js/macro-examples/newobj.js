@@ -8,7 +8,7 @@ expression newobj {
          var new_obj = { __proto__ : proto };
          for (var id in specs) new_obj[id] = specs[id];
          return new_obj;
-     })());}
+     })())}
 }
 
 var obj1 = { x: 100, y:200 };

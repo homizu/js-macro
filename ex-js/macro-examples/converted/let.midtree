@@ -2,8 +2,8 @@
   "type": "Program",
   "elements": [
     {
-      "type": "StatementMacroDefinition",
-      "macroName": "let",
+      "type": "ExpressionMacroDefinition",
+      "macroName": "let2",
       "literals": [
         "var",
         "and"
@@ -13,34 +13,25 @@
           "type": "SyntaxRule",
           "pattern": [
             {
-              "type": "Paren",
+              "type": "Repetition",
               "elements": [
                 {
-                  "type": "LiteralKeyword",
-                  "name": "var"
+                  "type": "IdentifierVariable",
+                  "name": "id"
                 },
                 {
-                  "type": "Repetition",
-                  "elements": [
-                    {
-                      "type": "IdentifierVariable",
-                      "name": "id"
-                    },
-                    {
-                      "type": "Punctuator",
-                      "value": "="
-                    },
-                    {
-                      "type": "ExpressionVariable",
-                      "name": "expr"
-                    }
-                  ],
-                  "punctuationMark": "and"
+                  "type": "Punctuator",
+                  "value": "="
                 },
                 {
-                  "type": "Ellipsis"
+                  "type": "ExpressionVariable",
+                  "name": "expr"
                 }
-              ]
+              ],
+              "punctuationMark": "and"
+            },
+            {
+              "type": "Ellipsis"
             },
             {
               "type": "Brace",
@@ -69,7 +60,9 @@
                   "id",
                   {
                     "type": "Ellipsis"
-                  }
+                  },
+                  "x",
+                  "y"
                 ],
                 "elements": [
                   {
@@ -90,6 +83,14 @@
                 },
                 {
                   "type": "Ellipsis"
+                },
+                {
+                  "type": "NumericLiteral",
+                  "value": "1"
+                },
+                {
+                  "type": "NumericLiteral",
+                  "value": "2"
                 }
               ]
             }
@@ -111,19 +112,7 @@
     },
     {
       "type": "Characterstmt",
-      "value": "("
-    },
-    {
-      "type": "Characterstmt",
-      "value": "v"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "a"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "r"
+      "value": "2"
     },
     {
       "type": "Characterstmt",
@@ -206,10 +195,6 @@
       "value": "0"
     },
     {
-      "type": "Characterstmt",
-      "value": ")"
-    },
-    {
       "type": "Block",
       "statements": [
         {
@@ -249,7 +234,7 @@
             },
             "right": {
               "type": "NumericLiteral",
-              "value": 2
+              "value": "2"
             }
           }
         },

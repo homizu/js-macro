@@ -24,6 +24,6 @@ expression or {
 
 }
 
-let (var let = false and temp = 'okay') {
-    return or(let, temp);
+let (var or = false and temp = 'okay') {
+    return or(or, temp);
 }

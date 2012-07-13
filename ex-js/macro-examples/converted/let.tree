@@ -2,8 +2,8 @@
   "type": "Program",
   "elements": [
     {
-      "type": "StatementMacroDefinition",
-      "macroName": "let",
+      "type": "ExpressionMacroDefinition",
+      "macroName": "let2",
       "literals": [
         "var",
         "and"
@@ -13,34 +13,25 @@
           "type": "SyntaxRule",
           "pattern": [
             {
-              "type": "Paren",
+              "type": "Repetition",
               "elements": [
                 {
-                  "type": "LiteralKeyword",
-                  "name": "var"
+                  "type": "IdentifierVariable",
+                  "name": "id"
                 },
                 {
-                  "type": "Repetition",
-                  "elements": [
-                    {
-                      "type": "IdentifierVariable",
-                      "name": "id"
-                    },
-                    {
-                      "type": "Punctuator",
-                      "value": "="
-                    },
-                    {
-                      "type": "ExpressionVariable",
-                      "name": "expr"
-                    }
-                  ],
-                  "punctuationMark": "and"
+                  "type": "Punctuator",
+                  "value": "="
                 },
                 {
-                  "type": "Ellipsis"
+                  "type": "ExpressionVariable",
+                  "name": "expr"
                 }
-              ]
+              ],
+              "punctuationMark": "and"
+            },
+            {
+              "type": "Ellipsis"
             },
             {
               "type": "Brace",
@@ -68,7 +59,9 @@
                 "id",
                 {
                   "type": "Ellipsis"
-                }
+                },
+                "x",
+                "y"
               ],
               "elements": [
                 {
@@ -89,6 +82,14 @@
               },
               {
                 "type": "Ellipsis"
+              },
+              {
+                "type": "NumericLiteral",
+                "value": "1"
+              },
+              {
+                "type": "NumericLiteral",
+                "value": "2"
               }
             ]
           }
@@ -100,56 +101,47 @@
       "inputForm": [
         {
           "type": "MacroName",
-          "name": "let"
+          "name": "let2"
         },
         {
-          "type": "Paren",
+          "type": "Repeat",
           "elements": [
-            {
-              "type": "LiteralKeyword",
-              "name": "var"
-            },
-            {
-              "type": "Repeat",
-              "elements": [
-                [
-                  {
-                    "type": "Variable",
-                    "name": "id1"
-                  },
-                  {
-                    "type": "Punctuator",
-                    "value": "="
-                  },
-                  {
-                    "type": "BinaryExpression",
-                    "operator": "/",
-                    "left": {
-                      "type": "NumericLiteral",
-                      "value": 1
-                    },
-                    "right": {
-                      "type": "NumericLiteral",
-                      "value": 2
-                    }
-                  }
-                ],
-                [
-                  {
-                    "type": "Variable",
-                    "name": "id2"
-                  },
-                  {
-                    "type": "Punctuator",
-                    "value": "="
-                  },
-                  {
-                    "type": "NumericLiteral",
-                    "value": 1000000000000
-                  }
-                ]
-              ]
-            }
+            [
+              {
+                "type": "Variable",
+                "name": "id1"
+              },
+              {
+                "type": "Punctuator",
+                "value": "="
+              },
+              {
+                "type": "BinaryExpression",
+                "operator": "/",
+                "left": {
+                  "type": "NumericLiteral",
+                  "value": "1"
+                },
+                "right": {
+                  "type": "NumericLiteral",
+                  "value": "2"
+                }
+              }
+            ],
+            [
+              {
+                "type": "Variable",
+                "name": "id2"
+              },
+              {
+                "type": "Punctuator",
+                "value": "="
+              },
+              {
+                "type": "NumericLiteral",
+                "value": "100E10"
+              }
+            ]
           ]
         },
         {
@@ -195,7 +187,7 @@
                     },
                     "right": {
                       "type": "NumericLiteral",
-                      "value": 2
+                      "value": "2"
                     }
                   }
                 },

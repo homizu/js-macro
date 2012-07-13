@@ -281,6 +281,10 @@
           ((eq? type "expressions") (do-expressions body))
           ((eq? type "const") (bformat "~a" (car body)))
           ((eq? type "number") (bformat "~a" (car body)))
+          ((eq? type "string") (let ((value (car body)))
+                                 (if (pregexp-match "\"" value)
+                                     (bformat "'~a'" value)      ;; single quote
+                                     (bformat "\"~a\"" value)))) ;; double quote
           ((eq? type "array") (do-array body))
           ((eq? type "object") (do-object body))
           ((eq? type "propAssign") (do-propAssign body))

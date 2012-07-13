@@ -47,13 +47,14 @@
 
 /* Initializer written by homizu */
 {
+  var exprMacro = true;   // expressionマクロかどうかを表す変数
   var inTemplate = false;       // テンプレート中かどうかを表す変数
   var identifierNames = [];     // identifier変数のリスト
   var expressionNames = [];     // expression変数のリスト
   var statementNames = [];      // statement変数のリスト
   var literalKeywordNames = []; // リテラルキーワードのリスト
   var identifierType = ""       // パターン中の識別子の種類を表す変数
-  var lastExpr = null;          // テンプレート中の式を保存するための変数
+//  var lastExpr = null;          // テンプレート中の式を保存するための変数
 }
 
 start
@@ -207,8 +208,8 @@ NullLiteral
   = NullToken { return { type: "NullLiteral" }; }
 
 BooleanLiteral
-  = TrueToken  { return { type: "BooleanLiteral", value: true  }; }
-  / FalseToken { return { type: "BooleanLiteral", value: false }; }
+  = TrueToken  { return { type: "BooleanLiteral", value: "true"  }; }
+  / FalseToken { return { type: "BooleanLiteral", value: "false" }; }
 
 NumericLiteral "number"
   = literal:(HexIntegerLiteral / DecimalLiteral) !IdentifierStart {
@@ -220,13 +221,16 @@ DecimalLiteral
     "."
     after:DecimalDigits?
     exponent:ExponentPart? {
-      return parseFloat(before + "." + after + exponent);
+        return before + "." + after + exponent;
+//      return parseFloat(before + "." + after + exponent);
     }
   / "." after:DecimalDigits exponent:ExponentPart? {
-      return parseFloat("." + after + exponent);
+      return "." + after + exponent;
+//      return parseFloat("." + after + exponent);
     }
   / before:DecimalIntegerLiteral exponent:ExponentPart? {
-      return parseFloat(before + exponent);
+      return before + exponent;
+//      return parseFloat(before + exponent);
     }
 
 DecimalIntegerLiteral
@@ -253,7 +257,10 @@ SignedInteger
   = sign:[-+]? digits:DecimalDigits { return sign + digits; }
 
 HexIntegerLiteral
-  = "0" [xX] digits:HexDigit+ { return parseInt("0x" + digits.join("")); }
+  = "0" [xX] digits:HexDigit+ { 
+      return "0x" + digits.join("");
+//      return parseInt("0x" + digits.join(""));
+    }
 
 HexDigit
   = [0-9a-fA-F]
@@ -326,8 +333,9 @@ RegularExpressionLiteral "regular expression"
   = "/" body:RegularExpressionBody "/" flags:RegularExpressionFlags {
       return {
         type:  "RegularExpressionLiteral",
-        body:  body,
-        flags: flags
+        value: "/" + body + "/" + flags
+//        body:  body,
+//        flags: flags
       };
     }
 
@@ -507,7 +515,21 @@ ArrayLiteral
     }
 
 ElementList
-  = (Elision __)?
+  = &{ return inTemplate; }
+    (Elision __)?
+    head:AssignmentExpression ellipsis:(__ "," __ "...")?
+    tail:(__ "," __ Elision? __ AssignmentExpression (__ "," __ "...")?)* {
+      var result = [head];
+      if (ellipsis)
+         result.push({ type: "Ellipsis" });
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][5]);
+        if (tail[i][6]);
+           result.push({ type: "Ellipsis" });
+      }
+      return result;
+    }
+  / (Elision __)?
     head:AssignmentExpression
     tail:(__ "," __ Elision? __ AssignmentExpression)* {
       var result = [head];
@@ -529,7 +551,20 @@ ObjectLiteral
     }
 
 PropertyNameAndValueList
-  = head:PropertyAssignment tail:(__ "," __ PropertyAssignment)* {
+  = &{ return inTemplate; }
+    head:PropertyAssignment ellipsis:(__ "," __ "...")?
+    tail:(__ "," __ PropertyAssignment (__ "," __ "...")?)* {
+      var result = [head];
+      if (ellipsis)
+         result.push({ type: "Ellipsis" });
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][3]);
+        if (tail[i][4])
+           result.push({ type: "Ellipsis" });
+      }
+      return result;
+    }
+  / head:PropertyAssignment tail:(__ "," __ PropertyAssignment)* {
       var result = [head];
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][3]);
@@ -672,15 +707,23 @@ Arguments
   }
 
 ArgumentList
-  = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)*
-    ellipsis:(!{ return inTemplate; }
-                  / (&{ return inTemplate; }(__ "," __ "...")?)) {
+  = &{ return inTemplate; }
+    head:AssignmentExpression ellipsis:(__ "," __ "...")?
+    tail:(__ "," __ AssignmentExpression (__ "," __ "...")?)* {
+    var result = [head];
+    if (ellipsis)
+       result.push({ type: "Ellipsis" });
+    for (var i = 0; i < tail.length; i++) {
+      result.push(tail[i][3]);
+      if (tail[i][4])
+         result.push({ type: "Ellipsis" });
+    }
+    return result;
+  }
+  / head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* {
     var result = [head];
     for (var i = 0; i < tail.length; i++) {
       result.push(tail[i][3]);
-    }
-    if (ellipsis[1]) {
-      result.push({ type: "Ellipsis" });
     }
     return result;
   }
@@ -1267,7 +1310,20 @@ Block
     }
 
 StatementList
-  = head:Statement tail:(__ Statement)* {
+  = &{ return inTemplate; }
+    head:Statement ellipsis:(__ "...")?
+    tail:(__ Statement (__ "...")?)* {
+      var result = [head];
+      if (ellipsis)
+         result.push({ type: "Ellipsis" });
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][1]);
+        if (tail[i][2])
+           result.push({ type: "Ellipsis" });
+      }
+      return result;
+    }
+  / head:Statement tail:(__ Statement)* {
       var result = [head];
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][1]);
@@ -1284,20 +1340,28 @@ VariableStatement
     }
 
 VariableDeclarationList
-  = head:VariableDeclaration tail:(__ "," __ VariableDeclaration)* {
+  = head:VariableDeclaration tail:(__ "," __ VariableDeclaration)*
+    ellipsis:(!{ return inTemplate; }
+                  / (&{ return inTemplate; }(__ "," __ "...")?)) {
       var result = [head];
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][3]);
       }
+      if (ellipsis[1])
+        result.push({ type: "Ellipsis" });
       return result;
     }
 
 VariableDeclarationListNoIn
-  = head:VariableDeclarationNoIn tail:(__ "," __ VariableDeclarationNoIn)* {
+  = head:VariableDeclarationNoIn tail:(__ "," __ VariableDeclarationNoIn)*
+    ellipsis:(!{ return inTemplate; }
+                  / (&{ return inTemplate; }(__ "," __ "...")?)) {
       var result = [head];
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][3]);
       }
+      if (ellipsis[1])
+        result.push({ type: "Ellipsis" });
       return result;
     }
 
@@ -1608,15 +1672,23 @@ FunctionExpression
 
 /* changed by homizu */
 FormalParameterList
-  = head:Identifier tail:(__ "," __ Identifier)* 
-    ellipsis:(!{ return inTemplate; }
-                  / (&{ return inTemplate; } (__ "," __ "...")?)) {
+  = &{ return inTemplate; }
+    head:Identifier ellipsis:(__ "," __ "...")?
+    tail:(__ "," __ Identifier (__ "," __ "...")?)* {
+      var result = [head];
+      if (ellipsis)
+         result.push({ type: "Ellipsis" });
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][3]);
+        if (tail[i][4])
+           result.push({ type: "Ellipsis" });
+      }
+      return result;
+    }
+  / head:Identifier tail:(__ "," __ Identifier)* {
       var result = [head];
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][3]);
-      }
-      if (ellipsis[1]) {
-        result.push({ type: "Ellipsis" });
       }
       return result;
     }
@@ -1678,7 +1750,7 @@ SourceElement
 /* マクロ定義のパーザー written by homizu */
 
 MacroDefinition
-  = type:(ExpressionToken / StatementToken) __
+  = type:(ExpressionToken { return exprMacro = true; } / StatementToken { return exprMacro = false; }) __
     macroName:Identifier __
     "{" __
     idList:("identifier:" __ ids:VariableList __ ";" { identifierNames = ids; return ids; })? __ 
@@ -1693,11 +1765,8 @@ MacroDefinition
           expressionNames = [];
           statementNames = [];
           literalKeywordNames = [];
-          return { type: (type === "expression" ? "Expression" : "Statement" ) + "MacroDefinition",
+          return { type: (type? "Expression" : "Statement") + "MacroDefinition",
                    macroName: macroName,
-//                   identifiers: idList,
-//                   expressions: exprList,
-//                   statements: stmtList,
                    literals: literalList || [],
                    syntaxRules: syntaxRules }; }
 
@@ -1734,7 +1803,7 @@ SyntaxRuleList
     }
 
 SyntaxRule
-  = "{" __ pat:Pattern __ ("=>" { inTemplate = true; })  __ temp:Template "}" {
+  = "{" __ pat:Pattern __ ("=>" { inTemplate = true; })  __ temp:Template __ "}" {
         inTemplate = false;       
         return { type: "SyntaxRule",
                  pattern: pat,
@@ -1743,104 +1812,82 @@ SyntaxRule
 
 // パターン
 Pattern
-  = ("_" / !"=>" Identifier) __ patterns:SubPatternList? { return patterns; }
+  = ("_" / !"=>" Identifier) __ patterns:SubPatternList? { return patterns || []; }
 
 SubPatternList
-  = head:SubPattern tail:(__ ","? __ SubPattern)* {
-        var result = head;
+  = head:SubPattern tail:(__ (","/";")? __ SubPattern)*
+    ellipsis:(__ PunctuationMark? __ "..." (__ ","? __ SubPattern)*)? {
+        var result = [head];
         for (var i=0; i<tail.length; i++) {
             if (tail[i][1])
-               result.push({ type: "PunctuationMark", value: "," });
-            result = result.concat(tail[i][3]);
+               result.push({ type: "PunctuationMark", value: tail[i][1] });
+            result.push(tail[i][3]);
+        }
+        if (ellipsis[3]) {
+           var last = result.pop();
+           var mark = ellipsis[1];
+           var elements = last;
+           if (!mark && last.type === "LiteralKeyword") {
+              var secondLast = result.pop();
+              if (secondLast.type === "RepBlock") {
+                 mark = last.name;
+                 elements = secondLast.elements;
+              } else {
+                 result.push(secondLast);
+              }
+           } else if (last.type === "RepBlock")
+             elements = last.elements;
+
+           result.push({ type: "Repetition",
+                         elements: elements,
+                         punctuationMark: mark });
+           result.push({ type: "Ellipsis" });
+           if (ellipsis[4]) {
+              for (var i=0; i<ellipsis[4].length; i++) {
+                  if (ellipsis[4][i][1])
+                     result.push({ type: "PunctuationMark", value: ellipsis[4][i][1] });
+                  result.push(ellipsis[4][i][3]);
+              }
+           }
         }
         return result;
      }
 
+RepetitionBlock
+  = "[#" __ patterns: SubPatternList __ "#]" {
+        return {
+          type: "RepBlock",
+          elements: patterns !== "" ? patterns : []
+        };
+    }
+
 SubPattern
-  = "[#" __ patterns:SubPatternList __ "#]" ellipsis:(__ PunctuationMark? __ "...") {
-         return [{
-           type: "Repetition",
-           elements: patterns,
-           punctuationMark: ellipsis[1]
-        },
-        { type: "Ellipsis" }
-//        { type: "PunctuationMark",
-//          value: ellipsis[1]
-//        }
-];
-      }
-  / "{" __ patterns:SubPatternList? __ "}" ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = {
+  = "[#" __ patterns: SubPatternList __ "#]" {
+        return {
+          type: "RepBlock",
+          elements: patterns
+        };
+    }
+  / "{" __ patterns:SubPatternList? __ "}" {
+        return {
           type: "Brace",
           elements: patterns !== "" ? patterns : []
         };
-        if (ellipsis[3]) {
-           return [{
-             type: "Repetition",
-             elements: result,
-             punctuationMark: ellipsis[1]
-           },
-           { type: "Ellipsis" }
-//           { type: "PunctuationMark",
-//             value: ellipsis[1]
-//           }
-];
-         }
-        return [result];                    
       }
-  / "(" __ patterns:SubPatternList? __ ")" ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = {
+  / "(" __ patterns:SubPatternList? __ ")" {
+        return {
           type: "Paren",
           elements: patterns !== "" ? patterns : []
         };
-        if (ellipsis[3]) {
-           return [{
-             type: "Repetition",
-             elements: result,
-             punctuationMark: ellipsis[1]
-           },
-           { type: "Ellipsis" }
-//           { type: "PunctuationMark",
-//             value: ellipsis[1]
-//           }
-];
-        }
-        return [result];                    
       }
-  / "[" __ patterns:SubPatternList? __ "]" ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = {
+  / "[" __ patterns:SubPatternList? __ "]" {
+        return {
           type: "Bracket",
           elements: patterns
         };
-        if (ellipsis[3]) {
-           return [{
-             type: "Repetition",
-             elements: result,
-             punctuationMark: ellipsis[1]
-           },
-           { type: "Ellipsis"}
-//           { type: "PunctuationMark",
-//             value: ellipsis[1]
-//           }
-];
-        }
-        return [result];                    
       }
-  / value:Literal ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = value;
-        if (ellipsis[3]) {
-           return [{
-             type: "Repetition",
-             elements: result,
-             punctuationMark: ellipsis[1]
-           },
-           { type: "Ellipsis" }
-//           { type: "PunctuationMark",
-//             value: ellipsis[1]
-//           }
-];
-        }
-        return [result];                    
+  / value:Literal {
+        return value;                 
       }
   / name:IdentifierName
     &{ if (identifierNames.indexOf(name) >= 0) {
@@ -1857,30 +1904,16 @@ SubPattern
            return identifierType;
        }
     } 
-    ellipsis:(__ PunctuationMark? __ "...")? {
-        var result = {
+    { return {
           type: identifierType === 'LiteralKeyword' ? identifierType : (identifierType + 'Variable'),
           name: name
-        };
-        if (ellipsis[3]) {
-           return [{
-             type: "Repetition",
-             elements: result,
-             punctuationMark: ellipsis[1]
-           },
-           { type: "Ellipsis" }
-//           { type: "PunctuationMark",
-//             value: ellipsis[1]
-//           }
-];
-        }
-        return [result];                    
+        };                 
       }
   / punc:PatternPunctuator {
-        return [{
+        return {
            type: "Punctuator",
            value: punc
-        }];
+        };
     }
 
 PunctuationMark
@@ -1948,17 +1981,7 @@ Template
   / !"}" char:. { return { type: "Charactertemp", value: char }; })*
 
 StatementInTemplate
-  = "{" __ head:Statement tail:(__ Statement __ "..."?)* __ "}" {
-        var statements = [head];
-        for (var i=0; i<tail.length; i++) {
-            statements.push(tail[i][1]);
-            if (tail[i][3]) {
-               statements.push({ type: "Ellipsis" });
-            }
-        }
-        return { type: "Block",
-                 statements: statements };
-    }
-  / Statement 
+  = &{ return exprMacro; } e:AssignmentExpression { return e; }
+  / !{ return exprMacro; } s:Statement { return s; }
 
 ////////////////////////////////////////////////////////////

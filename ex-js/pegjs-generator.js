@@ -174,13 +174,13 @@ module.exports = (function () {
                 return {
                     type: 'StringLiteral',
                     value: value,
-                    toString: function() { return '("\"'+ this.value + '\"" { return { type: "StringLiteral", value: "' + this.value + '" }; })'; }
+                    toString: function() { return '((\'"'+ this.value + '"\' / "\'' + this.value + '\'") { return { type: "StringLiteral", value: "' + this.value + '" }; })'; }
                 };
             } else if (type === 'RegularExpressionLiteral') {
                 return {
                     type: 'RegularExpressionLiteral',
                     value: value,
-                    toString: function() { return '("/" "' + value.body + '" "/" "' + value.flags + '" { return { type: "RegularExpressionLiteral", body: "' + this.value.body + '", flags: "' + this.value.flags + '" }; })'; } 
+                    toString: function() { return '("' + this.value + '" { return { type: "RegularExpressionLiteral", value: "' + this.value + '" }; })'; } 
                 };
             } else if (type === 'NullLiteral') {
                 return {
@@ -253,10 +253,12 @@ module.exports = (function () {
 
         // Enclosing
         enclosing: function(type, elements) {
-            var lefts = { Brace: pegObj.string(null, '{'),
+            var lefts = { RepBlock: pegObj.string(null, ''),
+                          Brace: pegObj.string(null, '{'),
                           Paren: pegObj.string(null, '('),
                           Bracket: pegObj.string(null, ']') };
-            var rights = { Brace: pegObj.string(null, '}'),
+            var rights = { RepBlock: pegObj.string(null, ''),
+                           Brace: pegObj.string(null, '}'),
                            Paren: pegObj.string(null, ')'),
                            Bracket: pegObj.string(null, ']') };
             var isNull = elements.type.charAt(0) === '-';
@@ -325,6 +327,15 @@ module.exports = (function () {
               var elements = convertToPegObj(obj.elements);
               return pegObj.repetition(elements, obj.punctuationMark);
           }          
+        },
+
+        // RepBlock [# ~ #] は 取り除く
+        { type: 'RepBlock',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              var elements = convertToPegObj(obj.elements);
+              return pegObj.enclosing(this.type, elements);
+          }
         },
 
         // Brace
@@ -438,7 +449,7 @@ module.exports = (function () {
         { type: 'RegularExpressionLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj.string(this.type, { body: obj.body, flags: obj.flags });
+              return pegObj.string(this.type, obj.value);
           }
         }
     ];
