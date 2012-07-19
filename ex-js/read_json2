@@ -92,9 +92,9 @@
         ((eq? type 'PropertyAssignment) ;; PropertyAssignment
          `("JS" "propAssign" ,(generalize-hash-value hash 'name) ,(generalize-hash-value hash 'value)))
         ((eq? type 'GetterDefinition) ;; GetterDefinition
-         `("JS" "getter" ,(generalize-hash-value hash 'name) ,(generalize-hash-value hash 'body)))
+         `("JS" "getter" ,(generalize-hash-value hash 'name) ,@(generalize-hash-value hash 'body)))
         ((eq? type 'SetterDefinition) ;; SetterDefinition
-         `("JS" "setter" ,(generalize-hash-value hash 'name) ,(generalize-hash-value hash 'param) ,(generalize-hash-value hash 'body)))
+         `("JS" "setter" ,(generalize-hash-value hash 'name) ,(generalize-hash-value hash 'param) ,@(generalize-hash-value hash 'body)))
         ((eq? type 'NewOperator) ;; NewOperator
          `("JS" "new" ,(generalize-hash-value hash 'constructor) ,@(generalize-hash-value hash 'arguments)))
         ((eq? type 'PropertyAccess) ;; PropertyAccess
@@ -142,7 +142,7 @@
         ((eq? type 'WithStatement) ;; WithStatement
          `("JS" "with" ,(generalize-hash-value hash 'environment) ,(generalize-hash-value hash 'statement)))
         ((eq? type 'SwitchStatement) ;; SwitchStatement
-         `("JS" "switch" ,(generalize-hash-value hash 'expression) ,(generalize-hash-value hash 'clauses)))
+         `("JS" "switch" ,(generalize-hash-value hash 'expression) ,@(generalize-hash-value hash 'clauses)))
         ((eq? type 'CaseClause) ;; CaseClause
          `("JS" "case" ,(generalize-hash-value hash 'selector) ,@(generalize-hash-value hash 'statements)))
         ((eq? type 'DefaultClause) ;; DefaultClause
@@ -152,21 +152,26 @@
         ((eq? type 'ThrowStatement) ;; ThrowStatement
          `("JS" "throw" ,(generalize-hash-value hash 'exception)))
         ((eq? type 'TryStatement) ;; TryStatement
-         `("JS" "try" ,(generalize-hash-value hash 'block) ,(generalize-hash-value hash 'catch) ,(generalize-hash-value hash 'finally)))
-        ((eq? type 'Catch) ;; Catch
-         `("JS" "catch" ,(generalize-variable hash 'identifier "V-" "") ,(generalize-hash-value hash 'block)))
-        ((eq? type 'Finally) ;; Finally
-         `("JS" "finally" ,(generalize-hash-value hash 'block)))
+         (let* ((block (generalize-hash-value hash 'block))
+                (catch (hash-ref hash 'catch))
+                (finally (hash-ref hash 'finally)))
+         `("JS" "try" ,block
+           ,(if (eq? catch #\nul) ;; Catch
+                catch
+                `(,(generalize-variable catch 'identifier "V-" "") ,(generalize-hash-value catch 'block)))
+           ,(if (eq? finally #\nul) ;; Finally
+                finally
+                (generalize-hash-value finally 'block)))))
         ((eq? type 'DebuggerStatement) ;; DebuggerStatement
          `("JS" "debugger"))
         ((eq? type 'Function) ;; Function
          (let* ((name (hash-ref hash 'name))
                 (body (generalize-hash-value hash 'elements))
                 (params (generalize-variable-list hash 'params "V-" "")))
-           (if (eq? name #\nul)
-               `(lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body)))
+;;           (if (eq? name #\nul)
+;;               `(lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body)))
 ;;               `(define (,name ,@params) ,(if (eq? body '()) `(quote ,body) `(begin ,@body))))))
-               `("JS" "function" ,(string-append "V-" name) (lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body)))))))
+           `("JS" "function" ,(if (eq? name #\nul) name (string->symbol (string-append "V-" name))) (lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body))))))
         ((eq? type 'Program) ;; Program
          `(begin ,@(generalize-hash-value hash 'elements)))
         (#t
