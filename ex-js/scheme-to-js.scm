@@ -43,36 +43,41 @@
          (str (list->string (map (lambda (c)
                                    (if (memq c unwanted-chars) #\_ c)) ;; . ` * を _ にする
                                  chars))))
-    (bformat "~a" (string->symbol (pregexp-replace "^(V|LK)-" str ""))))) ;; 変数名の V- と LK- を取り除く
+    (bformat "~a" (string->symbol (pregexp-replace "^(V|LK)-" str "")))) ;; 変数名の V- と LK- を取り除く
+  #t)
 
 (define (do-fargs arg*)
-  (bformat " (") (bseparating s2j ", " arg*) (bformat ") "))
+  (bformat "(") (bseparating s2j ", " arg*) (bformat ")"))
 
 (define (do-begin e)
-  (for-each (lambda (v) (s2j v) (bformat ";") (bnewline)) e))
+  (for-each (lambda (v) (if (s2j v) (bformat ";")) (bnewline)) e) #f)
 
 (define (do-expressions e)
-  (bformat "(") (bseparating s2j ", " e) (bformat ")"))
+  (bformat "(") (bseparating s2j ", " e) (bformat ")") #t)
 
 (define (do-array e)
-  (bformat "[ ") (bseparating s2j ", " e) (bformat " ]"))
+  (bformat "[ ") (bseparating s2j ", " e) (bformat " ]") #t)
 
 (define (do-object e)
   (bformat "{ ")
   (bseparating s2j ", " e)
-  (bformat " }"))
+  (bformat " }")
+  #t)
 
 (define (do-propAssign e)
   (bformat "~a: " (car e))
-  (s2j (cadr e)))
+  (s2j (cadr e))
+  #t)
 
 (define (do-getter e)
   (bformat "get ~a() " (car e))
-  (do-block (cdr e)))
+  (do-block (cdr e))
+  #t)
 
 (define (do-setter e)
   (bformat "set ~a(~a) " (car e) (cadr e))
-  (do-block (cddr e)))
+  (do-block (cddr e))
+  #t)
 
 (define (do-new e)
   (let ((constructor (car e))
@@ -80,7 +85,9 @@
     (bformat "new ")
     (s2j counstructor)
     (if (not (null? arg*))
-        (do-fargs arg*))))
+        (begin (bformat " ")
+               (do-fargs arg*))))
+  #t)
 
 (define (do-propAccess e)
   (let ((base (car e))
@@ -90,29 +97,34 @@
         (bformat ".~a" name) ;; .のとき
         (begin (bformat "[") ;; []のとき
                (s2j name)
-               (bformat "]")))))
+               (bformat "]"))))
+  #t)
 
 (define (do-funcCall e)
   (let ((name (car e))
         (arg* (cdr e)))
     (bformat "(")
     (s2j name)
+    (bformat " ")
     (do-fargs arg*)
-    (bformat ")")))
+    (bformat ")"))
+  #t)
 
 (define (do-postfix e)
   (let ((op (car e))
         (e1 (cadr e)))
     (bformat "(")
     (s2j e1)
-    (bformat " ~a)" op)))
+    (bformat " ~a)" op))
+  #t)
 
 (define (do-unary e)
   (let ((op (car e))
         (e1 (cadr e)))
     (bformat "(~a " op)
     (s2j e1)
-    (bformat ")")))
+    (bformat ")"))
+  #t)
 
 (define (do-binary e)
   (let ((op (car e))
@@ -120,7 +132,8 @@
         (e2 (caddr e)))
     (bformat "(")
     (s2j e1) (bformat " ~a " op) (s2j e2)
-    (bformat ")")))
+    (bformat ")"))
+  #t)
 
 (define (do-assignment e)
   (let ((op (car e))
@@ -128,7 +141,8 @@
         (e2 (caddr e)))
     (bformat "(")
     (s2j e1) (bformat " ~a " op) (s2j e2)
-    (bformat ")")))
+    (bformat ")"))
+  #t)
 
 (define (do-conditional e)
   (let ((e1 (car e))
@@ -137,7 +151,8 @@
     (bformat "((") (s2j e1)
     (bformat ") ? (") (s2j e2)
     (bformat ") : (") (s2j e3)
-    (bformat "))")))
+    (bformat "))"))
+  #t)
 
 (define (do-statement e)
   (if (and (list? e) (>= (length e) 2) (string=? (cadr e) "block"))
@@ -145,7 +160,7 @@
         (do-block (cddr e))
         #t)
       (begin
-        (s2j e)
+        (if (s2j e) (bformat ";"))
         #f)))
 
 (define (do-block e)
@@ -154,7 +169,8 @@
   (do-begin e)
   (bdelete1)
   (bnewline -2)
-  (bformat "}"))
+  (bformat "}")
+  #f)
 
 (define (do-variable e)
   (bformat "var ")
@@ -167,7 +183,8 @@
                          (bformat " = ")
                          (s2j value)))))
                ", "
-               e))
+               e)
+  #t)
 
 (define (do-if e)
   (let ((e1 (car e))
@@ -178,9 +195,10 @@
     (set! block (do-statement e2)) ;; then
     (if (not (eq? e3 #\nul)) ;; else
         (begin
-          (if block (bformat " ") (bformat ";~%"))
+          (if block (bformat " ") (bformat "~%"))
           (bformat "else ")
-          (do-statement e3)))))
+          (do-statement e3))))
+  #f)
 
 (define (do-dowhile e)
   (let ((block #t))
@@ -189,13 +207,15 @@
     (if block (bformat " ") (bformat ";~%"))
     (bformat "while (")
     (s2j (car e))
-    (bformat ")")))
+    (bformat ")"))
+  #f)
 
 (define (do-while e)
   (bformat "while (")
   (s2j (car e))
   (bformat ") ")
-  (do-statement (cadr e)))
+  (do-statement (cadr e))
+  #f)
 
 (define (do-for e)
   (let ((e1 (car e))
@@ -211,7 +231,8 @@
     (bformat "; ")
     (if (not (eq? e3 #\nul)) (s2j e3))
     (bformat ") ")
-    (do-statement e4)))
+    (do-statement e4))
+  #f)
 
 (define (do-forin e)
   (let ((e1 (car e))
@@ -224,17 +245,20 @@
      (bformat " in ")
      (s2j e2)
      (bformat ") ")
-     (do-statement e3)))
+     (do-statement e3))
+  #f)
 
 (define (do-return e)
   (bformat "return ")
-  (s2j (car e)))
+  (s2j (car e))
+  #t)
 
 (define (do-with e)
   (bformat "with (")
   (s2j (car e))
   (bformat ") ")
-  (do-statement (cadr e)))
+  (do-statement (cadr e))
+  #f)
 
 (define (do-switch e)
   (bformat "switch (")
@@ -244,7 +268,8 @@
   (for-each s2j (cdr e))
   (bdelete1)
   (bnewline -2)
-  (bformat "}"))
+  (bformat "}")
+  #f)
 
 (define (do-case e)
   (bformat "case ")
@@ -253,14 +278,16 @@
   (bnewline 2)
   (do-begin (cdr e))
   (bdelete1)
-  (bnewline -2))
+  (bnewline -2)
+  #f)
 
 (define (do-default e)
   (bformat "default: ")
   (bnewline 2)
   (do-begin e)
   (bdelete1)
-  (bnewline -2))
+  (bnewline -2)
+  #f)
 
 (define (do-try e)
   (let ((block (car e))
@@ -275,7 +302,8 @@
                (do-block (cddr (cadr catch)))))
     (if (not (eq? finally #\nul)) ;; finally
         (begin (bformat " finally ")
-               (do-block (cddr finally))))))
+               (do-block (cddr finally)))))
+  #f)
 
 (define (do-function e)
   (let ((name (car e))
@@ -285,20 +313,23 @@
     (if (not (eq? function #\nul))
         (begin
           (bformat "function")
-          (if (not (eq? name #\nul)) (do-symbol name))
+          (if (not (eq? name #\nul)) (begin (bformat " ") (do-symbol name)))
+          (bformat " ")
           (do-fargs (cadr function))
-          (do-block (cddr function))))))
+          (bformat " ")
+          (do-block (cddr function)))))
+  #f)
           
 (define (do-JS e)
   (let ((type (car e))
         (body (cdr e)))
     (cond ((eq? type "expressions") (do-expressions body))
-          ((eq? type "const") (bformat "~a" (car body)))
-          ((eq? type "number") (bformat "~a" (car body)))
+          ((eq? type "const") (bformat "~a" (car body)) #t)
+          ((eq? type "number") (bformat "~a" (car body)) #t)
           ((eq? type "string") (let ((value (car body)))
                                  (if (pregexp-match "\"" value)
                                      (bformat "'~a'" value)      ;; single quote
-                                     (bformat "\"~a\"" value)))) ;; double quote
+                                     (bformat "\"~a\"" value))) #t) ;; double quote
           ((eq? type "array") (do-array body))
           ((eq? type "object") (do-object body))
           ((eq? type "propAssign") (do-propAssign body))
@@ -314,7 +345,7 @@
           ((eq? type "conditional") (do-conditional body))
           ((eq? type "block") (do-block body))
           ((eq? type "variable") (do-variable body))
-          ((eq? type "empty") (bformat ";"))
+          ((eq? type "empty") #t) ;; (bformat ";")
           ((eq? type "if") (do-if body))
           ((eq? type "dowhile") (do-dowhile body))
           ((eq? type "while") (do-while body))
@@ -322,19 +353,19 @@
           ((eq? type "forin") (do-forin body))
           ((eq? type "continue") (let ((label (car body)))
                                    (bformat "continue")
-                                   (if (not (eq? label #\nul)) (bformat " ~a" label))))
+                                   (if (not (eq? label #\nul)) (bformat " ~a" label))) #t)
           ((eq? type "break") (let ((label (car body)))
                                 (bformat "break")
-                                (if (not (eq? label #\nul)) (bformat " ~a" label))))
+                                (if (not (eq? label #\nul)) (bformat " ~a" label))) #t)
           ((eq? type "return") (do-return body))
           ((eq? type "with") (do-with body))
           ((eq? type "switch") (do-switch body))
           ((eq? type "case") (do-case body))
           ((eq? type "default") (do-default body))
-          ((eq? type "labelled") (bformat "~a: " (car body)) (do-statement (cadr body)))
-          ((eq? type "throw") (bformat "throw ") (s2j (car body)))
+          ((eq? type "labelled") (bformat "~a: " (car body)) (do-statement (cadr body)) #f)
+          ((eq? type "throw") (bformat "throw ") (s2j (car body)) #t)
           ((eq? type "try") (do-try body))
-          ((eq? type "debugger") (bformat "debugger"))
+          ((eq? type "debugger") (bformat "debugger") #t)
           ((eq? type "function") (do-function body))
           (error 'do-JS "Invalid expression" e))))
 
@@ -342,7 +373,7 @@
   (let ((head (car e)))
     (cond ((symbol? head)
            (cond ((eq? head 'begin) (do-begin (cdr e)))
-                 ((eq? head 'define) (hashtable-set! functions (cadr e) (caddr e)))))
+                 ((eq? head 'define) (hashtable-set! functions (cadr e) (caddr e)))) #f)
           ((eq? head "JS") (do-JS (cdr e)))
           (error 'do-list "Invalid elements." e))))
 

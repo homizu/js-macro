@@ -1,0 +1,25 @@
+・必要なソフトウェア
+  - Node.js
+  - PEG.js (インストール方法：http://pegjs.majda.cz/documentation)
+  - Racket
+  - Ypsilon
+
+・サンプルファイルの場所
+  ex-js/macro-examples/
+
+・起動の前に
+  ファイル make_exjs_tree.js，convert-json.scm，expand-scm.scm の1行目にそれぞれ，node，racket，ypsilon の場所を指定しておいてください．
+
+・起動方法 (macの場合)
+  ex-js で以下のコマンドを実行する．
+  ./expand_js.sh jsファイル
+
+・生成するスクリプト群
+  引数で与えられた jsファイル（XXX.js）が存在するフォルダに converted というフォルダを作成し，その中に以下のファイルを生成する．
+  - XXX.midtree     : 1回目の構文解析で生成されるJSON
+  - XXX.pegjs       : 1回目の構文解析で得られたJSONから生成したPEG.jsのコード
+  - XXX.tree        : 拡張後のパーザーで構文解析し，生成されたJSON
+  - XXX-jsexpr.scm  : JSON（treeファイル）をracketで読み込んだときのjsexpr形式の式
+  - XXX-sform.scm   : jsexpr形式の式をypsilonで読み込めるよう変換したJSタグ付きS式
+  - XXX-expanded.scm: JSタグ付きS式をマクロ展開して得られたS式
+  - XXX-expanded.js : マクロ展開後のS式をJavaScriptのコードに変換したもの
