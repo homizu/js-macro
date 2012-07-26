@@ -204,7 +204,7 @@
   (let ((block #t))
     (bformat "do ")
     (set! block (do-statement (cadr e)))
-    (if block (bformat " ") (bformat ";~%"))
+    (if block (bformat " ") (bformat "~%"))
     (bformat "while (")
     (s2j (car e))
     (bformat ")"))

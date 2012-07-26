@@ -112,14 +112,14 @@ module.exports = (function () {
                 type: 'Repetition',
                 elements: elements,
                 mark: mark,
-                toString: function() { return '((ellipsis:"..." { return { type: "Repeat", elements: [{ type: "Ellipsis" }] }; })\
- / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !inTemplate && ellipsis; }\
- { var elements = [head];\
-   for (var i=0; i<tail.length; i++) {\
-     elements.push(tail[i][' + (mark? 3 : 1) + ']);\
-   }\
-   if (ellipsis) elements.push({ type: "Ellipsis" });\
-   return { type: "Repeat", elements: elements }; })?)'; }
+                toString: function() { return '((ellipsis:"..." { return { type: "Repeat", elements: [{ type: "Ellipsis" }] }; })\n\
+ / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !inTemplate && ellipsis; }\n\
+ { var elements = [head];\n\
+   for (var i=0; i<tail.length; i++) {\n\
+     elements.push(tail[i][' + (mark? 3 : 1) + ']);\n\
+   }\n\
+   if (ellipsis) elements.push({ type: "Ellipsis" });\n\
+   return { type: "Repeat", elements: elements }; })?)\n'; }
             };
             
         },
@@ -283,23 +283,6 @@ module.exports = (function () {
             };
         },
         
-        // Macro input form
-        // macroForm: function(name, body) {
-        //     var form;
-        //     if (body.type.charAt(0) === '-')
-        //         form = name;
-        //     else
-        //         form = pegObj.sequence([name, body]);
-        //     return {
-        //         type: 'MacroForm',
-        //         name: name.name,
-        //         inputForm: form,
-        //         toString: function() {
-        //             return 'form:' + form + '{ return { type: "' + this.type + '", inputForm: form }; }';
-        //         }
-        //     };
-        // }
-
         macroForm: function(name, body) {
             var form = [name];
             for (var i=0; i<body.length; i++) {

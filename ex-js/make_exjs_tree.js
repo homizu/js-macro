@@ -1,4 +1,4 @@
-#!/opt/local/bin/node
+#!/usr/bin/env node
 
 /* 
    引数に指定されたJSファイルをパーズし，JSONを生成するプログラム．
@@ -18,26 +18,39 @@ var grammarFile = './ex-javascript.pegjs';
 var debug = true;
 var resultDir = 'converted/';
 
+var start, end; // 時間計測用変数
+
+var jsFile, midtreeFile, treeFile, pegjsFile;
+var divPos;
+var fileDir, fileName;
+
 var argv = process.argv;
 if (argv.length === 3) {
-    var jsFile = argv[2];
-    var divPos = jsFile.lastIndexOf('/');
-    var fileDir = jsFile.substr(0, divPos+1) + resultDir;
-    var fileName = jsFile.substr(divPos+1).split('.js')[0];
-    var midtreeFile = fileDir + fileName + '.midtree';
-    var treeFile = fileDir + fileName + '.tree';
-    var pegjsFile = fileDir + fileName + '.pegjs';
+    jsFile = argv[2];
+    divPos = jsFile.lastIndexOf('/');
+    fileDir = jsFile.substr(0, divPos+1) + resultDir;
+    fileName = jsFile.substr(divPos+1).split('.js')[0];
+    midtreeFile = fileDir + fileName + '.midtree';
+    treeFile = fileDir + fileName + '.tree';
+    pegjsFile = fileDir + fileName + '.pegjs';
 
     fs.mkdir(fileDir, function(err) {});
 
-    fs.readFile(grammarFile, function(err, grammar) {
+    fs.readFile(grammarFile, function(err, gram) {
+        var parser;
+        var midtree, tree;
+        var macro;
+        var grammar = '' + gram;
+
         if (err) throw err;
-        grammar = '' + grammar;
+
         // generate a parser
         try {
-            if (debug) console.log('building a parser ...');
-            var parser = PEG.buildParser(grammar, { cache: true});
-            if (debug) console.log('done');
+            if (debug) console.log('Building a parser ...');
+            start = new Date();
+            parser = PEG.buildParser(grammar, { cache: true});
+            end = new Date();
+            if (debug) console.log('Done.\nTime: %ds.', (end.getTime() - start.getTime()) / 1000);
         } catch (e) {
             console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
             process.exit(1);
@@ -47,42 +60,31 @@ if (argv.length === 3) {
             if (err) throw err;
             jsCode = '' + jsCode;
             try {
-                if (debug) console.log('parsing a JavaScript code ...');
-                var tree = parser.parse(jsCode, 'start');
-                if (debug) console.log('done\n%s', JSON.stringify(tree, null, 2));
+                if (debug) console.log('Parsing a JavaScript code ...');
+                start = new Date();
+                midtree = parser.parse(jsCode, 'start');
+                end = new Date();
+                if (debug) console.log('Done.\nTime: %ds.\n%s', (end.getTime() - start.getTime()) / 1000, JSON.stringify(midtree, null, 2));
             } catch(e) {
                 console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
                 process.exit(1);
             }
-            
-            // write a mid-tree
-            if (debug) console.log('writing a mid-tree file ...');
-            fs.writeFile(midtreeFile,
-                         JSON.stringify(tree, null, 2),
-                         function(err) {
-                             if (err) throw err;
-                             if (debug) console.log('done');
-                         });
 
             // generate a pegjs code
-            if (debug) console.log('generating a pegjs code ...');
-            var macro = generator.generate(tree);
-            if (debug) console.log('done\n%s', macro);
-
-            // write a pegjs code
-            if (debug) console.log('writing a pegjs file ...');
-            fs.writeFile(pegjsFile,
-                         macro,
-                         function(err) {
-                             if (err) throw err;
-                             if (debug) console.log('done');
-                         });
+            if (debug) console.log('Generating a pegjs code ...');
+            start = new Date();
+            macro = generator.generate(midtree);
+            end = new Date();
+            if (debug) console.log('Done.\nTime: %ds.\n%s', (end.getTime() - start.getTime()) / 1000, macro);
             
             // re-generate a parser
             try {
-                if (debug) console.log('re-building a parser ...');
-                parser = PEG.buildParser(grammar+macro, { cache: true });
-                if (debug) console.log('done');
+                if (debug) console.log('Re-building a parser ...');
+                grammar = grammar + macro;
+                start = new Date();
+                parser = PEG.buildParser(grammar, { cache: true });
+                end = new Date();
+                if (debug) console.log('Done.\nTime: %ds.\n', (end.getTime() - start.getTime()) / 1000);
             } catch (e) {
                 console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
                 process.exit(1);
@@ -90,21 +92,41 @@ if (argv.length === 3) {
 
             // make a parse tree
             try {
-                if (debug) console.log('parsing a JavaScript code ...');
-                var tree = parser.parse(jsCode, 'start');
-                if (debug) console.log('done\n%s', JSON.stringify(tree, null, 2));
+                if (debug) console.log('Parsing a JavaScript code ...');
+                start = new Date();
+                tree = parser.parse(jsCode, 'start');
+                end = new Date();
+                if (debug) console.log('Done.\nTime: %ds.\n%s', (end.getTime() - start.getTime()) / 1000, JSON.stringify(tree, null, 2));
             } catch(e) {
                 console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
                 process.exit(1);
             }
 
+            // write a mid-tree
+            if (debug) console.log('Writing a mid-tree file ...');
+            fs.writeFile(midtreeFile,
+                         JSON.stringify(midtree, null, 2),
+                         function(err) {
+                             if (err) throw err;
+                             if (debug) console.log('Done.');
+                         });
+
+            // write a pegjs code
+            if (debug) console.log('Writing a pegjs file ...');
+            fs.writeFile(pegjsFile,
+                         macro,
+                         function(err) {
+                             if (err) throw err;
+                             if (debug) console.log('Done.');
+                         });
+
             // write a tree
-            if (debug) console.log('writing a tree file ...');
+            if (debug) console.log('Writing a tree file ...');
             fs.writeFile(treeFile,
                          JSON.stringify(tree, null, 2),
                          function(err) {
                              if (err) throw err;
-                             if (debug) console.log('done');
+                             if (debug) console.log('Done.');
                          });
 
         });
