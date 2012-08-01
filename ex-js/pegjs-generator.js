@@ -112,8 +112,9 @@ module.exports = (function () {
                 type: 'Repetition',
                 elements: elements,
                 mark: mark,
-                toString: function() { return '((ellipsis:"..." { return { type: "Repeat", elements: [{ type: "Ellipsis" }] }; })\n\
- / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !inTemplate && ellipsis; }\n\
+                toString: function() { return '(PatternEllipsis\n' +
+//(ellipsis:"..." { return { type: "Repeat", elements: [{ type: "Ellipsis" }] }; })\n\
+' / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !inTemplate && ellipsis; }\n\
  { var elements = [head];\n\
    for (var i=0; i<tail.length; i++) {\n\
      elements.push(tail[i][' + (mark? 3 : 1) + ']);\n\
@@ -186,7 +187,7 @@ module.exports = (function () {
                 return {
                     type: 'NullLiteral',
                     value: value,
-                    toString: function() { return '(NullToken { return { type: "NullLiteral" }; })'; }
+                    toString: function() { return 'NullLiteral'; }
                 };
             } else if (type === 'LiteralKeyword') {
                 return {
@@ -222,7 +223,7 @@ module.exports = (function () {
         identifier: function() {
             return {
                 type: 'Identifier',
-                toString: function() { return '(name:IdentifierName { return { type: "Variable", name: name }; })'; }
+                toString: function() { return 'PatternIdentifier'; }
             };
         },
         
@@ -482,7 +483,6 @@ module.exports = (function () {
                 var syntaxRules = macroDef.syntaxRules;
                 var patterns = [];
                 for (var j=0; j<syntaxRules.length; j++) {
-//                    patterns.push(pegObj.macroForm(macroName, convertToPegObj(syntaxRules[j].pattern)));
                     patterns.push(pegObj.macroForm(macroName, syntaxRules[j].pattern));
                 }
                 patterns = pegObj.choice(patterns);

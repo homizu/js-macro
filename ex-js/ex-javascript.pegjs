@@ -2038,4 +2038,15 @@ StatementInTemplate
   = &{ return exprMacro; } e:AssignmentExpression { return e; }
   / !{ return exprMacro; } s:Statement { return s; }
 
+PatternIdentifier
+  = name:IdentifierName {
+      return { type: "Variable", name: name };
+    }
+
+PatternEllipsis
+  = "..." {
+      return { type: "Repeat",
+               elements: [{ type: "Ellipsis" }] };
+    }
+
 ////////////////////////////////////////////////////////////
