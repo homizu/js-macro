@@ -7,9 +7,6 @@
 ・サンプルファイルの場所
   ex-js/macro-examples/
 
-・起動の前に
-  ファイル make_exjs_tree.js，convert-json.scm，expand-scm.scm の1行目にそれぞれ，node，racket，ypsilon の場所を指定しておいてください．
-
 ・起動方法 (macの場合)
   ex-js で以下のコマンドを実行する．
   ./expand_js.sh jsファイル

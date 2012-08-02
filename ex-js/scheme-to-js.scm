@@ -317,7 +317,10 @@
           (bformat " ")
           (do-fargs (cadr function))
           (bformat " ")
-          (do-block (cddr function)))))
+          (let ((body (cddr function)))
+            (if (and (list? body) (= (length body) 1) (list? (car body)) (eq? (caar body) 'letrec*)) ;; letrec*のとき
+                (set! body (cddar body)))
+            (do-block body)))))
   #f)
           
 (define (do-JS e)
@@ -373,7 +376,8 @@
   (let ((head (car e)))
     (cond ((symbol? head)
            (cond ((eq? head 'begin) (do-begin (cdr e)))
-                 ((eq? head 'define) (hashtable-set! functions (cadr e) (caddr e)))) #f)
+                 ((eq? head 'define) (if (not (null? (caddr e))) (hashtable-set! functions (cadr e) (caddr e))))
+                 ((eq? head 'letrec*) (s2j (cddr e)))) #f)
           ((eq? head "JS") (do-JS (cdr e)))
           (error 'do-list "Invalid elements." e))))
 

@@ -27,7 +27,7 @@
     (close-input-port in)))
 
 (define (main args)
-  (time (expand-scm (cadr args))))
+  (time (begin (expand-scm (cadr args)) (display "MacroExpand and Scheme->JavaScript"))))
 
 (main (command-line))
 
