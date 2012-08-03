@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+expand_times=2 # number of macro-expand times. 1 or 2
+
 if [ ! $# -eq 1 ]
 then
     echo "Expected 1 argument, but got $# arguments"
@@ -16,6 +18,11 @@ sformfile=$converted_dir/$base-sform.scm
 
 ./make_exjs_tree.js $input_js &&
 
-./convert-json-gp.scm $treefile &&
-
-./expand-scm.scm $sformfile
+if [ $expand_times -eq 1 ]
+then
+    ./convert-json-gp.scm $treefile &&
+    ./expand-scm.scm $sformfile
+else
+    ./convert-json.scm $treefile &&
+    ./expand-scm-2times.scm $sformfile
+fi
