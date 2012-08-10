@@ -222,15 +222,12 @@ DecimalLiteral
     after:DecimalDigits?
     exponent:ExponentPart? {
         return before + "." + after + exponent;
-//      return parseFloat(before + "." + after + exponent);
     }
   / "." after:DecimalDigits exponent:ExponentPart? {
       return "." + after + exponent;
-//      return parseFloat("." + after + exponent);
     }
   / before:DecimalIntegerLiteral exponent:ExponentPart? {
       return before + exponent;
-//      return parseFloat(before + exponent);
     }
 
 DecimalIntegerLiteral
@@ -259,7 +256,6 @@ SignedInteger
 HexIntegerLiteral
   = "0" [xX] digits:HexDigit+ { 
       return "0x" + digits.join("");
-//      return parseInt("0x" + digits.join(""));
     }
 
 HexDigit
@@ -334,8 +330,6 @@ RegularExpressionLiteral "regular expression"
       return {
         type:  "RegularExpressionLiteral",
         value: "/" + body + "/" + flags
-//        body:  body,
-//        flags: flags
       };
     }
 
@@ -727,16 +721,6 @@ ArgumentList
     }
     return result;
   }
-
-/* original */
-// ArgumentList
-//   = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* {
-//     var result = [head];
-//     for (var i = 0; i < tail.length; i++) {
-//       result.push(tail[i][3]);
-//     }
-//     return result;
-//   }
 
 LeftHandSideExpression
   = CallExpression
@@ -1146,43 +1130,6 @@ AssignmentOperator
   / "^="
   / "|="
 
-/* Expression and ExpressionNoIn changed by homizu */
-// Expression
-//   = head:(exp:AssignmentExpression { lastExpr = exp; return exp; })
-//     tail:(__ delimiter:(comma:(","/"") &{
-//               return comma[0] || inTemplate; } { return comma[0] || " "; })
-//           __ exp:AssignmentExpression &{
-//               if (delimiter) {
-//                   return delimiter;
-//               } else {
-//                   lastExpr = exp;
-//                   return lastExpr.type === "Variable" && statementNames.indexOf(lastExpr.name) >= 0
-//               }
-//           } { return [delimiter, exp]; })*
-//     ellipsis:(!{ return inTemplate; }
-//                   / (&{ return inTemplate; } (__ (","/";")? __ "...")?)) {
-//       var result = head;
-//       for (var i = 0; i < tail.length; i++) {
-//         result = {
-//           type:     "BinaryExpression",
-//           operator: tail[i][0],
-//           left:     result,
-//           right:    tail[i][1]
-//         };
-//       }
-//       if (ellipsis[1]) {
-//          result = {
-//            type:     "BinaryExpression",
-//            operator: ellipsis[1][1] || " ",
-//            left:     result,
-//            right:    { type: "Ellipsis" }
-//          }
-// //        result = [result];
-// //        result.push({ type: "Ellipsis" });
-//       }
-//       return result;
-//     }
-
 Expression
   = &{ return inTemplate; }
     head:IdentifierName &{ return statementNames.indexOf(head) >= 0;} ellipsis:(__ "...")?
@@ -1236,8 +1183,6 @@ Expression
       return result;
     }
 
-
-
 ExpressionNoIn  // for in で使う
   = &{ return inTemplate; }
     head:AssignmentExpressionNoIn ellipsis:(__ "," __ "...")?
@@ -1275,38 +1220,6 @@ ExpressionNoIn  // for in で使う
       return result;
     }
 
-
-/* original */
-// Expression
-//   = head:AssignmentExpression
-//     tail:(__ "," __ AssignmentExpression)* {
-//       var result = head;
-//       for (var i = 0; i < tail.length; i++) {
-//         result = {
-//           type:     "BinaryExpression",
-//           operator: tail[i][1],
-//           left:     result,
-//           right:    tail[i][3]
-//         };
-//       }
-//       return result;
-//     }
-
-// ExpressionNoIn
-//   = head:AssignmentExpressionNoIn
-//     tail:(__ "," __ AssignmentExpressionNoIn)* {
-//       var result = head;
-//       for (var i = 0; i < tail.length; i++) {
-//         result = {
-//           type:     "BinaryExpression",
-//           operator: tail[i][1],
-//           left:     result,
-//           right:    tail[i][3]
-//         };
-//       }
-//       return result;
-//     }
-
 /* ===== A.4 Statements ===== */
 
 /*
@@ -1334,8 +1247,15 @@ Statement
   / MacroDefinition      // add
   / FunctionDeclaration
   / FunctionExpression
-  / !(EOS / ExpressionToken / StatementToken) char:.
+  / !ExcludeWord char:.
      { return { type: "Characterstmt", value: char }; }
+
+ExcludeWord
+  = EOS
+  / ExpressionToken
+  / StatementToken
+  / CaseToken
+  / DefaultToken
 
 Block
   = "{" __ statements:(StatementList __)? "}" {
@@ -1746,16 +1666,6 @@ FormalParameterList
       }
       return result;
     }
-
-/* original */
-// FormalParameterList
-//   = head:Identifier tail:(__ "," __ Identifier)* {
-//       var result = [head];
-//       for (var i = 0; i < tail.length; i++) {
-//         result.push(tail[i][3]);
-//       }
-//       return result;
-//     }
 
 FunctionBody
   = elements:SourceElements? { return elements !== "" ? elements : []; }

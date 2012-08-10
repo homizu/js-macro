@@ -379,7 +379,7 @@
              ((begin) (do-begin (cdr e)))
              ((define) (if (not (null? (caddr e))) (hashtable-set! functions (cadr e) (caddr e)))))
            #f)
-          ((string=? head "JS") (do-JS (cdr e)))
+          ((equal? head "JS") (do-JS (cdr e)))
           (error 'do-list "Invalid elements." e))))
 
 (define (s2j e)

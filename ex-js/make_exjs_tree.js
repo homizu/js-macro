@@ -12,8 +12,8 @@ var fs = require('fs');
 var util = require('util');
 var PEG = require('pegjs');
 var generator = require('./pegjs-generator');
+var parser = require('./ex-javascript-parser');
 
-//var js = require('./ex-javascript-parser');
 var grammarFile = './ex-javascript.pegjs';
 var debug = true;
 var resultDir = 'converted/';
@@ -37,7 +37,6 @@ if (argv.length === 3) {
     fs.mkdir(fileDir, function(err) {});
 
     fs.readFile(grammarFile, function(err, gram) {
-        var parser;
         var midtree, tree;
         var macro;
         var grammar = '' + gram;
@@ -45,16 +44,19 @@ if (argv.length === 3) {
         if (err) throw err;
 
         // generate a parser
-        try {
-            if (debug) console.log('Building a parser ...');
-            start = new Date();
-            parser = PEG.buildParser(grammar, { cache: true});
-            end = new Date();
-            if (debug) console.log('Done.\nTime: %ds.', (end.getTime() - start.getTime()) / 1000);
-        } catch (e) {
-            console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
-            process.exit(1);
+        if (!parser.parse) {
+            try {
+                if (debug) console.log('Building a parser ...');
+                start = new Date();
+                parser = PEG.buildParser(grammar, { cache: true});
+                end = new Date();
+                if (debug) console.log('Done.\nTime: %ds.', (end.getTime() - start.getTime()) / 1000);
+            } catch (e) {
+                console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
+                process.exit(1);
+            }
         }
+        
         // make a parse tree
         fs.readFile(jsFile, function(err, jsCode) {
             if (err) throw err;
