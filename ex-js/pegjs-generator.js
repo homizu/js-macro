@@ -2,41 +2,11 @@ module.exports = (function () {
 
     var generator = { debug: false };
 
-    var pegjsTemplate = 'Template\n = StatementInTemplate\n';
-    var pegjsStatement = 'Statement\n = '
-    var pegjsStatements = '\n\
-   Block\n\
- / VariableStatement\n\
- / EmptyStatement\n\
- / ExpressionStatement\n\
- / IfStatement\n\
- / IterationStatement\n\
- / ContinueStatement\n\
- / BreakStatement\n\
- / ReturnStatement\n\
- / WithStatement\n\
- / LabelledStatement\n\
- / SwitchStatement\n\
- / ThrowStatement\n\
- / TryStatement\n\
- / DebuggerStatement\n\
- / MacroDefinition\n\
- / FunctionDeclaration\n\
- / FunctionExpression\n';
-
-    var pegjsExpression = 'AssignmentExpression =\n '
-    var pegjsExpressions = '\n\
- / left:LeftHandSideExpression __\n\
- operator:AssignmentOperator __\n\
- right:AssignmentExpression {\n\
-   return {\n\
-     type:     "AssignmentExpression",\n\
-     operator: operator,\n\
-     left:     left,\n\
-     right:    right\n\
-   };\n\
- }\n\
- / ConditionalExpression\n';
+    var template = 'Template\n = StatementInTemplate\n\n';
+    var characterStatement = 'CharacterStatement\n = &{}\n\n';
+    var macroExpression = 'MacroExpression\n = '
+    var macroStatement = 'MacroStatement\n = '
+    
 
     var pegObj = {
 /* 定義通りに実装したもの       
@@ -113,8 +83,7 @@ module.exports = (function () {
                 elements: elements,
                 mark: mark,
                 toString: function() { return '(PatternEllipsis\n' +
-//(ellipsis:"..." { return { type: "Repeat", elements: [{ type: "Ellipsis" }] }; })\n\
-' / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !inTemplate && ellipsis; }\n\
+' / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !macroType && ellipsis; }\n\
  { var elements = [head];\n\
    for (var i=0; i<tail.length; i++) {\n\
      elements.push(tail[i][' + (mark? 3 : 1) + ']);\n\
@@ -460,10 +429,6 @@ module.exports = (function () {
         return pegObj.null();            
     };
 
-    
-
-
-
     generator.generate = function(jsObj) {
 
         if (jsObj.type === 'Program') {
@@ -492,9 +457,9 @@ module.exports = (function () {
                     statementMacros.push(patterns);
             }
 
-            return pegjsTemplate
-                + (expressionMacros.length > 0 ?  pegjsExpression + pegObj.choice(expressionMacros) + pegjsExpressions : '')
-                + pegjsStatement + (statementMacros.length > 0 ? pegObj.choice(statementMacros) + '/' : '') + pegjsStatements;
+            return template + characterStatement
+                + (expressionMacros.length > 0 ?  macroExpression + pegObj.choice(expressionMacros) + '\n\n' : '')
+                + (statementMacros.length > 0 ? macroStatement + pegObj.choice(statementMacros) + '\n\n' : '');
                 
         } else {
             return 'error';

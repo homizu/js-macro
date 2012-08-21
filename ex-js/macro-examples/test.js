@@ -15,13 +15,17 @@ statement test {
             id = expr2;
         }
         ...
+        }
     }
-    }
+    
 }
 
 test (iidd, 1, 2, 3) {
     hogehoge;
 }
+
+
+
 
 /*
 var pi = 3.14;

@@ -47,14 +47,16 @@
 
 /* Initializer written by homizu */
 {
-  var exprMacro = true;   // expressionマクロかどうかを表す変数
-  var inTemplate = false;       // テンプレート中かどうかを表す変数
-  var identifierNames = [];     // identifier変数のリスト
-  var expressionNames = [];     // expression変数のリスト
-  var statementNames = [];      // statement変数のリスト
-  var literalKeywordNames = []; // リテラルキーワードのリスト
-  var identifierType = ""       // パターン中の識別子の種類を表す変数
-//  var lastExpr = null;          // テンプレート中の式を保存するための変数
+  var group = { "(": ")", "{": "}", "[": "]" }; // 括弧の対応を表すオブジェクト
+  var groupType = { "(": "Paren",
+                    "{": "Brace", /* } must be balanced */
+                    "[": "Bracket" };   // 括弧の種類を表すオブジェクト
+  var macroType = false;                // マクロの種類(expression, statement)を表す変数
+  var metaVariables = { identifier: [],
+                        expression: [], 
+                        statement: [], 
+                        literal: [] };  // メタ変数のリストを保持するオブジェクト
+  var identifierType = "";              // パターン中の識別子の種類を表す変数
 }
 
 start
@@ -509,7 +511,7 @@ ArrayLiteral
     }
 
 ElementList
-  = &{ return inTemplate; }
+  = &{ return macroType; }
     (Elision __)?
     head:AssignmentExpression ellipsis:(__ "," __ "...")?
     tail:(__ "," __ Elision? __ AssignmentExpression (__ "," __ "...")?)* {
@@ -545,7 +547,7 @@ ObjectLiteral
     }
 
 PropertyNameAndValueList
-  = &{ return inTemplate; }
+  = &{ return macroType; }
     head:PropertyAssignment ellipsis:(__ "," __ "...")?
     tail:(__ "," __ PropertyAssignment (__ "," __ "...")?)* {
       var result = [head];
@@ -701,7 +703,7 @@ Arguments
   }
 
 ArgumentList
-  = &{ return inTemplate; }
+  = &{ return macroType; }
     head:AssignmentExpression ellipsis:(__ "," __ "...")?
     tail:(__ "," __ AssignmentExpression (__ "," __ "...")?)* {
     var result = [head];
@@ -1091,7 +1093,8 @@ ConditionalExpressionNoIn
   / LogicalORExpressionNoIn
 
 AssignmentExpression
-  = left:LeftHandSideExpression __
+  = MacroExpression // add
+  / left:LeftHandSideExpression __
     operator:AssignmentOperator __
     right:AssignmentExpression {
       return {
@@ -1131,9 +1134,9 @@ AssignmentOperator
   / "|="
 
 Expression
-  = &{ return inTemplate; }
-    head:IdentifierName &{ return statementNames.indexOf(head) >= 0;} ellipsis:(__ "...")?
-    tail:(__ name:IdentifierName &{ return statementNames.indexOf(name) >= 0; } (__ "...")?)* {
+  = &{ return macroType; }
+    head:IdentifierName &{ return metaVariables.statement.indexOf(head) >= 0;} ellipsis:(__ "...")?
+    tail:(__ name:IdentifierName &{ return metaVariables.statement.indexOf(name) >= 0; } (__ "...")?)* {
       var elements = [head];
       if (ellipsis)
          elements.push({ type: "Ellipsis" });
@@ -1147,7 +1150,7 @@ Expression
         elements: elements
       };
     }
-  / &{ return inTemplate; }
+  / &{ return macroType; }
     head:AssignmentExpression ellipsis:(__ "," __ "...")?
     tail:(__ "," __ AssignmentExpression (__ "," __ "...")?)* {
       var result = head;
@@ -1184,7 +1187,7 @@ Expression
     }
 
 ExpressionNoIn  // for in で使う
-  = &{ return inTemplate; }
+  = &{ return macroType; }
     head:AssignmentExpressionNoIn ellipsis:(__ "," __ "...")?
     tail:(__ "," __ AssignmentExpressionNoIn (__ "," __ "...")?)* {
       var result = head;
@@ -1229,7 +1232,8 @@ ExpressionNoIn  // for in で使う
  */
 // Statement(パーザー拡張前)
 Statement  
-  = Block
+  = MacroStatement       // add
+  / Block
   / VariableStatement
   / EmptyStatement
   / ExpressionStatement
@@ -1247,15 +1251,7 @@ Statement
   / MacroDefinition      // add
   / FunctionDeclaration
   / FunctionExpression
-  / !ExcludeWord char:.
-     { return { type: "Characterstmt", value: char }; }
-
-ExcludeWord
-  = EOS
-  / ExpressionToken
-  / StatementToken
-  / CaseToken
-  / DefaultToken
+  / CharacterStatement   // add
 
 Block
   = "{" __ statements:(StatementList __)? "}" {
@@ -1266,7 +1262,7 @@ Block
     }
 
 StatementList
-  = &{ return inTemplate; }
+  = &{ return macroType; }
     head:Statement ellipsis:(__ "...")?
     tail:(__ Statement (__ "...")?)* {
       var result = [head];
@@ -1296,7 +1292,7 @@ VariableStatement
     }
 
 VariableDeclarationList
-  = &{ return inTemplate; }
+  = &{ return macroType; }
     head:VariableDeclaration ellipsis:(__ "," __ "...")?
     tail:(__ "," __ VariableDeclaration (__ "," __ "...")?)* {
       var result = [head];
@@ -1318,7 +1314,7 @@ VariableDeclarationList
     }
 
 VariableDeclarationListNoIn
-  = &{ return inTemplate; }
+  = &{ return macroType; }
     head:VariableDeclarationNoIn ellipsis:(__ "," __ "...")?
     tail:(__ "," __ VariableDeclarationNoIn (__ "," __ "...")?)* {
       var result = [head];
@@ -1646,7 +1642,7 @@ FunctionExpression
 
 /* changed by homizu */
 FormalParameterList
-  = &{ return inTemplate; }
+  = &{ return macroType; }
     head:Identifier ellipsis:(__ "," __ "...")?
     tail:(__ "," __ Identifier (__ "," __ "...")?)* {
       var result = [head];
@@ -1714,25 +1710,28 @@ SourceElement
 /* マクロ定義のパーザー written by homizu */
 
 MacroDefinition
-  = type:(ExpressionToken { return exprMacro = true; } / StatementToken { return exprMacro = false; }) __
-    macroName:Identifier __
-    "{" __
-    idList:("identifier:" __ ids:VariableList __ ";" { identifierNames = ids; return ids; })? __ 
-    exprList:("expression:" __ exprs:VariableList __ ";" { expressionNames = exprs; return exprs; })? __
-    stmtList:("statement:" __ stmts:VariableList __ ";" {
-                           statementNames = stmts; return stmts; })? __
-    literalList:("literal:" __ literals:LiteralKeywordList __ ";" {
-                            literalKeywordNames = literals; return literals; })? __
-    syntaxRules:SyntaxRuleList __
-    "}" { 
-          identifierNames = [];
-          expressionNames = [];
-          statementNames = [];
-          literalKeywordNames = [];
-          return { type: (type? "Expression" : "Statement") + "MacroDefinition",
-                   macroName: macroName,
-                   literals: literalList || [],
-                   syntaxRules: syntaxRules }; }
+  = (type:(ExpressionToken / StatementToken) { macroType = type; }) __
+    macroName:Identifier __ "{" __
+    (MetaVariableDecralation __)*
+    syntaxRules:SyntaxRuleList __ "}" { 
+        var type = macroType.charAt(0).toUpperCase() + macroType.slice(1) + "MacroDefinition";
+        var literals = metaVariables.literal;
+        macroType = false;
+        for (var i in metaVariables)
+            metaVariables[i] = [];
+        return { type: type,
+                 macroName: macroName,
+                 literals: literals,
+                 syntaxRules: syntaxRules };
+    }
+
+MetaVariableDecralation
+  = type:("identifier" / "expression" / "statement") __ ":" __ list:VariableList __ ";" { 
+        metaVariables[type] = metaVariables[type].concat(list);
+    }
+  / "literal" __ ":" __ list:LiteralKeywordList __ ";" {
+        metaVariables.literal = metaVariables.literal.concat(list);
+    }
 
 VariableList
   = head:IdentifierName tail:(__ "," __ IdentifierName)* {
@@ -1767,8 +1766,7 @@ SyntaxRuleList
     }
 
 SyntaxRule
-  = "{" __ pat:Pattern __ ("=>" { inTemplate = true; })  __ temp:Template __ "}" {
-        inTemplate = false;       
+  = "{" __ pat:Pattern __ "=>" __ temp:Template __ "}" {
         return { type: "SyntaxRule",
                  pattern: pat,
                  template: temp };
@@ -1817,14 +1815,6 @@ SubPatternList
         return result;
      }
 
-RepetitionBlock
-  = "[#" __ patterns: SubPatternList __ "#]" {
-        return {
-          type: "RepBlock",
-          elements: patterns !== "" ? patterns : []
-        };
-    }
-
 SubPattern
   = "[#" __ patterns: SubPatternList __ "#]" {
         return {
@@ -1832,40 +1822,25 @@ SubPattern
           elements: patterns
         };
     }
-  / "{" __ patterns:SubPatternList? __ "}" {
-        return {
-          type: "Brace",
-          elements: patterns !== "" ? patterns : []
-        };
-      }
-  / "(" __ patterns:SubPatternList? __ ")" {
-        return {
-          type: "Paren",
-          elements: patterns !== "" ? patterns : []
-        };
-      }
-  / "[" __ patterns:SubPatternList? __ "]" {
-        return {
-          type: "Bracket",
-          elements: patterns
-        };
-      }
+  / g_open:("("/"{"/"[") __ patterns:SubPatternList? __ g_close:(")"/"}"/"]")
+    &{ return group[g_open] === g_close; } {
+       return {
+         type: groupType[g_open],
+         elements: patterns !== "" ? patterns : []
+       };
+    }
   / value:Literal {
         return value;                 
       }
   / name:IdentifierName
-    &{ if (identifierNames.indexOf(name) >= 0) {
-           identifierType = 'Identifier';
-           return identifierType;
-       } else if (expressionNames.indexOf(name) >= 0) {
-           identifierType = 'Expression';
-           return identifierType;
-       } else if (statementNames.indexOf(name) >= 0) {
-           identifierType = 'Statement';
-           return identifierType;
-       } else if (literalKeywordNames.indexOf(name) >= 0) {
-           identifierType = 'LiteralKeyword';
-           return identifierType;
+    &{ if (metaVariables.identifier.indexOf(name) >= 0) {
+           return identifierType = 'Identifier';
+       } else if (metaVariables.expression.indexOf(name) >= 0) {
+           return identifierType = 'Expression';
+       } else if (metaVariables.statement.indexOf(name) >= 0) {
+           return identifierType = 'Statement';
+       } else if (metaVariables.literal.indexOf(name) >= 0) {
+           return identifierType = 'LiteralKeyword';
        }
     } 
     { return {
@@ -1884,7 +1859,7 @@ PunctuationMark
   = ";"
   / ","
   / name:LiteralKeyword &{
-      return literalKeywordNames.indexOf(name) >= 0;
+      return metaVariables.literal.indexOf(name) >= 0;
     }{ return name; }
 
 PatternPunctuator
@@ -1917,7 +1892,9 @@ Punctuators
 
 // テンプレート(パーザー拡張前)
 Template
-  = ("{" elements:(__ Statement)* __ "}"
+  = Statement (__ Statement)*
+/*
+ ("{" elements:(__ Statement)* __ "}"
       { var result = [];
         for (var i=0; i<elements.length; i++) {
             result.push(elements[i][1]);
@@ -1941,12 +1918,29 @@ Template
         return { type: "Bracket",
                  elements: result };
       }
-  / Statement
-  / !"}" char:. { return { type: "Charactertemp", value: char }; })*
+  / Statement)*/
+
+
+CharacterStatement
+  = !ExcludeWord char:.
+     { return { type: "Characterstmt", value: char }; }
+
+ExcludeWord
+  = EOS
+  / ExpressionToken
+  / StatementToken
+  / CaseToken
+  / DefaultToken
+
+MacroExpression
+  = &{}
+
+MacroStatement
+  = &{}
 
 StatementInTemplate
-  = &{ return exprMacro; } e:AssignmentExpression { return e; }
-  / !{ return exprMacro; } s:Statement { return s; }
+  = &{ return macroType === "expression"; } e:AssignmentExpression { return e; }
+  / &{ return macroType === "statement"; } s:Statement { return s; }
 
 PatternIdentifier
   = name:IdentifierName {

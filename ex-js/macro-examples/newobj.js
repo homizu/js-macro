@@ -13,3 +13,5 @@ expression newobj {
 
 var obj1 = { x: 100, y:200 };
 var obj2 = newobj(obj1, { z: 300 });
+
+with (newobj(obj2, { w: 400 })) { console.log(x+w); }
