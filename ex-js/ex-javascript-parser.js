@@ -235,7 +235,6 @@ module.exports = (function(){
         "Program": parse_Program,
         "SourceElements": parse_SourceElements,
         "MacroDefinition": parse_MacroDefinition,
-        "MetaVariableDecralationList": parse_MetaVariableDecralationList,
         "MetaVariableDecralation": parse_MetaVariableDecralation,
         "VariableList": parse_VariableList,
         "LiteralKeywordList": parse_LiteralKeywordList,
@@ -17791,70 +17790,6 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_MetaVariableDecralationList() {
-        var cacheKey = "MetaVariableDecralationList@" + pos;
-        var cachedResult = cache[cacheKey];
-        if (cachedResult) {
-          pos = cachedResult.nextPos;
-          return cachedResult.result;
-        }
-        
-        var result0, result1, result2, result3;
-        var pos0, pos1;
-        
-        pos0 = pos;
-        result0 = parse_MetaVariableDecralation();
-        if (result0 !== null) {
-          result1 = [];
-          pos1 = pos;
-          result2 = parse___();
-          if (result2 !== null) {
-            result3 = parse_MetaVariableDecralation();
-            if (result3 !== null) {
-              result2 = [result2, result3];
-            } else {
-              result2 = null;
-              pos = pos1;
-            }
-          } else {
-            result2 = null;
-            pos = pos1;
-          }
-          while (result2 !== null) {
-            result1.push(result2);
-            pos1 = pos;
-            result2 = parse___();
-            if (result2 !== null) {
-              result3 = parse_MetaVariableDecralation();
-              if (result3 !== null) {
-                result2 = [result2, result3];
-              } else {
-                result2 = null;
-                pos = pos1;
-              }
-            } else {
-              result2 = null;
-              pos = pos1;
-            }
-          }
-          if (result1 !== null) {
-            result0 = [result0, result1];
-          } else {
-            result0 = null;
-            pos = pos0;
-          }
-        } else {
-          result0 = null;
-          pos = pos0;
-        }
-        
-        cache[cacheKey] = {
-          nextPos: pos,
-          result:  result0
-        };
-        return result0;
-      }
-      
       function parse_MetaVariableDecralation() {
         var cacheKey = "MetaVariableDecralation@" + pos;
         var cachedResult = cache[cacheKey];
@@ -19018,7 +18953,7 @@ module.exports = (function(){
                     }
                   }
                   if (result4 !== null) {
-                    result5 = (function(offset, g_open, patterns, g_close) { return group[g_open] === g_close; })(pos, result0, result2, result4) ? "" : null;
+                    result5 = (function(offset, g_open, patterns, g_close) { return group[g_open][0] === g_close; })(pos, result0, result2, result4) ? "" : null;
                     if (result5 !== null) {
                       result0 = [result0, result1, result2, result3, result4, result5];
                     } else {
@@ -19048,7 +18983,7 @@ module.exports = (function(){
           if (result0 !== null) {
             result0 = (function(offset, g_open, patterns, g_close) {
                  return {
-                   type: groupType[g_open],
+                   type: group[g_open][1],
                    elements: patterns !== "" ? patterns : []
                  };
               })(pos0, result0[0], result0[2], result0[4]);
@@ -19789,10 +19724,9 @@ module.exports = (function(){
       }
       
       
-        var group = { "(": ")", "{": "}", "[": "]" }; // 括弧の対応を表すオブジェクト
-        var groupType = { "(": "Paren",
-                          "{": "Brace", /* } must be balanced */
-                          "[": "Bracket" };   // 括弧の種類を表すオブジェクト
+        var group = { "(": [")", "Paren"], 
+                      "{": ["}", "Brace"],
+                      "[": ["]", "Bracket"] }; // 括弧を表すオブジェクト
         var macroType = false;                // マクロの種類(expression, statement)を表す変数
         var metaVariables = { identifier: [],
                               expression: [], 

@@ -47,10 +47,9 @@
 
 /* Initializer written by homizu */
 {
-  var group = { "(": ")", "{": "}", "[": "]" }; // 括弧の対応を表すオブジェクト
-  var groupType = { "(": "Paren",
-                    "{": "Brace", /* } must be balanced */
-                    "[": "Bracket" };   // 括弧の種類を表すオブジェクト
+  var group = { "(": [")", "Paren"], 
+                "{": ["}", "Brace"],
+                "[": ["]", "Bracket"] }; // 括弧を表すオブジェクト
   var macroType = false;                // マクロの種類(expression, statement)を表す変数
   var metaVariables = { identifier: [],
                         expression: [], 
@@ -1823,9 +1822,9 @@ SubPattern
         };
     }
   / g_open:("("/"{"/"[") __ patterns:SubPatternList? __ g_close:(")"/"}"/"]")
-    &{ return group[g_open] === g_close; } {
+    &{ return group[g_open][0] === g_close; } {
        return {
-         type: groupType[g_open],
+         type: group[g_open][1],
          elements: patterns !== "" ? patterns : []
        };
     }

@@ -60,8 +60,8 @@
           ],
           "template": [
             {
-              "type": "Brace",
-              "elements": [
+              "type": "Block",
+              "statements": [
                 {
                   "type": "IfStatement",
                   "condition": {
@@ -121,39 +121,11 @@
                   "elseStatement": null
                 },
                 {
-                  "type": "Characterstmt",
-                  "value": "."
-                },
-                {
-                  "type": "Characterstmt",
-                  "value": "."
-                },
-                {
-                  "type": "Characterstmt",
-                  "value": "."
+                  "type": "Ellipsis"
                 }
               ]
             },
-            {
-              "type": "Charactertemp",
-              "value": "\n"
-            },
-            {
-              "type": "Charactertemp",
-              "value": " "
-            },
-            {
-              "type": "Charactertemp",
-              "value": " "
-            },
-            {
-              "type": "Charactertemp",
-              "value": " "
-            },
-            {
-              "type": "Charactertemp",
-              "value": " "
-            }
+            []
           ]
         }
       ]
