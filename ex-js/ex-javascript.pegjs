@@ -47,9 +47,9 @@
 
 /* Initializer written by homizu */
 {
-  var group = { "(": [")", "Paren"], 
-                "{": ["}", "Brace"],
-                "[": ["]", "Bracket"] }; // 括弧を表すオブジェクト
+  var group = { "(": { close: ")", type: "Paren" }, 
+                "{": { close: "}", type: "Brace" },
+                "[": { close: "]", type: "Bracket"} }; // 括弧を表すオブジェクト
   var macroType = false;                // マクロの種類(expression, statement)を表す変数
   var metaVariables = { identifier: [],
                         expression: [], 
@@ -509,33 +509,29 @@ ArrayLiteral
       };
     }
 
-ElementList
-  = &{ return macroType; }
-    (Elision __)?
-    head:AssignmentExpression ellipsis:(__ "," __ "...")?
-    tail:(__ "," __ Elision? __ AssignmentExpression (__ "," __ "...")?)* {
+ElementList // changed
+  = (Elision __)?
+    head:AssignmentExpression ellipsis:CommaEllipsis?
+    tail:(__ "," __ Elision? __ AssignmentExpression CommaEllipsis?)* {
       var result = [head];
       if (ellipsis)
          result.push({ type: "Ellipsis" });
       for (var i = 0; i < tail.length; i++) {
         result.push(tail[i][5]);
-        if (tail[i][6]);
+        if (tail[i][6])
            result.push({ type: "Ellipsis" });
-      }
-      return result;
-    }
-  / (Elision __)?
-    head:AssignmentExpression
-    tail:(__ "," __ Elision? __ AssignmentExpression)* {
-      var result = [head];
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][5]);
       }
       return result;
     }
 
 Elision
   = "," (__ ",")*
+
+Ellipsis // added
+  = &{ return macroType; } __ "..."
+
+CommaEllipsis // added
+  = &{ return macroType; } __ "," __ "..."
 
 ObjectLiteral
   = "{" __ properties:(PropertyNameAndValueList __ ("," __)?)? "}" {
@@ -545,10 +541,9 @@ ObjectLiteral
       };
     }
 
-PropertyNameAndValueList
-  = &{ return macroType; }
-    head:PropertyAssignment ellipsis:(__ "," __ "...")?
-    tail:(__ "," __ PropertyAssignment (__ "," __ "...")?)* {
+PropertyNameAndValueList // changed
+  = head:PropertyAssignment ellipsis:CommaEllipsis?
+    tail:(__ "," __ PropertyAssignment CommaEllipsis?)* {
       var result = [head];
       if (ellipsis)
          result.push({ type: "Ellipsis" });
@@ -556,13 +551,6 @@ PropertyNameAndValueList
         result.push(tail[i][3]);
         if (tail[i][4])
            result.push({ type: "Ellipsis" });
-      }
-      return result;
-    }
-  / head:PropertyAssignment tail:(__ "," __ PropertyAssignment)* {
-      var result = [head];
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
       }
       return result;
     }
@@ -701,27 +689,19 @@ Arguments
     return arguments !== "" ? arguments : [];
   }
 
-ArgumentList
-  = &{ return macroType; }
-    head:AssignmentExpression ellipsis:(__ "," __ "...")?
-    tail:(__ "," __ AssignmentExpression (__ "," __ "...")?)* {
-    var result = [head];
-    if (ellipsis)
-       result.push({ type: "Ellipsis" });
-    for (var i = 0; i < tail.length; i++) {
-      result.push(tail[i][3]);
-      if (tail[i][4])
+ArgumentList // changed
+  = head:AssignmentExpression ellipsis:CommaEllipsis?
+    tail:(__ "," __ AssignmentExpression CommaEllipsis?)* {
+      var result = [head];
+      if (ellipsis)
          result.push({ type: "Ellipsis" });
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][3]);
+        if (tail[i][4])
+           result.push({ type: "Ellipsis" });
+      }
+      return result;
     }
-    return result;
-  }
-  / head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* {
-    var result = [head];
-    for (var i = 0; i < tail.length; i++) {
-      result.push(tail[i][3]);
-    }
-    return result;
-  }
 
 LeftHandSideExpression
   = CallExpression
@@ -1132,10 +1112,9 @@ AssignmentOperator
   / "^="
   / "|="
 
-Expression
-  = &{ return macroType; }
-    head:IdentifierName &{ return metaVariables.statement.indexOf(head) >= 0;} ellipsis:(__ "...")?
-    tail:(__ name:IdentifierName &{ return metaVariables.statement.indexOf(name) >= 0; } (__ "...")?)* {
+Expression // changed
+  = head:IdentifierName &{ return metaVariables.statement.indexOf(head) >= 0;} ellipsis:Ellipsis?
+    tail:(__ name:IdentifierName &{ return metaVariables.statement.indexOf(name) >= 0; } Ellipsis?)* {
       var elements = [head];
       if (ellipsis)
          elements.push({ type: "Ellipsis" });
@@ -1149,75 +1128,43 @@ Expression
         elements: elements
       };
     }
-  / &{ return macroType; }
-    head:AssignmentExpression ellipsis:(__ "," __ "...")?
-    tail:(__ "," __ AssignmentExpression (__ "," __ "...")?)* {
+  / head:AssignmentExpression ellipsis:CommaEllipsis?
+    tail:(__ "," __ AssignmentExpression CommaEllipsis?)* {
       var result = head;
-      if (ellipsis)
-         result = [result, { type: "Ellipsis" }];
-      if (tail.length > 0) {
-        if (!(result instanceof Array)) result = [result];
-        for (var i = 0; i < tail.length; i++) {
-          result.push(tail[i][3]);
-          if (tail[i][4])
-             result.push({ type: "Ellipsis" });
-        }
-      }
-      if (result instanceof Array)
-          result =  {
-            type: "Expressions",
-            elements: result
-          }; 
-      return result;
-    }
-  / head:AssignmentExpression
-    tail:(__ "," __ AssignmentExpression)* {
-      var result = head;
-      if (tail.length > 0) {
-        result = [result];
-        for (var i = 0; i < tail.length; i++)
-          result.push(tail[i][3]);
-        result =  {
-          type: "Expressions",
-          elements: result
-        }; 
-      }
+      if (ellipsis || tail.length > 0) {
+         result = [result];
+         if (ellipsis)
+            result.push({ type: "Ellipsis" });
+         for (var i=0; i<tail.length; i++) {
+           result.push(tail[i][3]);
+           if (tail[i][4])
+              result.push({ type: "Ellipsis" });
+         }
+         result = {
+           type: "Expressions",
+           elements: result
+         };
+       }
       return result;
     }
 
-ExpressionNoIn  // for in で使う
-  = &{ return macroType; }
-    head:AssignmentExpressionNoIn ellipsis:(__ "," __ "...")?
-    tail:(__ "," __ AssignmentExpressionNoIn (__ "," __ "...")?)* {
+ExpressionNoIn // changed  // for in で使う
+  = head:AssignmentExpressionNoIn ellipsis:CommaEllipsis?
+    tail:(__ "," __ AssignmentExpressionNoIn CommaEllipsis?)* {
       var result = head;
-      if (ellipsis)
-         result = [result, { type: "Ellipsis" }];
-      if (tail.length > 0) {
-         if (!(result instanceof Array)) result = [result];
-        for (var i = 0; i < tail.length; i++) {
-          result.push(tail[i][3]);
-          if (tail[i][4])
-             result.push({ type: "Ellipsis" });
-        }
-      }
-      if (result instanceof Array)
-         result =  {
+      if (ellipsis || tail.length > 0) {
+         result = [result];
+         if (ellipsis)
+            result.push({ type: "Ellipsis" });
+         for (var i=0; i<tail.length; i++) {
+           result.push(tail[i][3]);
+           if (tail[i][4])
+              result.push({ type: "Ellipsis" });
+         }
+         result = {
            type: "Expressions",
            elements: result
-         }; 
-      return result;
-    }
-  / head:AssignmentExpressionNoIn
-    tail:(__ "," __ AssignmentExpressionNoIn)* {
-        var result = head;
-      if (tail.length > 0) {
-        result = [result];
-        for (var i = 0; i < tail.length; i++)
-          result.push(tail[i][3]);
-        result =  {
-          type: "Expressions",
-          elements: result
-        }; 
+         };
       }
       return result;
     }
@@ -1229,9 +1176,8 @@ ExpressionNoIn  // for in で使う
  * |FunctionExpression| as statements, but JavaScript implementations do and so
  * are we. This syntax is actually used in the wild (e.g. by jQuery).
  */
-// Statement(パーザー拡張前)
 Statement  
-  = MacroStatement       // add
+  = MacroStatement       // added
   / Block
   / VariableStatement
   / EmptyStatement
@@ -1247,10 +1193,10 @@ Statement
   / ThrowStatement
   / TryStatement
   / DebuggerStatement
-  / MacroDefinition      // add
+  / MacroDefinition      // added
   / FunctionDeclaration
   / FunctionExpression
-  / CharacterStatement   // add
+  / CharacterStatement   // added
 
 Block
   = "{" __ statements:(StatementList __)? "}" {
@@ -1260,10 +1206,9 @@ Block
       };
     }
 
-StatementList
-  = &{ return macroType; }
-    head:Statement ellipsis:(__ "...")?
-    tail:(__ Statement (__ "...")?)* {
+StatementList // changed
+  = head:Statement ellipsis:Ellipsis?
+    tail:(__ Statement Ellipsis?)* {
       var result = [head];
       if (ellipsis)
          result.push({ type: "Ellipsis" });
@@ -1271,13 +1216,6 @@ StatementList
         result.push(tail[i][1]);
         if (tail[i][2])
            result.push({ type: "Ellipsis" });
-      }
-      return result;
-    }
-  / head:Statement tail:(__ Statement)* {
-      var result = [head];
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][1]);
       }
       return result;
     }
@@ -1290,10 +1228,9 @@ VariableStatement
       };
     }
 
-VariableDeclarationList
-  = &{ return macroType; }
-    head:VariableDeclaration ellipsis:(__ "," __ "...")?
-    tail:(__ "," __ VariableDeclaration (__ "," __ "...")?)* {
+VariableDeclarationList // changed
+  = head:VariableDeclaration ellipsis:CommaEllipsis?
+    tail:(__ "," __ VariableDeclaration CommaEllipsis?)* {
       var result = [head];
       if (ellipsis)
          result.push({ type: "Ellipsis" });
@@ -1301,21 +1238,13 @@ VariableDeclarationList
         result.push(tail[i][3]);
         if (tail[i][4])
            result.push({ type: "Ellipsis" });
-      }
-      return result;
-    }
-  / head:VariableDeclaration tail:(__ "," __ VariableDeclaration)* {
-      var result = [head];
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
       }
       return result;
     }
 
-VariableDeclarationListNoIn
-  = &{ return macroType; }
-    head:VariableDeclarationNoIn ellipsis:(__ "," __ "...")?
-    tail:(__ "," __ VariableDeclarationNoIn (__ "," __ "...")?)* {
+VariableDeclarationListNoIn // changed
+  = head:VariableDeclarationNoIn ellipsis:CommaEllipsis?
+    tail:(__ "," __ VariableDeclarationNoIn CommaEllipsis?)* {
       var result = [head];
       if (ellipsis)
          result.push({ type: "Ellipsis" });
@@ -1323,13 +1252,6 @@ VariableDeclarationListNoIn
         result.push(tail[i][3]);
         if (tail[i][4])
            result.push({ type: "Ellipsis" });
-      }
-      return result;
-    }
-  / head:VariableDeclarationNoIn tail:(__ "," __ VariableDeclarationNoIn)* {
-      var result = [head];
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
       }
       return result;
     }
@@ -1639,11 +1561,9 @@ FunctionExpression
       };
     }
 
-/* changed by homizu */
-FormalParameterList
-  = &{ return macroType; }
-    head:Identifier ellipsis:(__ "," __ "...")?
-    tail:(__ "," __ Identifier (__ "," __ "...")?)* {
+FormalParameterList // changed
+  = head:Identifier ellipsis:CommaEllipsis?
+    tail:(__ "," __ Identifier CommaEllipsis?)* {
       var result = [head];
       if (ellipsis)
          result.push({ type: "Ellipsis" });
@@ -1651,13 +1571,6 @@ FormalParameterList
         result.push(tail[i][3]);
         if (tail[i][4])
            result.push({ type: "Ellipsis" });
-      }
-      return result;
-    }
-  / head:Identifier tail:(__ "," __ Identifier)* {
-      var result = [head];
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
       }
       return result;
     }
@@ -1777,7 +1690,7 @@ Pattern
 
 SubPatternList
   = head:SubPattern tail:(__ (","/";")? __ SubPattern)*
-    ellipsis:(__ PunctuationMark? __ "..." (__ ","? __ SubPattern)*)? {
+    ellipsis:(__ PunctuationMark? __ "..." (__ (","/";")? __ SubPattern)*)? {
         var result = [head];
         for (var i=0; i<tail.length; i++) {
             if (tail[i][1])
@@ -1822,31 +1735,29 @@ SubPattern
         };
     }
   / g_open:("("/"{"/"[") __ patterns:SubPatternList? __ g_close:(")"/"}"/"]")
-    &{ return group[g_open][0] === g_close; } {
+    &{ return group[g_open].close === g_close; } {
        return {
-         type: group[g_open][1],
+         type: group[g_open].type,
          elements: patterns !== "" ? patterns : []
        };
     }
-  / value:Literal {
-        return value;                 
-      }
+  / Literal
   / name:IdentifierName
     &{ if (metaVariables.identifier.indexOf(name) >= 0) {
-           return identifierType = 'Identifier';
+           return identifierType = 'IdentifierVariable';
        } else if (metaVariables.expression.indexOf(name) >= 0) {
-           return identifierType = 'Expression';
+           return identifierType = 'ExpressionVariable';
        } else if (metaVariables.statement.indexOf(name) >= 0) {
-           return identifierType = 'Statement';
+           return identifierType = 'StatementVariable';
        } else if (metaVariables.literal.indexOf(name) >= 0) {
            return identifierType = 'LiteralKeyword';
        }
-    } 
-    { return {
-          type: identifierType === 'LiteralKeyword' ? identifierType : (identifierType + 'Variable'),
+    } {
+      return {
+          type: identifierType,
           name: name
-        };                 
-      }
+      };                 
+    }
   / punc:PatternPunctuator {
         return {
            type: "Punctuator",
@@ -1862,63 +1773,22 @@ PunctuationMark
     }{ return name; }
 
 PatternPunctuator
-  =  puncs:Punctuator2+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
+  =  puncs:Punctuator+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
 
-// 区切り記号 '"', "'" は除く
-//Punctuator
-//  = Punctuator1 / Punctuator2
-
-//Punctuator1
-//  = "." / ";" / ","
-
-Punctuator2
+Punctuator
   = "<" / ">" / "=" / "!" / "+"
   / "-" / "*" / "%" / "&" / "|"
   / "^" / "!" / "~" / "?" / ":"
 
-
-/*　JS の区切り記号
-Punctuators
-  = "." / ";" / "," / "<" / ">"
-  / "<=" / ">=" / "==" / "!=" / "==="
-  / "!==" / "+" / "-" / "*" / "%"
-  / "++" / "--" / "<<" / ">>" / ">>>"
-  / "&" / "|" / "^" / "!" / "~"
-  / "&&" / "||" / "?" / ":" / "="
-  / "+=" / "-=" / "*=" / "%=" / "<<="
-  / ">>=" / ">>>=" / "&=" / "|=" / "^="
-*/
-
 // テンプレート(パーザー拡張前)
 Template
-  = Statement (__ Statement)*
-/*
- ("{" elements:(__ Statement)* __ "}"
-      { var result = [];
-        for (var i=0; i<elements.length; i++) {
-            result.push(elements[i][1]);
-        }
-        return { type: "Brace",
-                 elements: result };
-       }
-  / "(" elements:(__ Statement)* __ ")"
-     { var result = [];
-        for (var i=0; i<elements.length; i++) {
-            result.push(elements[i][1]);
-        }
-        return { type: "Paren",
-                 elements: result };
+  = head:Statement tail:(__ Statement)* {
+      var result = [head];
+      for (var i=0; i<tail.length; i++) {
+          result.push(tail[i][1]);
       }
-  / "[" elements:(__ Statement)* __ "]"
-     { var result = [];
-        for (var i=0; i<elements.length; i++) {
-            result.push(elements[i][1]);
-        }
-        return { type: "Bracket",
-                 elements: result };
-      }
-  / Statement)*/
-
+      return result;
+    }
 
 CharacterStatement
   = !ExcludeWord char:.
