@@ -1689,15 +1689,16 @@ Pattern
   = ("_" / !"=>" Identifier) __ patterns:SubPatternList? { return patterns || []; }
 
 SubPatternList
-  = head:SubPattern tail:(__ (","/";")? __ SubPattern)*
-    ellipsis:(__ PunctuationMark? __ "..." (__ (","/";")? __ SubPattern)*)? {
+  = head:SubPattern middle:(__ (","/";")? __ SubPattern)*
+    ellipsis:(__ PunctuationMark? __ "...")? tail:(__ (","/";")? __ SubPattern)* __
+    semicolon: ";"? {
         var result = [head];
-        for (var i=0; i<tail.length; i++) {
-            if (tail[i][1])
-               result.push({ type: "PunctuationMark", value: tail[i][1] });
-            result.push(tail[i][3]);
+        for (var i=0; i<middle.length; i++) {
+            if (middle[i][1])
+               result.push({ type: "PunctuationMark", value: middle[i][1] });
+            result.push(middle[i][3]);
         }
-        if (ellipsis[3]) {
+        if (ellipsis) {
            var last = result.pop();
            var mark = ellipsis[1];
            var elements = last;
@@ -1711,19 +1712,18 @@ SubPatternList
               }
            } else if (last.type === "RepBlock")
              elements = last.elements;
-
            result.push({ type: "Repetition",
                          elements: elements,
                          punctuationMark: mark });
            result.push({ type: "Ellipsis" });
-           if (ellipsis[4]) {
-              for (var i=0; i<ellipsis[4].length; i++) {
-                  if (ellipsis[4][i][1])
-                     result.push({ type: "PunctuationMark", value: ellipsis[4][i][1] });
-                  result.push(ellipsis[4][i][3]);
-              }
-           }
         }
+        for (var i=0; i<tail.length; i++) {
+            if (tail[i][1])
+               result.push({ type: "PunctuationMark", value: tail[i][1] });
+            result.push(tail[i][3]);
+        }
+        if (semicolon)
+           result.push({ type: "PunctuationMark", value: ";" });
         return result;
      }
 
