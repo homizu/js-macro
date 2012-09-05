@@ -1,2 +1,6 @@
 Template
  = StatementInTemplate
+
+CharacterStatement
+ = &{}
+

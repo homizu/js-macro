@@ -8,29 +8,8 @@
           "type": "VariableDeclaration",
           "name": "a",
           "value": {
-            "type": "NumericLiteral",
-            "value": 1
-          }
-        }
-      ]
-    },
-    {
-      "type": "VariableStatement",
-      "declarations": [
-        {
-          "type": "VariableDeclaration",
-          "name": "b",
-          "value": {
-            "type": "BinaryExpression",
-            "operator": "+",
-            "left": {
-              "type": "Variable",
-              "name": "a"
-            },
-            "right": {
-              "type": "Variable",
-              "name": "a"
-            }
+            "type": "StringLiteral",
+            "value": "ho'ge"
           }
         }
       ]

@@ -6,10 +6,16 @@ statement block {
     literal: var;
     
     {block {
-       (var id = expr; ...)
+       [#var [# id = expr ; #] ...#]
         stmt ...
      } => ((function(id, ...) {
         stmt ...
      })(expr, ...));}
     
+}
+
+block {
+  var i = 100; j = 200;
+  var x = i+j;
+  return x;
 }

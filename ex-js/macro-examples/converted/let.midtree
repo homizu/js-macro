@@ -3,7 +3,7 @@
   "elements": [
     {
       "type": "ExpressionMacroDefinition",
-      "macroName": "let2",
+      "macroName": "let",
       "literals": [
         "var",
         "and"
@@ -13,25 +13,34 @@
           "type": "SyntaxRule",
           "pattern": [
             {
-              "type": "Repetition",
+              "type": "Paren",
               "elements": [
                 {
-                  "type": "IdentifierVariable",
-                  "name": "id"
+                  "type": "LiteralKeyword",
+                  "name": "var"
                 },
                 {
-                  "type": "Punctuator",
-                  "value": "="
+                  "type": "Repetition",
+                  "elements": [
+                    {
+                      "type": "IdentifierVariable",
+                      "name": "id"
+                    },
+                    {
+                      "type": "Punctuator",
+                      "value": "="
+                    },
+                    {
+                      "type": "ExpressionVariable",
+                      "name": "expr"
+                    }
+                  ],
+                  "punctuationMark": "and"
                 },
                 {
-                  "type": "ExpressionVariable",
-                  "name": "expr"
+                  "type": "Ellipsis"
                 }
-              ],
-              "punctuationMark": "and"
-            },
-            {
-              "type": "Ellipsis"
+              ]
             },
             {
               "type": "Brace",
@@ -60,9 +69,7 @@
                   "id",
                   {
                     "type": "Ellipsis"
-                  },
-                  "x",
-                  "y"
+                  }
                 ],
                 "elements": [
                   {
@@ -83,14 +90,6 @@
                 },
                 {
                   "type": "Ellipsis"
-                },
-                {
-                  "type": "NumericLiteral",
-                  "value": "1"
-                },
-                {
-                  "type": "NumericLiteral",
-                  "value": "2"
                 }
               ]
             }
@@ -112,7 +111,19 @@
     },
     {
       "type": "Characterstmt",
-      "value": "2"
+      "value": "("
+    },
+    {
+      "type": "Characterstmt",
+      "value": "v"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "a"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "r"
     },
     {
       "type": "Characterstmt",
@@ -193,6 +204,175 @@
     {
       "type": "Characterstmt",
       "value": "0"
+    },
+    {
+      "type": "Characterstmt",
+      "value": ")"
+    },
+    {
+      "type": "Block",
+      "statements": [
+        {
+          "type": "VariableStatement",
+          "declarations": [
+            {
+              "type": "VariableDeclaration",
+              "name": "result",
+              "value": {
+                "type": "BinaryExpression",
+                "operator": "+",
+                "left": {
+                  "type": "Variable",
+                  "name": "id1"
+                },
+                "right": {
+                  "type": "Variable",
+                  "name": "id2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "AssignmentExpression",
+          "operator": "=",
+          "left": {
+            "type": "Variable",
+            "name": "result"
+          },
+          "right": {
+            "type": "BinaryExpression",
+            "operator": "*",
+            "left": {
+              "type": "Variable",
+              "name": "result"
+            },
+            "right": {
+              "type": "NumericLiteral",
+              "value": "2"
+            }
+          }
+        },
+        {
+          "type": "ReturnStatement",
+          "value": {
+            "type": "Variable",
+            "name": "result"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Characterstmt",
+      "value": "l"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "e"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "t"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "("
+    },
+    {
+      "type": "Characterstmt",
+      "value": "v"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "a"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "r"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "i"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "d"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "1"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "="
+    },
+    {
+      "type": "Characterstmt",
+      "value": "1"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "/"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "2"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "a"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "n"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "d"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "i"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "d"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "2"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "="
+    },
+    {
+      "type": "Characterstmt",
+      "value": "1"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "0"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "0"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "E"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "1"
+    },
+    {
+      "type": "Characterstmt",
+      "value": "0"
+    },
+    {
+      "type": "Characterstmt",
+      "value": ")"
     },
     {
       "type": "Block",

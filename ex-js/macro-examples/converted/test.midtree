@@ -3,7 +3,7 @@
   "elements": [
     {
       "type": "StatementMacroDefinition",
-      "macroName": "test",
+      "macroName": "some_macro",
       "literals": [],
       "syntaxRules": [
         {
@@ -14,46 +14,7 @@
               "elements": [
                 {
                   "type": "IdentifierVariable",
-                  "name": "id"
-                },
-                {
-                  "type": "PunctuationMark",
-                  "value": ","
-                },
-                {
-                  "type": "ExpressionVariable",
-                  "name": "expr1"
-                },
-                {
-                  "type": "PunctuationMark",
-                  "value": ","
-                },
-                {
-                  "type": "Repetition",
-                  "elements": {
-                    "type": "ExpressionVariable",
-                    "name": "expr2"
-                  },
-                  "punctuationMark": ","
-                },
-                {
-                  "type": "Ellipsis"
-                }
-              ]
-            },
-            {
-              "type": "Brace",
-              "elements": [
-                {
-                  "type": "Repetition",
-                  "elements": {
-                    "type": "StatementVariable",
-                    "name": "stmt"
-                  },
-                  "punctuationMark": ""
-                },
-                {
-                  "type": "Ellipsis"
+                  "name": "x"
                 }
               ]
             }
@@ -63,145 +24,175 @@
               "type": "Block",
               "statements": [
                 {
-                  "type": "IfStatement",
-                  "condition": {
-                    "type": "Variable",
-                    "name": "expr1"
+                  "type": "FunctionCall",
+                  "name": {
+                    "type": "PropertyAccess",
+                    "base": {
+                      "type": "Variable",
+                      "name": "console"
+                    },
+                    "name": "log"
                   },
-                  "ifStatement": {
-                    "type": "Block",
-                    "statements": [
-                      {
-                        "type": "AssignmentExpression",
-                        "operator": "=",
-                        "left": {
-                          "type": "Variable",
-                          "name": "id"
-                        },
-                        "right": {
-                          "type": "BinaryExpression",
-                          "operator": "+",
-                          "left": {
-                            "type": "Variable",
-                            "name": "expr1"
-                          },
-                          "right": {
-                            "type": "StringLiteral",
-                            "value": "hoge"
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "elseStatement": null
+                  "arguments": [
+                    {
+                      "type": "Variable",
+                      "name": "x"
+                    }
+                  ]
                 },
                 {
-                  "type": "IfStatement",
-                  "condition": {
-                    "type": "Variable",
-                    "name": "expr2"
-                  },
-                  "ifStatement": {
-                    "type": "Block",
-                    "statements": [
-                      {
-                        "type": "AssignmentExpression",
-                        "operator": "=",
-                        "left": {
-                          "type": "Variable",
-                          "name": "id"
-                        },
-                        "right": {
-                          "type": "Variable",
-                          "name": "expr2"
-                        }
+                  "type": "VariableStatement",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclaration",
+                      "name": "x",
+                      "value": {
+                        "type": "NumericLiteral",
+                        "value": "10"
                       }
-                    ]
-                  },
-                  "elseStatement": null
-                },
-                {
-                  "type": "Ellipsis"
+                    }
+                  ]
                 }
               ]
-            },
-            []
+            }
           ]
         }
       ]
     },
     {
-      "type": "Characterstmt",
-      "value": "t"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "e"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "s"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "t"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "("
-    },
-    {
-      "type": "Characterstmt",
-      "value": "i"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "i"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "d"
-    },
-    {
-      "type": "Characterstmt",
-      "value": "d"
-    },
-    {
-      "type": "Characterstmt",
-      "value": ","
-    },
-    {
-      "type": "Characterstmt",
-      "value": "1"
-    },
-    {
-      "type": "Characterstmt",
-      "value": ","
-    },
-    {
-      "type": "Characterstmt",
-      "value": "2"
-    },
-    {
-      "type": "Characterstmt",
-      "value": ","
-    },
-    {
-      "type": "Characterstmt",
-      "value": "3"
-    },
-    {
-      "type": "Characterstmt",
-      "value": ")"
-    },
-    {
-      "type": "Block",
-      "statements": [
+      "type": "ExpressionMacroDefinition",
+      "macroName": "my_display",
+      "literals": [],
+      "syntaxRules": [
         {
-          "type": "Variable",
-          "name": "hogehoge"
+          "type": "SyntaxRule",
+          "pattern": [],
+          "template": [
+            {
+              "type": "FunctionCall",
+              "name": {
+                "type": "PropertyAccess",
+                "base": {
+                  "type": "Variable",
+                  "name": "console"
+                },
+                "name": "log"
+              },
+              "arguments": [
+                {
+                  "type": "Variable",
+                  "name": "x"
+                }
+              ]
+            }
+          ]
         }
       ]
+    },
+    {
+      "type": "VariableStatement",
+      "declarations": [
+        {
+          "type": "VariableDeclaration",
+          "name": "x",
+          "value": {
+            "type": "NumericLiteral",
+            "value": "100"
+          }
+        }
+      ]
+    },
+    {
+      "type": "FunctionCall",
+      "name": {
+        "type": "Function",
+        "name": null,
+        "params": [],
+        "elements": [
+          {
+            "type": "FunctionCall",
+            "name": {
+              "type": "Variable",
+              "name": "some_macro"
+            },
+            "arguments": [
+              {
+                "type": "Variable",
+                "name": "x"
+              }
+            ]
+          },
+          {
+            "type": "FunctionCall",
+            "name": {
+              "type": "PropertyAccess",
+              "base": {
+                "type": "Variable",
+                "name": "console"
+              },
+              "name": "log"
+            },
+            "arguments": [
+              {
+                "type": "Variable",
+                "name": "x"
+              }
+            ]
+          },
+          {
+            "type": "Variable",
+            "name": "my_display"
+          }
+        ]
+      },
+      "arguments": []
+    },
+    {
+      "type": "VariableStatement",
+      "declarations": [
+        {
+          "type": "VariableDeclaration",
+          "name": "x",
+          "value": {
+            "type": "NumericLiteral",
+            "value": "200"
+          }
+        }
+      ]
+    },
+    {
+      "type": "FunctionCall",
+      "name": {
+        "type": "Variable",
+        "name": "some_macro"
+      },
+      "arguments": [
+        {
+          "type": "Variable",
+          "name": "x"
+        }
+      ]
+    },
+    {
+      "type": "FunctionCall",
+      "name": {
+        "type": "PropertyAccess",
+        "base": {
+          "type": "Variable",
+          "name": "console"
+        },
+        "name": "log"
+      },
+      "arguments": [
+        {
+          "type": "Variable",
+          "name": "x"
+        }
+      ]
+    },
+    {
+      "type": "Variable",
+      "name": "my_display"
     }
   ]
 }

@@ -1,4 +1,40 @@
+statement some_macro {
+    identifier: x;
+    { _ (x) => {
+                 console.log(x);
+                 var x = 10;
+               }
+    }
+}
 
+expression my_display {
+    { _ => console.log(x) }
+}
+
+var x = 100;
+(function () {
+    some_macro(x);
+    console.log(x);
+    my_display;
+})();
+
+var x = 200;
+some_macro(x)
+console.log(x);
+my_display;
+
+/*expression test {
+    expression: e;
+    literal: and;
+    { test [# e #] and ... => console.log(e, ...) }
+    { test [# e #] => console.log(e) }
+}
+
+(test 1+1 and 2);
+*/
+
+
+/*
 // test マクロの定義
 statement test {
     identifier: id;
@@ -23,7 +59,7 @@ statement test {
 test (iidd, 1, 2, 3) {
     hogehoge;
 }
-
+*/
 
 
 
