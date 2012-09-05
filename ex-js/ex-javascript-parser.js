@@ -6384,15 +6384,7 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, ellipsis, tail) {
-              var result = [head];
-              if (ellipsis)
-                 result.push({ type: "Ellipsis" });
-              for (var i = 0; i < tail.length; i++) {
-                result.push(tail[i][5]);
-                if (tail[i][6])
-                   result.push({ type: "Ellipsis" });
-              }
-              return result;
+              return makeElementsList(head, ellipsis, tail, 5, 6);
             })(pos0, result0[1], result0[2], result0[3]);
         }
         if (result0 === null) {
@@ -6843,15 +6835,7 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, ellipsis, tail) {
-              var result = [head];
-              if (ellipsis)
-                 result.push({ type: "Ellipsis" });
-              for (var i = 0; i < tail.length; i++) {
-                result.push(tail[i][3]);
-                if (tail[i][4])
-                   result.push({ type: "Ellipsis" });
-              }
-              return result;
+              return makeElementsList(head, ellipsis, tail, 3, 4);
             })(pos0, result0[0], result0[1], result0[2]);
         }
         if (result0 === null) {
@@ -8176,15 +8160,7 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, ellipsis, tail) {
-              var result = [head];
-              if (ellipsis)
-                 result.push({ type: "Ellipsis" });
-              for (var i = 0; i < tail.length; i++) {
-                result.push(tail[i][3]);
-                if (tail[i][4])
-                   result.push({ type: "Ellipsis" });
-              }
-              return result;
+              return makeElementsList(head, ellipsis, tail, 3, 4);
             })(pos0, result0[0], result0[1], result0[2]);
         }
         if (result0 === null) {
@@ -11718,17 +11694,9 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, ellipsis, tail) {
-              var elements = [head];
-              if (ellipsis)
-                 elements.push({ type: "Ellipsis" });
-              for (var i=0; i<tail.length; i++) {
-                elements.push(tail[i][1]);
-                if (tail[i][3])
-                   elements.push({ type: "Ellipsis" });
-              }
               return {
                 type: "Statements",
-                elements: elements
+                elements: makeElementsList(head, ellipsis, tail, 1, 3)
               };
             })(pos0, result0[0], result0[2], result0[3]);
         }
@@ -11847,17 +11815,9 @@ module.exports = (function(){
             result0 = (function(offset, head, ellipsis, tail) {
                 var result = head;
                 if (ellipsis || tail.length > 0) {
-                   result = [result];
-                   if (ellipsis)
-                      result.push({ type: "Ellipsis" });
-                   for (var i=0; i<tail.length; i++) {
-                     result.push(tail[i][3]);
-                     if (tail[i][4])
-                        result.push({ type: "Ellipsis" });
-                   }
                    result = {
                      type: "Expressions",
-                     elements: result
+                     elements: makeElementsList(head, ellipsis, tail, 3, 4)
                    };
                  }
                 return result;
@@ -11997,17 +11957,9 @@ module.exports = (function(){
           result0 = (function(offset, head, ellipsis, tail) {
               var result = head;
               if (ellipsis || tail.length > 0) {
-                 result = [result];
-                 if (ellipsis)
-                    result.push({ type: "Ellipsis" });
-                 for (var i=0; i<tail.length; i++) {
-                   result.push(tail[i][3]);
-                   if (tail[i][4])
-                      result.push({ type: "Ellipsis" });
-                 }
                  result = {
                    type: "Expressions",
-                   elements: result
+                   elements: makeElementsList(head, ellipsis, tail, 3, 4)
                  };
               }
               return result;
@@ -12267,15 +12219,7 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, ellipsis, tail) {
-              var result = [head];
-              if (ellipsis)
-                 result.push({ type: "Ellipsis" });
-              for (var i = 0; i < tail.length; i++) {
-                result.push(tail[i][1]);
-                if (tail[i][2])
-                   result.push({ type: "Ellipsis" });
-              }
-              return result;
+              return makeElementsList(head, ellipsis, tail, 1, 2);
             })(pos0, result0[0], result0[1], result0[2]);
         }
         if (result0 === null) {
@@ -12466,15 +12410,7 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, ellipsis, tail) {
-              var result = [head];
-              if (ellipsis)
-                 result.push({ type: "Ellipsis" });
-              for (var i = 0; i < tail.length; i++) {
-                result.push(tail[i][3]);
-                if (tail[i][4])
-                   result.push({ type: "Ellipsis" });
-              }
-              return result;
+              return makeElementsList(head, ellipsis, tail, 3, 4);
             })(pos0, result0[0], result0[1], result0[2]);
         }
         if (result0 === null) {
@@ -12608,15 +12544,7 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, ellipsis, tail) {
-              var result = [head];
-              if (ellipsis)
-                 result.push({ type: "Ellipsis" });
-              for (var i = 0; i < tail.length; i++) {
-                result.push(tail[i][3]);
-                if (tail[i][4])
-                   result.push({ type: "Ellipsis" });
-              }
-              return result;
+              return makeElementsList(head, ellipsis, tail, 3, 4);
             })(pos0, result0[0], result0[1], result0[2]);
         }
         if (result0 === null) {
@@ -15501,15 +15429,7 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, head, ellipsis, tail) {
-              var result = [head];
-              if (ellipsis)
-                 result.push({ type: "Ellipsis" });
-              for (var i = 0; i < tail.length; i++) {
-                result.push(tail[i][3]);
-                if (tail[i][4])
-                   result.push({ type: "Ellipsis" });
-              }
-              return result;
+              return makeElementsList(head, ellipsis, tail, 3, 4);
             })(pos0, result0[0], result0[1], result0[2]);
         }
         if (result0 === null) {
@@ -17806,6 +17726,19 @@ module.exports = (function(){
                               statement: [], 
                               literal: [] };  // メタ変数のリストを保持するオブジェクト
         var identifierType = "";              // パターン中の識別子の種類を表す変数
+      
+        // ...が出現する要素の並びからリストを作る関数
+        var makeElementsList = function (head, ellipsis, tail, elementIndex, ellipsisIndex) {
+            var elements = [head];
+            if (ellipsis)
+               elements.push({ type: "Ellipsis" });
+            for (var i=0; i<tail.length; i++) {
+                elements.push(tail[i][elementIndex]);
+                if (tail[i][ellipsisIndex])
+                   elements.push({ type: "Ellipsis" });
+            }
+            return elements;
+        }
       
       
       var result = parseFunctions[startRule]();

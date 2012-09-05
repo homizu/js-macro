@@ -56,6 +56,19 @@
                         statement: [], 
                         literal: [] };  // メタ変数のリストを保持するオブジェクト
   var identifierType = "";              // パターン中の識別子の種類を表す変数
+
+  // ...が出現する要素の並びからリストを作る関数
+  var makeElementsList = function (head, ellipsis, tail, elementIndex, ellipsisIndex) {
+      var elements = [head];
+      if (ellipsis)
+         elements.push({ type: "Ellipsis" });
+      for (var i=0; i<tail.length; i++) {
+          elements.push(tail[i][elementIndex]);
+          if (tail[i][ellipsisIndex])
+             elements.push({ type: "Ellipsis" });
+      }
+      return elements;
+  }
 }
 
 start
@@ -513,15 +526,7 @@ ElementList // changed
   = (Elision __)?
     head:AssignmentExpression ellipsis:CommaEllipsis?
     tail:(__ "," __ Elision? __ AssignmentExpression CommaEllipsis?)* {
-      var result = [head];
-      if (ellipsis)
-         result.push({ type: "Ellipsis" });
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][5]);
-        if (tail[i][6])
-           result.push({ type: "Ellipsis" });
-      }
-      return result;
+      return makeElementsList(head, ellipsis, tail, 5, 6);
     }
 
 Elision
@@ -544,15 +549,7 @@ ObjectLiteral
 PropertyNameAndValueList // changed
   = head:PropertyAssignment ellipsis:CommaEllipsis?
     tail:(__ "," __ PropertyAssignment CommaEllipsis?)* {
-      var result = [head];
-      if (ellipsis)
-         result.push({ type: "Ellipsis" });
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
-        if (tail[i][4])
-           result.push({ type: "Ellipsis" });
-      }
-      return result;
+      return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
 PropertyAssignment
@@ -692,15 +689,7 @@ Arguments
 ArgumentList // changed
   = head:AssignmentExpression ellipsis:CommaEllipsis?
     tail:(__ "," __ AssignmentExpression CommaEllipsis?)* {
-      var result = [head];
-      if (ellipsis)
-         result.push({ type: "Ellipsis" });
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
-        if (tail[i][4])
-           result.push({ type: "Ellipsis" });
-      }
-      return result;
+      return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
 LeftHandSideExpression
@@ -1115,34 +1104,18 @@ AssignmentOperator
 Expression // changed
   = head:IdentifierName &{ return metaVariables.statement.indexOf(head) >= 0;} ellipsis:Ellipsis?
     tail:(__ name:IdentifierName &{ return metaVariables.statement.indexOf(name) >= 0; } Ellipsis?)* {
-      var elements = [head];
-      if (ellipsis)
-         elements.push({ type: "Ellipsis" });
-      for (var i=0; i<tail.length; i++) {
-        elements.push(tail[i][1]);
-        if (tail[i][3])
-           elements.push({ type: "Ellipsis" });
-      }
       return {
         type: "Statements",
-        elements: elements
+        elements: makeElementsList(head, ellipsis, tail, 1, 3)
       };
     }
   / head:AssignmentExpression ellipsis:CommaEllipsis?
     tail:(__ "," __ AssignmentExpression CommaEllipsis?)* {
       var result = head;
       if (ellipsis || tail.length > 0) {
-         result = [result];
-         if (ellipsis)
-            result.push({ type: "Ellipsis" });
-         for (var i=0; i<tail.length; i++) {
-           result.push(tail[i][3]);
-           if (tail[i][4])
-              result.push({ type: "Ellipsis" });
-         }
          result = {
            type: "Expressions",
-           elements: result
+           elements: makeElementsList(head, ellipsis, tail, 3, 4)
          };
        }
       return result;
@@ -1153,17 +1126,9 @@ ExpressionNoIn // changed  // for in で使う
     tail:(__ "," __ AssignmentExpressionNoIn CommaEllipsis?)* {
       var result = head;
       if (ellipsis || tail.length > 0) {
-         result = [result];
-         if (ellipsis)
-            result.push({ type: "Ellipsis" });
-         for (var i=0; i<tail.length; i++) {
-           result.push(tail[i][3]);
-           if (tail[i][4])
-              result.push({ type: "Ellipsis" });
-         }
          result = {
            type: "Expressions",
-           elements: result
+           elements: makeElementsList(head, ellipsis, tail, 3, 4)
          };
       }
       return result;
@@ -1209,15 +1174,7 @@ Block
 StatementList // changed
   = head:Statement ellipsis:Ellipsis?
     tail:(__ Statement Ellipsis?)* {
-      var result = [head];
-      if (ellipsis)
-         result.push({ type: "Ellipsis" });
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][1]);
-        if (tail[i][2])
-           result.push({ type: "Ellipsis" });
-      }
-      return result;
+      return makeElementsList(head, ellipsis, tail, 1, 2);
     }
 
 VariableStatement
@@ -1231,29 +1188,13 @@ VariableStatement
 VariableDeclarationList // changed
   = head:VariableDeclaration ellipsis:CommaEllipsis?
     tail:(__ "," __ VariableDeclaration CommaEllipsis?)* {
-      var result = [head];
-      if (ellipsis)
-         result.push({ type: "Ellipsis" });
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
-        if (tail[i][4])
-           result.push({ type: "Ellipsis" });
-      }
-      return result;
+      return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
 VariableDeclarationListNoIn // changed
   = head:VariableDeclarationNoIn ellipsis:CommaEllipsis?
     tail:(__ "," __ VariableDeclarationNoIn CommaEllipsis?)* {
-      var result = [head];
-      if (ellipsis)
-         result.push({ type: "Ellipsis" });
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
-        if (tail[i][4])
-           result.push({ type: "Ellipsis" });
-      }
-      return result;
+      return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
 VariableDeclaration
@@ -1564,15 +1505,7 @@ FunctionExpression
 FormalParameterList // changed
   = head:Identifier ellipsis:CommaEllipsis?
     tail:(__ "," __ Identifier CommaEllipsis?)* {
-      var result = [head];
-      if (ellipsis)
-         result.push({ type: "Ellipsis" });
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
-        if (tail[i][4])
-           result.push({ type: "Ellipsis" });
-      }
-      return result;
+      return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
 FunctionBody

@@ -13,8 +13,10 @@ var util = require('util');
 var PEG = require('pegjs');
 var generator = require('./pegjs-generator');
 var parser = require('./ex-javascript-parser');
+//var parser = require('./jsx-parser');
 
 var grammarFile = './ex-javascript.pegjs';
+//var grammarFile = './jsx.pegjs';
 var debug = true;
 var resultDir = 'converted/';
 

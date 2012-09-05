@@ -183,7 +183,6 @@
                                (else (set! result (cons v result))))))
                      jsexpr)
            (reverse result)))
-
         (else ;; other
          jsexpr)))
 
