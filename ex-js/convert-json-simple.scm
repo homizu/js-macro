@@ -23,13 +23,6 @@
     (write-file (change-suffix tree-file-path "-sform.scm") sform pretty-write)
     (close-input-port in)))
 
-(define in-macro #f) ;; MacroFormの中かどうかを表す変数
-(define vars '()) ;; var文で宣言している変数を保存するためのリスト
-(define (add-vars name) ;; varsに変数を追加
-  (and (not in-macro) (not (member name vars)) (set! vars (cons name vars))))
-(define (get-defs unnecessaries) ;; varsからunnecessariesを取り除いたリストに対しdefine式を生成
-  (reverse (map (lambda (v) `(define ,v (quote ()))) (remove* unnecessaries vars))))
-
 ;; 変数を表す文字列に接頭辞，接尾辞を付けてシンボルに変換．リストの場合は各要素に同じ変換を行う．
 (define (racket-variable->symbol hash key prefix suffix)
   (let ((value (hash-ref hash key)))
@@ -53,23 +46,13 @@
        `(define-syntax ,macro-name
           (syntax-rules ,literals ,@rules))))
     ((SyntaxRule) ;; SyntaxRule
-     (let* ((current-vars vars)
-            (template '())
-            (defs '()))
-       (set! vars '())
-       (set! template (racket-hash-value->sexp hash 'template))
-       (set! defs (get-defs '()))
-       (set! vars current-vars)
-       `((_ ,@(racket-hash-value->sexp hash 'pattern)) (begin ,@defs ,template))))
+     `((_ ,@(racket-hash-value->sexp hash 'pattern)) ,(racket-hash-value->sexp hash 'template)))
     ((RepBlock Brace Paren Bracket) ;; RepBlock, Brace, Paren, Bracket
      `("JS" ,(string-downcase (symbol->string type)) ,@(racket-hash-value->sexp hash 'elements)))
     ((MacroName) ;; MacroName
      (racket-variable->symbol hash 'name "" "-Macro"))
     ((MacroForm) ;; MacroForm
-     (set! in-macro #t)
-     (let ((form (racket-hash-value->sexp hash 'inputForm)))
-       (set! in-macro #f)
-       form))
+     (racket-hash-value->sexp hash 'inputForm))
     ((Variable IdentifierVariable ExpressionVariable StatementVariable) ;; Variable, IdentifierVariable, ExpressionVariable, StatementVariable
      (racket-variable->symbol hash 'name "V-" ""))
     ((LiteralKeyword) ;; LiteralKeyword
@@ -125,13 +108,9 @@
     ((Block) ;; Block
      `("JS" "block" ,@(racket-hash-value->sexp hash 'statements)))
     ((VariableStatement) ;; VariableStatement
-     `("JS" "variable" ,@(racket-hash-value->sexp hash 'declarations)))
-    ;;         `(begin ,@(racket-hash-value->sexp hash 'declarations)))
+     `(begin ,@(racket-hash-value->sexp hash 'declarations)))
     ((VariableDeclaration) ;; VariableDecralation
-     (let ((name (racket-variable->symbol hash 'name "V-" "")))
-       (add-vars name)
-       `(,name ,(racket-hash-value->sexp hash 'value))))
-    ;;         `(define ,(racket-variable->symbol hash 'name "V-" "") ,(racket-hash-value->sexp hash 'value)))
+     `(define ,(racket-variable->symbol hash 'name "V-" "") ,(racket-hash-value->sexp hash 'value)))
     ((EmptyStatement) ;; EmptyStatement
      `("JS" "empty"))
     ((IfStatement) ;; IfStatement
@@ -165,34 +144,28 @@
        `("JS" "try" ,block
          ,(if (eq? catch #\nul) ;; Catch
               catch
-              `(,(racket-variable->symbol catch 'identifier "V-" "") ,(racket-hash-value->sexp catch 'block)))
+              `(lambda ( ,(racket-variable->symbol catch 'identifier "V-" "") ) ,(racket-hash-value->sexp catch 'block)))
          ,(if (eq? finally #\nul) ;; Finally
               finally
               (racket-hash-value->sexp finally 'block)))))
     ((DebuggerStatement) ;; DebuggerStatement
      `("JS" "debugger"))
+    ((FunctionDeclaration) ;; FunctionDeclaration
+     (let* ((name (racket-variable->symbol hash 'name "V-" ""))
+            (params (racket-variable->symbol hash 'params "V-" ""))
+            (body (racket-hash-value->sexp hash 'elements)))
+       `(define (,name ,@params) ,@body #\@)))
     ((Function) ;; Function
-     (let* ((current-vars vars)
-            (name (hash-ref hash 'name))
-            (onymous? (not (eq? name #\nul)))
-            (body '())
-            (params (racket-variable->symbol hash 'params "V-" "")))
-       (set! vars '())
-       (set! body (racket-hash-value->sexp hash 'elements))
-       (and onymous? (set! name (string->symbol (string-append "V-" name))))
-       (set! body (append (get-defs params) body))
-       (set! vars current-vars)
-       (and onymous? (add-vars name))
-       `("JS" "function" ,name (lambda ,params ,@(if (eq? body '()) `((quote ,body)) body)))))
- ;;      `("JS" "function" ,(if anonymous? name (string->symbol (string-append "V-" name)))
- ;;      (if (eq? name #\nul)
- ;;          `(lambda ,params `(begin ,@(get-defs) ,(if (eq? body '()) `(quote ,body) `(begin ,@body))))
- ;;          `(define (,name ,@params) ,(if (eq? body '()) `(quote ,body) `(begin ,@body))))))
- ;;   
- ;;      `("JS" "function" ,(if (eq? name #\nul) name (string->symbol (string-append "V-" name))) (lambda ,params ,(if (eq? body '()) `(quote ,body) `(begin ,@body))))))
+     (let* ((name (hash-ref hash 'name))
+            (params (racket-variable->symbol hash 'params "V-" ""))
+            (body (racket-hash-value->sexp hash 'elements)))
+       (if (eq? name #\nul)
+           '()
+           (set! body (cons `(define ,(string->symbol (string-append "V-" name))) body)))
+       `("JS" "function" ,name (lambda ,params ,@body #\@))))
     ((Program) ;; Program
      (let ((elements (racket-hash-value->sexp hash 'elements)))
-       `(begin ,@(get-defs '()) ,@elements)))
+       `(begin ,@elements)))
     (else
      (hash-map hash
                (lambda (key value)

@@ -15132,7 +15132,7 @@ module.exports = (function(){
         if (result0 !== null) {
           result0 = (function(offset, name, params, elements) {
               return {
-                type:     "Function",
+                type:     "FunctionDeclaration",
                 name:     name,
                 params:   params !== "" ? params : [],
                 elements: elements

@@ -8,8 +8,10 @@
   ex-js/macro-examples/
 
 ・起動方法 (macの場合)
-  ex-js で以下のコマンドを実行する．
+  ex-js で以下のコマンドを実行する．（バグ多数）
   ./expand_js.sh jsファイル
+  jsファイルが Good Parts で書かれている場合は，以下のコマンドを実行できる．
+  ./expand_gpjs.sh jsファイル
 
 ・生成するスクリプト群
   引数で与えられた jsファイル（XXX.js）が存在するフォルダに converted というフォルダを作成し，その中に以下のファイルを生成する．

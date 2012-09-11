@@ -1,1 +1,0 @@
-(Program (elements ((VariableStatement (declarations ((VariableDeclaration (name "a") (value (NumericLiteral (value 1))))))) (VariableStatement (declarations ((VariableDeclaration (name "b") (value (BinaryExpression (operator "+") (left (Variable (name "a"))) (right (Variable (name "a"))))))))))))
