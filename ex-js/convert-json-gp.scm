@@ -23,9 +23,10 @@
     (write-file (change-suffix tree-file-path "-sform.scm") sform pretty-write)
     (close-input-port in)))
 
+(define in-macro #f) ;; MacroFormの中かどうかを表す変数
 (define vars '()) ;; var文で宣言している変数を保存するためのリスト
 (define (add-vars name) ;; varsに変数を追加
-  (and (not (member name vars)) (set! vars (cons name vars))))
+  (and (not in-macro) (not (member name vars)) (set! vars (cons name vars))))
 (define (get-defs unnecessaries) ;; varsからunnecessariesを取り除いたリストに対しdefine式を生成
   (reverse (map (lambda (v) `(define ,v (quote ()))) (remove* unnecessaries vars))))
 
@@ -65,7 +66,10 @@
     ((MacroName) ;; MacroName
      (racket-variable->symbol hash 'name "" "-Macro"))
     ((MacroForm) ;; MacroForm
-     (racket-hash-value->sexp hash 'inputForm))
+     (set! in-macro #t)
+     (let ((form (racket-hash-value->sexp hash 'inputForm)))
+       (set! in-macro #f)
+       form))
     ((Variable IdentifierVariable ExpressionVariable StatementVariable) ;; Variable, IdentifierVariable, ExpressionVariable, StatementVariable
      (racket-variable->symbol hash 'name "V-" ""))
     ((LiteralKeyword) ;; LiteralKeyword

@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-expand_times=2 # number of macro-expand times. 1 or 2
+expand_times=1 # number of macro-expand times. 1 or 2
 
 if [ ! $# -eq 1 ]
 then

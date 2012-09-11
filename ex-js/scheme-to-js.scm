@@ -9,6 +9,7 @@
 (define (bindent delta)
   (set! indent-level (+ indent-level delta)))
 (define (bnewline . delta)
+  (set! buffer (list (apply string-append (reverse buffer))))
   (bindent (if (null? delta) 0 (car delta)))
   (bformat "~%~v,a" indent-level ""))
 (define (bdelete1)

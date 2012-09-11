@@ -1730,6 +1730,18 @@ VariableDeclarationListNoIn // changed
       return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
+FunctionDeclaration // changed
+  = FunctionToken __ name:Identifier __
+    "(" __ params:FormalParameterList? __ ")" __
+    "{" __ elements:FunctionBody __ "}" {
+      return {
+        type:     "FunctionDeclaration",
+        name:     name,
+        params:   params !== "" ? params : [],
+        elements: elements
+      };
+    }
+
 FormalParameterList // changed
   = head:Identifier ellipsis:CommaEllipsis?
     tail:(__ "," __ Identifier CommaEllipsis?)* {

@@ -1478,12 +1478,12 @@ DebuggerStatement
 
 /* ===== A.5 Functions and Programs ===== */
 
-FunctionDeclaration
+FunctionDeclaration // changed
   = FunctionToken __ name:Identifier __
     "(" __ params:FormalParameterList? __ ")" __
     "{" __ elements:FunctionBody __ "}" {
       return {
-        type:     "Function",
+        type:     "FunctionDeclaration",
         name:     name,
         params:   params !== "" ? params : [],
         elements: elements
