@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>The CSV Macro</title>
+	<link type="text/css" rel="stylesheet" href="../lib/jsx.css"/>
+</head>
+<body>
+
+<h1 id="csv">CSV マクロ</h1>
+
+<p>このマクロは，CSV データを簡単に作成するためのものです．</p>
+
+<pre><code>CSV
+    d11, d12, ...;
+    d21, d22, ...;
+    ...
+    d91, d92, ...
+EoD
+</code></pre>
+
+<h2 id="">バグ</h2>
+
+<ul>
+<li><p>csv.js に書いたセミコロン問題</p></li>
+<li><p>カンマなしのバージョンを定義しようとしたら失敗した．もしかして &#8230; の直前には literal が必須？</p></li>
+<li><p>シンボルをサポートしてくれるとさらにいいのだけれど</p></li>
+</ul>
+
+<hr />
+
+<h1 id="demo">Demo</h1>
+
+<div id="demo-area"></div>
+
+<hr />
+
+<h1 id="jsxcode">JSX Code</h1>
+
+<script src="../lib/jquery.min.js"></script>
+
+<script src="converted/csv-expanded.js"></script>
+
+<pre><code>expression CSV {
+  expression: data;
+  literal: EoD;
+  { CSV [# data, ... #]; ... EoD; =&gt; [ [ data, ... ], ... ] }
+  { CSV [# data, ... #]; ... ; EoD; =&gt; [ [ data, ... ], ... ] }
+}
+
+var csv1 = CSV
+  &quot;穂水&quot;, &quot;homizu&quot;;
+  &quot;脇田&quot;, &quot;wakita&quot;;
+  &quot;佐々木&quot;, &quot;sasaki&quot;;
+  &quot;荒井&quot;, &quot;arai&quot;
+EoD;
+
+/*
+ * 以下の例は最後のデータの末尾にセミコロンを追加した例．
+ * マクロ定義にはこれにもマッチする規則を書いたつもりだが jsx は
+ * マクロとして認識してくれない．
+var csv2 = CSV
+  &quot;穂水&quot;, &quot;homizu&quot;;
+  &quot;脇田&quot;, &quot;wakita&quot;;
+  &quot;佐々木&quot;, &quot;sasaki&quot;;
+  &quot;荒井&quot;, &quot;arai&quot;;
+EoD;
+*/
+
+if (false) ;  // Yet another nortorious work around...
+
+$(function () {
+    $('#demo-area').append($('&lt;p&gt;').text(JSON.stringify(csv1, null, 2)));
+    // $('#demo-area').append($('&lt;p&gt;').text(JSON.stringify(csv2, null, 2)));
+  });
+
+// vim: shiftwidth=2
+</code></pre>
+
+</body>
+</html>
