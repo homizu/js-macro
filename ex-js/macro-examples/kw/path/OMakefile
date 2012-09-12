@@ -1,2 +1,10 @@
-index.html: index.md
-	multimarkdown < $^ > $@
+converted/path-expanded.js: path.js
+	../bin/jsx.sh
+
+index.html: index.md converted/path-expanded.js
+	/usr/local/bin/multimarkdown -o $@ index.md
+
+.DEFAULT: index.html
+
+veryclean:
+	rm -rf converted index.html

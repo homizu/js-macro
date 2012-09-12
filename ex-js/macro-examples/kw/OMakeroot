@@ -1,1 +1,3 @@
+.PHONY: clean veryclean
+
 .SUBDIRS: path
