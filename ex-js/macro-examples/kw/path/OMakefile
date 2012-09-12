@@ -2,10 +2,7 @@ converted/path-expanded.js: path.js
 	../bin/jsx.sh
 
 index.html: index.md converted/path-expanded.js
-	/usr/local/bin/multimarkdown -o $@ index.md
-	echo "<div id=\"jsx_code\"><pre><code>" >> $@
-	cat path.js >> $@
-	echo "</code></pre></div>" >> $@
+    (cat index.md; sed 's/^/    /' path.js) | /usr/local/bin/multimarkdown > $@
 
 .DEFAULT: index.html
 
