@@ -1,5 +1,14 @@
 /* Rewritten rules for jsx. */
 
+UnicodeLetter
+  = Lu
+  / Ll
+  / Lt
+  / Lm
+  / Lo
+  / Nl
+  / Kanji
+
 Keyword
   = (
         "break"
