@@ -1,7 +1,5 @@
-converted/path-expanded.js: path.js
-	../bin/jsx.sh
-
-index.html: index.md converted/path-expanded.js
+index.html: index.md
+    ../bin/jsx.sh
     (cat index.md; sed 's/^/    /' path.js) | /usr/local/bin/multimarkdown > $@
 
 .DEFAULT: index.html
