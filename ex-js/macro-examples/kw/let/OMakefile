@@ -1,0 +1,10 @@
+converted/let-expanded.js: let.js
+	../bin/jsx.sh
+
+index.html: index.md converted/let-expanded.js
+    (cat index.md; sed 's/^/    /' let.js) | /usr/local/bin/multimarkdown > $@
+
+.DEFAULT: index.html
+
+veryclean:
+	rm -rf converted index.html
