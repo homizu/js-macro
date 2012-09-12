@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8"/>
 	<title>The Path Macro</title>
+	<link type="text/css" rel="stylesheet" href="../lib/jsx.css"/>
 </head>
 <body>
 
@@ -14,7 +15,7 @@
 
 <hr />
 
-<h1 id="code">Code</h1>
+<h1 id="jsxcode">JSX Code</h1>
 
 <script src="http://gist-it.sudarmuthu.com/http://github.com/homizu/js-macro/blob/kw-examples/ex-js/macro-examples/kw/path/path.js"></script>
 
@@ -24,3 +25,22 @@
 
 </body>
 </html>
+<div id="jsx_code"><pre><code>
+expression Path {
+  expression: line, f, t;
+  { path [# f -> t : line #] ...
+    => [{ from: f, to: t, via: line }, ...] }
+}
+
+$(function () {
+    var $table = $('<table>').appendTo($('#demo-area'));
+    (Path
+      "新宿" -> "東京" : "中央線"
+      "東京" -> "京都" : "新幹線").forEach(function (train) {
+          var $tr = $('<tr>').appendTo($table);
+          for (k in train) $('<td>').text(train[k]).appendTo($tr);
+        });
+    });
+
+// vim: shiftwidth=2
+</code></pre></div>
