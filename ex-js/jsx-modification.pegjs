@@ -1,5 +1,14 @@
 /* Rewritten rules for jsx. */
 
+UnicodeLetter
+  = Lu
+  / Ll
+  / Lt
+  / Lm
+  / Lo
+  / Nl
+  / Kanji
+
 Keyword
   = (
         "break"
@@ -168,6 +177,18 @@ VariableDeclarationListNoIn // changed
   = head:VariableDeclarationNoIn ellipsis:CommaEllipsis?
     tail:(__ "," __ VariableDeclarationNoIn CommaEllipsis?)* {
       return makeElementsList(head, ellipsis, tail, 3, 4);
+    }
+
+FunctionDeclaration // changed
+  = FunctionToken __ name:Identifier __
+    "(" __ params:FormalParameterList? __ ")" __
+    "{" __ elements:FunctionBody __ "}" {
+      return {
+        type:     "FunctionDeclaration",
+        name:     name,
+        params:   params !== "" ? params : [],
+        elements: elements
+      };
     }
 
 FormalParameterList // changed

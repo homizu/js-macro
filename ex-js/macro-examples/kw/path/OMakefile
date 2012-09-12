@@ -1,0 +1,8 @@
+index.html: index.md
+    ../bin/jsx.sh
+    (cat index.md; sed 's/^/    /' path.js) | /usr/local/bin/multimarkdown > $@
+
+.DEFAULT: index.html
+
+veryclean:
+	rm -rf converted index.html
