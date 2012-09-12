@@ -1,0 +1,8 @@
+index.html: index.md csv.js
+    ../bin/jsx.sh
+    (cat index.md; sed 's/^/    /' csv.js) | /usr/local/bin/multimarkdown > $@
+
+.DEFAULT: index.html
+
+veryclean:
+	rm -rf converted index.html
