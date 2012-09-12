@@ -1,17 +1,23 @@
 expression Path {
-  expression: line, f, t;
-  { path [# f -> t : line #] ...
-    => [{ from: f, to: t, via: line }, ...] }
+  expression: s, t, via;
+  { Path s [# -> t : via #] ...
+    => [ s, [t, via], ... ] }
 }
 
 $(function () {
-    var $table = $('<table>').appendTo($('#demo-area'));
-    (Path
-      "新宿" -> "東京" : "中央線"
-      "東京" -> "京都" : "新幹線").forEach(function (train) {
-          var $tr = $('<tr>').appendTo($table);
-          for (k in train) $('<td>').text(train[k]).appendTo($tr);
-        });
-    });
+    var path = (Path "新宿" -> "東京" : "中央線" -> "京都" : "新幹線");
+    var $table, place;
+
+    $('<p>').text('path = ' + JSON.stringify(path)).appendTo($('#demo-area'));
+
+    $table = $('<table>').appendTo($('#demo-area'));
+    place = path[0];
+    path[1].forEach(function (to_via) {
+        var $tr = $('<tr>').appendTo($table);
+        $('<td>').text(place).appendTo($tr);
+        $('<td>').text(to_via[0]).appendTo($tr);
+        $('<td>').text(to_via[1]).appendTo($tr);
+      });
+  });
 
 // vim: shiftwidth=2

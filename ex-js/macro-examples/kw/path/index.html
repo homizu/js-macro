@@ -7,6 +7,20 @@
 </head>
 <body>
 
+<h1 id="path">Path マクロ</h1>
+
+<p>このマクロは，道程のデータを配列として表現する目的で使います．</p>
+
+<pre><code>Path 
+    出発地点
+    -&gt; 中継地点1 : 交通手段
+    -&gt; 中継地点2 : 交通手段
+    ...
+    -&gt; 目的地 : 交通手段
+</code></pre>
+
+<p>以下のデモでは，このように作成された交通手段の情報を利用して，HTMLの表を作成しています．</p>
+
 <hr />
 
 <h1 id="demo">Demo</h1>
@@ -22,20 +36,26 @@
 <script src="converted/path-expanded.js"></script>
 
 <pre><code>expression Path {
-  expression: line, f, t;
-  { path [# f -&gt; t : line #] ...
-    =&gt; [{ from: f, to: t, via: line }, ...] }
+  expression: s, t, via;
+  { Path s [# -&gt; t : via #] ...
+    =&gt; [ s, [t, via], ... ] }
 }
 
 $(function () {
-    var $table = $('&lt;table&gt;').appendTo($('#demo-area'));
-    (Path
-      &quot;新宿&quot; -&gt; &quot;東京&quot; : &quot;中央線&quot;
-      &quot;東京&quot; -&gt; &quot;京都&quot; : &quot;新幹線&quot;).forEach(function (train) {
-          var $tr = $('&lt;tr&gt;').appendTo($table);
-          for (k in train) $('&lt;td&gt;').text(train[k]).appendTo($tr);
-        });
-    });
+    var path = (Path &quot;新宿&quot; -&gt; &quot;東京&quot; : &quot;中央線&quot; -&gt; &quot;京都&quot; : &quot;新幹線&quot;);
+    var $table, place;
+
+    $('&lt;p&gt;').text('path = ' + JSON.stringify(path)).appendTo($('#demo-area'));
+
+    $table = $('&lt;table&gt;').appendTo($('#demo-area'));
+    place = path[0];
+    path[1].forEach(function (to_via) {
+        var $tr = $('&lt;tr&gt;').appendTo($table);
+        $('&lt;td&gt;').text(place).appendTo($tr);
+        $('&lt;td&gt;').text(to_via[0]).appendTo($tr);
+        $('&lt;td&gt;').text(to_via[1]).appendTo($tr);
+      });
+  });
 
 // vim: shiftwidth=2
 </code></pre>
