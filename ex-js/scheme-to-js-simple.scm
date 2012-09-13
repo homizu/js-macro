@@ -271,8 +271,9 @@
   #f)
 
 (define (do-return e)
-  (bformat "return ")
-  (s2j (car e))
+  (let ((v (car e)))
+    (bformat "return ")
+    (if (not (eq? v #\nul)) (s2j v)))
   #t)
 
 (define (do-with e)
