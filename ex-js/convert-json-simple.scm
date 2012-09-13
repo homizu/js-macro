@@ -187,7 +187,7 @@
                                (else (set! result (cons v result))))))
                      jsexpr)
            (reverse result)))
-
+        ((equal? jsexpr "") 'ignore)
         (else ;; other
          jsexpr)))
 
