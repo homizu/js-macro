@@ -249,7 +249,7 @@ module.exports = (function () {
             return {
                 type: 'MacroName',
                 name: name,
-                toString: function() { return '("' + this.name + '" { return { type: "MacroName", name:"' + name + '"}; })' }
+                toString: function() { return '("' + this.name + '" !IdentifierPart { return { type: "MacroName", name:"' + name + '"}; })' }
             };
         },
         
