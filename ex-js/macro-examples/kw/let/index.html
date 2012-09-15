@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<link type="text/css" rel="stylesheet" href="../lib/jsx.css"/>
+	<title>The Let Macro</title>
+</head>
+<body>
+
+<hr />
+
+<h1 id="demo">Demo</h1>
+
+<div id="demo-area"></div>
+
+<hr />
+
+<h1 id="jsxcode">JSX Code</h1>
+
+<pre><code>expression Let {
+    identifier: id;
+    literal: and, In;
+    expression: e, M;
+
+    { Let [# id = e #] and ... In M =&gt;
+      (function (id, ...) { return M; })(e, ...)
+    }
+}
+
+var $div = $('#demo-area');
+var small = Number.MIN_VALUE;
+
+$('&lt;p&gt;').text('small = ' + small).appendTo($div);
+
+Let small = &quot;ε&quot; In
+Let large = Number.MAX_VALUE In
+$('&lt;p&gt;').text('small = ' + small + ', large = ' + large).appendTo($div);
+
+$('&lt;p&gt;').text('small = ' + small).appendTo($div);
+</code></pre>
+
+<hr />
+
+<h1 id="expandedjavascriptcode">Expanded JavaScript Code</h1>
+
+<pre><code>var $div = ($ (&quot;#demo-area&quot;));
+var small = Number.MIN_VALUE;
+((($ (&quot;&lt;p&gt;&quot;)).text ((&quot;small = &quot; + small))).appendTo ($div));
+(function (small_199_) {
+  return (function (large_202_) {
+    return ((($ (&quot;&lt;p&gt;&quot;)).text ((((&quot;small = &quot; + small_199_) + &quot;, large = &quot;) + large_202_))).appendTo ($div));
+  } (Number.MAX_VALUE));
+} (&quot;ε&quot;));
+((($ (&quot;&lt;p&gt;&quot;)).text ((&quot;small = &quot; + small))).appendTo ($div));
+</code></pre>
+
+<script src="../lib/jquery.min.js"></script>
+
+<script src="converted/let.js"></script>
+
+</body>
+</html>

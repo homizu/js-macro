@@ -1,0 +1,10 @@
+converted/csv.js: csv.js
+    ../bin/jsx.sh
+
+index.html: converted/csv.js index.md
+    ../bin/markdown.sh index.md index.html
+
+.DEFAULT: index.html
+
+veryclean:
+	rm -rf converted index.html
