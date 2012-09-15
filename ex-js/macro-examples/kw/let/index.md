@@ -1,15 +1,7 @@
 Title: The Path Macro
-CSS: ../lib/jsx.css
 
------
+DemoSection
+CodeSection
 
-# Demo
-
-<div id="demo-area"></div>
-
------
-
-# JSX Code
-
-<script src="../lib/jquery.min.js"></script>
-<script src="converted/let-expanded.js"></script>
+LoadJquery
+Script(converted/let.js)

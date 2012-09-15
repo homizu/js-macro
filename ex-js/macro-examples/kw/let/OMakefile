@@ -1,6 +1,5 @@
 index.html: index.md
-    ../bin/jsx.sh
-    (cat index.md; sed 's/^/    /' let.js) | /usr/local/bin/multimarkdown > $@
+    ../bin/markdown.sh index.md index.html
 
 .DEFAULT: index.html
 

@@ -2,8 +2,8 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
-	<title>The Path Macro</title>
 	<link type="text/css" rel="stylesheet" href="../lib/jsx.css"/>
+	<title>The Path Macro</title>
 </head>
 <body>
 
@@ -17,10 +17,6 @@
 
 <h1 id="jsxcode">JSX Code</h1>
 
-<script src="../lib/jquery.min.js"></script>
-
-<script src="converted/let-expanded.js"></script>
-
 <pre><code>expression Let {
     identifier: id;
     literal: and, In;
@@ -32,18 +28,22 @@
 }
 
 var $div = $('#demo-area');
-var small = 0.5E-10;
+var small = Number.MIN_VALUE;
 
-if (false) ;  // A dirty get around to avoid the &quot;bug-newline&quot; issue.
+if (false) ;  // A dirty get around the &quot;bug-newline&quot; issue.
 
 $('&lt;p&gt;').text('small = ' + small).appendTo($div);
 
-Let small = &quot;a tiny value&quot; In
-Let large = 100E10 In
+Let small = &quot;ε&quot; In
+Let large = Number.MAX_VALUE In
 $('&lt;p&gt;').text('small = ' + small + ', large = ' + large).appendTo($div);
 
 $('&lt;p&gt;').text('small = ' + small).appendTo($div);
 </code></pre>
+
+<script src="../lib/jquery.min.js"></script>
+
+<script src="converted/let.js"></script>
 
 </body>
 </html>

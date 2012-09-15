@@ -29,22 +29,31 @@
 
 <h1 id="jsxcode">JSX Code</h1>
 
-<pre><code>($ (function () {
-  var $table_201_;
-  var place_201_;
-  var path_201_ = [ &quot;新宿&quot;, [ &quot;東京&quot;, &quot;中央線&quot; ], [ &quot;京都&quot;, &quot;新幹線&quot; ] ];
-  ((($ (&quot;&lt;p&gt;&quot;)).text ((&quot;path = &quot; + (JSON.stringify (path_201_))))).appendTo (($ (&quot;#demo-area&quot;))));
-  ($table_201_ = (($ (&quot;&lt;table&gt;&quot;)).appendTo (($ (&quot;#demo-area&quot;)))));
-  (place_201_ = path_201_[0]);
-  (path_201_.shift ());
-  (path_201_.forEach (function (to_via_203_) {
-    var $tr_204_ = (($ (&quot;&lt;tr&gt;&quot;)).appendTo ($table_201_));
-    ((($ (&quot;&lt;td&gt;&quot;)).text (place_201_)).appendTo ($tr_204_));
-    ((($ (&quot;&lt;td&gt;&quot;)).text (to_via_203_[0])).appendTo ($tr_204_));
-    ((($ (&quot;&lt;td&gt;&quot;)).text (to_via_203_[1])).appendTo ($tr_204_));
-    (place_201_ = to_via_203_[0]);
-  }));
-}));
+<pre><code>expression Path {
+  expression: s, t, via;
+  { Path s [# -&gt; t : via #] ...
+    =&gt; [ s, [t, via], ... ] }
+}
+
+$(function () {
+    var path = (Path &quot;新宿&quot; -&gt; &quot;東京&quot; : &quot;中央線&quot; -&gt; &quot;京都&quot; : &quot;新幹線&quot;);
+    var $table, place;
+
+    $('&lt;p&gt;').text('path = ' + JSON.stringify(path)).appendTo($('#demo-area'));
+
+    $table = $('&lt;table&gt;').appendTo($('#demo-area'));
+    place = path[0];
+    path.shift();
+    path.forEach(function (to_via) {
+        var $tr = $('&lt;tr&gt;').appendTo($table);
+        $('&lt;td&gt;').text(place).appendTo($tr);
+        $('&lt;td&gt;').text(to_via[0]).appendTo($tr);
+        $('&lt;td&gt;').text(to_via[1]).appendTo($tr);
+        place = to_via[0];
+      });
+  });
+
+// vim: shiftwidth=2
 </code></pre>
 
 <script src="../lib/jquery.min.js"></script>
