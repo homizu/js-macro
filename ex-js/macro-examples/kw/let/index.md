@@ -1,4 +1,4 @@
-Title: The Path Macro
+Title: The Let Macro
 
 DemoSection
 CodeSection

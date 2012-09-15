@@ -11,8 +11,6 @@ expression Let {
 var $div = $('#demo-area');
 var small = Number.MIN_VALUE;
 
-if (false) ;  // A dirty get around the "bug-newline" issue.
-
 $('<p>').text('small = ' + small).appendTo($div);
 
 Let small = "ε" In

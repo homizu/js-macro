@@ -12,6 +12,10 @@ var csv1 = CSV
   "荒井", "arai"
 EoD;
 
+$(function () {
+    $('#demo-area').append($('<p>').text(JSON.stringify(csv1, null, 2)));
+  });
+
 /*
  * 以下の例は最後のデータの末尾にセミコロンを追加した例．
  * マクロ定義にはこれにもマッチする規則を書いたつもりだが jsx は
@@ -22,13 +26,10 @@ var csv2 = CSV
   "佐々木", "sasaki";
   "荒井", "arai";
 EoD;
-*/
-
-if (false) ;  // Yet another nortorious work around...
 
 $(function () {
-    $('#demo-area').append($('<p>').text(JSON.stringify(csv1, null, 2)));
-    // $('#demo-area').append($('<p>').text(JSON.stringify(csv2, null, 2)));
+    $('#demo-area').append($('<p>').text(JSON.stringify(csv2, null, 2)));
   });
+*/
 
 // vim: shiftwidth=2

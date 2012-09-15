@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8"/>
 	<link type="text/css" rel="stylesheet" href="../lib/jsx.css"/>
-	<title>The Path Macro</title>
+	<title>The Let Macro</title>
 </head>
 <body>
 
@@ -30,8 +30,6 @@
 var $div = $('#demo-area');
 var small = Number.MIN_VALUE;
 
-if (false) ;  // A dirty get around the &quot;bug-newline&quot; issue.
-
 $('&lt;p&gt;').text('small = ' + small).appendTo($div);
 
 Let small = &quot;ε&quot; In
@@ -45,13 +43,12 @@ $('&lt;p&gt;').text('small = ' + small).appendTo($div);
 
 <h1 id="expandedjavascriptcode">Expanded JavaScript Code</h1>
 
-<pre><code>var $div = ($ (&quot;#demo-area&quot;))
-var small = Number.MIN_VALUE
-if (false) ;
+<pre><code>var $div = ($ (&quot;#demo-area&quot;));
+var small = Number.MIN_VALUE;
 ((($ (&quot;&lt;p&gt;&quot;)).text ((&quot;small = &quot; + small))).appendTo ($div));
-(function (small_201_) {
-  return (function (large_204_) {
-    return ((($ (&quot;&lt;p&gt;&quot;)).text ((((&quot;small = &quot; + small_201_) + &quot;, large = &quot;) + large_204_))).appendTo ($div));
+(function (small_199_) {
+  return (function (large_202_) {
+    return ((($ (&quot;&lt;p&gt;&quot;)).text ((((&quot;small = &quot; + small_199_) + &quot;, large = &quot;) + large_202_))).appendTo ($div));
   } (Number.MAX_VALUE));
 } (&quot;ε&quot;));
 ((($ (&quot;&lt;p&gt;&quot;)).text ((&quot;small = &quot; + small))).appendTo ($div));

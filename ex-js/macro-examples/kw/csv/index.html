@@ -2,14 +2,12 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
-	<title>The CSV Macro</title>
 	<link type="text/css" rel="stylesheet" href="../lib/jsx.css"/>
+	<title>The CSV Macro</title>
 </head>
 <body>
 
-<h1 id="csv">CSV マクロ</h1>
-
-<p>このマクロは，CSV データを簡単に作成するためのものです．</p>
+<p>CSV データを簡単に作成するためのマクロです．</p>
 
 <pre><code>CSV
     d11, d12, ...;
@@ -37,10 +35,6 @@ EoD
 
 <h1 id="jsxcode">JSX Code</h1>
 
-<script src="../lib/jquery.min.js"></script>
-
-<script src="converted/csv-expanded.js"></script>
-
 <pre><code>expression CSV {
   expression: data;
   literal: EoD;
@@ -67,8 +61,6 @@ var csv2 = CSV
 EoD;
 */
 
-if (false) ;  // Yet another nortorious work around...
-
 $(function () {
     $('#demo-area').append($('&lt;p&gt;').text(JSON.stringify(csv1, null, 2)));
     // $('#demo-area').append($('&lt;p&gt;').text(JSON.stringify(csv2, null, 2)));
@@ -76,6 +68,20 @@ $(function () {
 
 // vim: shiftwidth=2
 </code></pre>
+
+<hr />
+
+<h1 id="expandedjavascriptcode">Expanded JavaScript Code</h1>
+
+<pre><code>var csv1 = [ [ &quot;穂水&quot;, &quot;homizu&quot; ], [ &quot;脇田&quot;, &quot;wakita&quot; ], [ &quot;佐々木&quot;, &quot;sasaki&quot; ], [ &quot;荒井&quot;, &quot;arai&quot; ] ];
+($ (function () {
+  (($ (&quot;#demo-area&quot;)).append ((($ (&quot;&lt;p&gt;&quot;)).text ((JSON.stringify (csv1, null, 2))))));
+}));
+</code></pre>
+
+<script src="../lib/jquery.min.js"></script>
+
+<script src="converted/csv.js"></script>
 
 </body>
 </html>

@@ -1,4 +1,7 @@
-index.html: index.md
+converted/let.js: let.js
+    ../bin/jsx.sh
+
+index.html: converted/let.js index.md
     ../bin/markdown.sh index.md index.html
 
 .DEFAULT: index.html

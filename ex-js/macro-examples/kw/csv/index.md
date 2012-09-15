@@ -1,9 +1,6 @@
 Title: The CSV Macro
-CSS: ../lib/jsx.css
 
-# CSV マクロ
-
-このマクロは，CSV データを簡単に作成するためのものです．
+CSV データを簡単に作成するためのマクロです．
 
     CSV
         d11, d12, ...;
@@ -20,15 +17,9 @@ CSS: ../lib/jsx.css
 
 - シンボルをサポートしてくれるとさらにいいのだけれど
 
------
+DemoSection
+CodeSection
+ExpandedSection
 
-# Demo
-
-<div id="demo-area"></div>
-
------
-
-# JSX Code
-
-<script src="../lib/jquery.min.js"></script>
-<script src="converted/csv-expanded.js"></script>
+LoadJQuery
+Script(converted/csv.js)
