@@ -1,0 +1,3 @@
+.PHONY: clean veryclean
+
+.SUBDIRS: csv let path
