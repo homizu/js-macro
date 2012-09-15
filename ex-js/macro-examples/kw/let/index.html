@@ -41,6 +41,22 @@ $('&lt;p&gt;').text('small = ' + small + ', large = ' + large).appendTo($div);
 $('&lt;p&gt;').text('small = ' + small).appendTo($div);
 </code></pre>
 
+<hr />
+
+<h1 id="expandedjavascriptcode">Expanded JavaScript Code</h1>
+
+<pre><code>var $div = ($ (&quot;#demo-area&quot;))
+var small = Number.MIN_VALUE
+if (false) ;
+((($ (&quot;&lt;p&gt;&quot;)).text ((&quot;small = &quot; + small))).appendTo ($div));
+(function (small_201_) {
+  return (function (large_204_) {
+    return ((($ (&quot;&lt;p&gt;&quot;)).text ((((&quot;small = &quot; + small_201_) + &quot;, large = &quot;) + large_204_))).appendTo ($div));
+  } (Number.MAX_VALUE));
+} (&quot;ε&quot;));
+((($ (&quot;&lt;p&gt;&quot;)).text ((&quot;small = &quot; + small))).appendTo ($div));
+</code></pre>
+
 <script src="../lib/jquery.min.js"></script>
 
 <script src="converted/let.js"></script>

@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<p>このマクロは，道程のデータを配列として表現する目的で使います．</p>
+<p>道順を配列として表現するためのマクロです．</p>
 
 <pre><code>Path 
     出発地点
@@ -54,6 +54,28 @@ $(function () {
   });
 
 // vim: shiftwidth=2
+</code></pre>
+
+<hr />
+
+<h1 id="expandedjavascriptcode">Expanded JavaScript Code</h1>
+
+<pre><code>($ (function () {
+  var $table_201_;
+  var place_201_;
+  var path_201_ = [ &quot;新宿&quot;, [ &quot;東京&quot;, &quot;中央線&quot; ], [ &quot;京都&quot;, &quot;新幹線&quot; ] ];
+  ((($ (&quot;&lt;p&gt;&quot;)).text ((&quot;path = &quot; + (JSON.stringify (path_201_))))).appendTo (($ (&quot;#demo-area&quot;))));
+  ($table_201_ = (($ (&quot;&lt;table&gt;&quot;)).appendTo (($ (&quot;#demo-area&quot;)))));
+  (place_201_ = path_201_[0]);
+  (path_201_.shift ());
+  (path_201_.forEach (function (to_via_203_) {
+    var $tr_204_ = (($ (&quot;&lt;tr&gt;&quot;)).appendTo ($table_201_));
+    ((($ (&quot;&lt;td&gt;&quot;)).text (place_201_)).appendTo ($tr_204_));
+    ((($ (&quot;&lt;td&gt;&quot;)).text (to_via_203_[0])).appendTo ($tr_204_));
+    ((($ (&quot;&lt;td&gt;&quot;)).text (to_via_203_[1])).appendTo ($tr_204_));
+    (place_201_ = to_via_203_[0]);
+  }));
+}));
 </code></pre>
 
 <script src="../lib/jquery.min.js"></script>

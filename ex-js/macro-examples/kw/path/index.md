@@ -1,6 +1,6 @@
 Title: The Path Macro
 
-このマクロは，道程のデータを配列として表現する目的で使います．
+道順を配列として表現するためのマクロです．
 
     Path 
         出発地点
@@ -13,6 +13,7 @@ Title: The Path Macro
 
 DemoSection
 CodeSection
+ExpandedSection
 
 LoadJquery
 Script(converted/path.js)
