@@ -12,11 +12,13 @@ $(function () {
 
     $table = $('<table>').appendTo($('#demo-area'));
     place = path[0];
-    path[1].forEach(function (to_via) {
+    path.shift();
+    path.forEach(function (to_via) {
         var $tr = $('<tr>').appendTo($table);
         $('<td>').text(place).appendTo($tr);
         $('<td>').text(to_via[0]).appendTo($tr);
         $('<td>').text(to_via[1]).appendTo($tr);
+        place = to_via[0];
       });
   });
 

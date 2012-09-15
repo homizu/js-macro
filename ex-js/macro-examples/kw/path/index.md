@@ -1,7 +1,4 @@
 Title: The Path Macro
-CSS: ../lib/jsx.css
-
-# Path マクロ
 
 このマクロは，道程のデータを配列として表現する目的で使います．
 
@@ -14,15 +11,8 @@ CSS: ../lib/jsx.css
 
 以下のデモでは，このように作成された交通手段の情報を利用して，HTMLの表を作成しています．
 
------
+DemoSection
+CodeSection
 
-# Demo
-
-<div id="demo-area"></div>
-
------
-
-# JSX Code
-
-<script src="../lib/jquery.min.js"></script>
-<script src="converted/path-expanded.js"></script>
+LoadJquery
+Script(converted/path.js)
