@@ -349,10 +349,12 @@
     (cond ((string=? type "expressions") (do-expressions body))
           ((string=? type "const") (bformat "~a" (car body)) #t)
           ((string=? type "number") (bformat "~a" (car body)) #t)
-          ((string=? type "string") (let ((value (car body)))
-                                 (if (pregexp-match "\"" value)
-                                     (bformat "'~a'" value)      ;; single quote
-                                     (bformat "\"~a\"" value))) #t) ;; double quote
+          ((string=? type "string") (bformat "\"~a\"" ;; double quote
+                                             (fold-left
+                                              (lambda (str pat ins) (pregexp-replace* pat str ins))
+                                              (car body)
+                                              '("\\\\" "\"" "\b" "\f" "\n" "\r" "\t" "\v")
+                                              '("\\\\\\\\" "\\\\\"" "\\\\b" "\\\\f" "\\\\n" "\\\\r" "\\\\t" "\\\\v"))) #t)
           ((string=? type "array") (do-array body))
           ((string=? type "object") (do-object body))
           ((string=? type "propAssign") (do-propAssign body))
@@ -367,7 +369,6 @@
           ((string=? type "assignment") (do-assignment body))
           ((string=? type "conditional") (do-conditional body))
           ((string=? type "block") (do-block body))
-;;          ((string=? type "variable") (do-variable body))
           ((string=? type "empty") #t) ;; (bformat ";")
           ((string=? type "if") (do-if body))
           ((string=? type "dowhile") (do-dowhile body))
