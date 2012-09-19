@@ -47,8 +47,10 @@
           (syntax-rules ,literals ,@rules))))
     ((SyntaxRule) ;; SyntaxRule
      `((_ ,@(racket-hash-value->sexp hash 'pattern)) ,(racket-hash-value->sexp hash 'template)))
-    ((RepBlock Brace Paren Bracket) ;; RepBlock, Brace, Paren, Bracket
+    ((Brace Paren Bracket) ;; Brace, Paren, Bracket
      `("JS" ,(string-downcase (symbol->string type)) ,@(racket-hash-value->sexp hash 'elements)))
+    ((RepBlock) ;; RepBlock
+     (racket-hash-value->sexp hash 'elements))
     ((MacroName) ;; MacroName
      (racket-variable->symbol hash 'name "" "-Macro"))
     ((MacroForm) ;; MacroForm
