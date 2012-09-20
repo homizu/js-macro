@@ -22,3 +22,4 @@
   - XXX-sform.scm   : jsexpr形式の式をypsilonで読み込めるよう変換したJSタグ付きS式
   - XXX-expanded.scm: JSタグ付きS式をマクロ展開して得られたS式
   - XXX-expanded.js : マクロ展開後のS式をJavaScriptのコードに変換したもの
+  さらに， ex-js/parsers に，実行中に再構成されたパーザ H-parser.js を生成する．（H は XXX.pegjs のコードから生成したハッシュコード）
