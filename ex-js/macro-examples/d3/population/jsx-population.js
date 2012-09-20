@@ -7,8 +7,15 @@ expression func {
 expression translate {
     expression: tx, ty;
     literal: s;
-    { _ { tx, ty, s } => "translate(" + tx + ", " + ty + ")scale(-1, -1)" }
-    { _ { tx, ty } => "translate(" + tx + ", " + ty + ")" }
+    { _ (tx, ty, s) => "translate(" + tx + ", " + ty + ")scale(-1, -1)" }
+    { _ (tx, ty) => "translate(" + tx + ", " + ty + ")" }
+}
+
+expression add {
+    expression: s,t,e1,e2,f1,f2;
+    { _ (s) {} => s }
+    { _ (s) { [#e1:f1#], [#e2:f2#], ... } => add(s.attr(e1,f1)) { e2:f2, ... } }
+    { _ (s,t) { [#e1:f1#], ... } => add(s.append(t)) { e1:f1, ... } }
 }
 
 
@@ -23,26 +30,21 @@ $(function () {
         .range([0, height - 40]);
 
     // An SVG element with a bottom-right origin.
-    var svg = d3.select("#chart-macro").append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .style("padding-right", "30px")
-        .append("g")
-        .attr("transform", translate { x(1), (height - 20), s });
+    var svg = add((add(d3.select("#chart-macro"), "svg")
+                      { "with": width, "height": height }).style("padding-right", "30px"), "g")
+                 { "transform": translate(x(1), (height - 20), s) };
 
     // A sliding container to hold the bars.
     var body = svg.append("g")
-        .attr("transform", "translate(0,0)");
+        .attr("transform", translate(0,0));
 
     // A container to hold the y-axis rules.
-    var rules = svg.append("g");
+    var rules = add(svg, "g"){};
 
     // A label for the current year.
-    var title = svg.append("text")
-        .attr("class", "title")
-        .attr("dy", ".71em")
-        .attr("transform", translate { x(1), y(1), s})
-        .text(2000);
+    var title = (add(svg, "text")
+                    { "class": "title", "dy": ".71em", "transform": translate(x(1), y(1), s) })
+                .text(2000);
 
     d3.csv("population.csv", function(data) {
         var age0, age1, year0, year1, year, years;
@@ -53,7 +55,7 @@ $(function () {
 
             body.transition()
                 .duration(750)
-                .attr("transform", func(d, translate { x(year - year1), 0 }));
+                .attr("transform", func(d, translate(x(year - year1), 0)));
 
             years.selectAll("rect")
                 .data(func(d, data[year][d] || [0, 0]))
@@ -81,50 +83,32 @@ $(function () {
         y.domain([0, d3.max(data, func(d, d.people))]);
 
         // Add rules to show the population values.
-        rules = rules.selectAll(".rule")
-            .data(y.ticks(10))
-            .enter().append("g")
-            .attr("class", "rule")
-            .attr("transform", func(d, translate { 0, y(d) }));
+        rules = add(rules.selectAll(".rule").data(y.ticks(10)).enter(), "g")
+                   { "class": "rule", "transform": func(d, translate(0, y(d))) };
 
-        rules.append("line")
-            .attr("x2", width);
+        add(rules, "line") { "x2": width };
 
-        rules.append("text")
-            .attr("x", 6)
-            .attr("dy", ".35em")
-            .attr("transform", "rotate(180)")
-            .text(func(d, Math.round(d / 1e6) + "M"));
+        (add(rules, "text")
+            { "x": 6, "dy": ".35em", "transform": "rotate(180)" })
+        .text(func(d, Math.round(d / 1e6) + "M"));
 
         // Add labeled rects for each birthyear.
-        years = body.selectAll("g")
-            .data(d3.range(year0 - age1, year1 + 5, 5))
-            .enter().append("g")
-            .attr("transform", func(d, translate { x(year1 - d), 0 }));
+        years = add(body.selectAll("g").data(d3.range(year0 - age1, year1 + 5, 5)).enter(), "g")
+                   { "transform": func(d, translate(x(year1 - d), 0)) };
 
-        years.selectAll("rect")
-            .data(d3.range(2))
-            .enter().append("rect")
-            .attr("x", 1)
-            .attr("width", x(5) - 2)
-            .attr("height", 1e-6);
+        add(years.selectAll("rect").data(d3.range(2)).enter(), "rect")
+           { "x": 1, "width": x(5) - 2, "height": 1e-6 };
 
-        years.append("text")
-            .attr("y", -6)
-            .attr("x", -x(5) / 2)
-            .attr("transform", "rotate(180)")
-            .attr("text-anchor", "middle")
-            .style("fill", "#fff")
-            .text(String);
+        (add(years, "text")
+            { "y": -6, "x": -x(5) / 2, "transform": "rotate(180)", "text-anchor": "middle"})
+        .style("fill", "#fff")
+        .text(String);
 
         // Add labels to show the age.
-        svg.append("g").selectAll("text")
-            .data(d3.range(0, age1 + 5, 5))
-            .enter().append("text")
-            .attr("text-anchor", "middle")
-            .attr("transform", func(d, translate { (x(d) + x(5) / 2), -4, s }))
-            .attr("dy", ".71em")
-            .text(String);
+        (add((add(svg, "g"){}).selectAll("text").data(d3.range(0, age1 + 5, 5)).enter(), "text")
+            { "text-anchor": "middle", "transform": func(d, translate((x(d) + x(5) / 2), -4, s)),
+              "dy": ".71em" })
+        .text(String);
 
         // Nest by year then birthyear.
         data = d3.nest()
