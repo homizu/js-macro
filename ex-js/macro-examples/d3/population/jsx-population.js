@@ -1,7 +1,7 @@
-expression func {
+expression λ {
     identifier: d;
     expression: e;
-    { _ (d, e) => function (d) { return e; } }
+    { _ (d -> e) => function (d) { return e; } }
 }
 
 expression translate {
@@ -17,7 +17,6 @@ expression add {
     { _ (s) { [#e1:f1#], [#e2:f2#], ... } => add(s.attr(e1,f1)) { e2:f2, ... } }
     { _ (s,t) { [#e1:f1#], ... } => add(s.append(t)) { e1:f1, ... } }
 }
-
 
 $(function () {
     var width = 960,
@@ -55,10 +54,10 @@ $(function () {
 
             body.transition()
                 .duration(750)
-                .attr("transform", func(d, translate(x(year - year1), 0)));
+                .attr("transform", λ(d -> translate(x(year - year1), 0)));
 
             years.selectAll("rect")
-                .data(func(d, data[year][d] || [0, 0]))
+                .data(λ(d -> data[year][d] || [0, 0]))
                 .transition()
                 .duration(750)
                 .attr("height", y);
@@ -73,28 +72,28 @@ $(function () {
 
         // Compute the extent of the data set in age and years.
         age0 = 0,
-        age1 = d3.max(data, func(d, d.age)),
-        year0 = d3.min(data, func(d, d.year)),
-        year1 = d3.max(data, func(d, d.year)),
+        age1 = d3.max(data, λ(d -> d.age)),
+        year0 = d3.min(data, λ(d -> d.year)),
+        year1 = d3.max(data, λ(d -> d.year)),
         year = year1;
 
         // Update the scale domains.
         x.domain([0, age1 + 5]);
-        y.domain([0, d3.max(data, func(d, d.people))]);
+        y.domain([0, d3.max(data, λ(d -> d.people))]);
 
         // Add rules to show the population values.
         rules = add(rules.selectAll(".rule").data(y.ticks(10)).enter(), "g")
-                   { "class": "rule", "transform": func(d, translate(0, y(d))) };
+                   { "class": "rule", "transform": λ(d -> translate(0, y(d))) };
 
         add(rules, "line") { "x2": width };
 
         (add(rules, "text")
             { "x": 6, "dy": ".35em", "transform": "rotate(180)" })
-        .text(func(d, Math.round(d / 1e6) + "M"));
+        .text(λ(d -> Math.round(d / 1e6) + "M"));
 
         // Add labeled rects for each birthyear.
         years = add(body.selectAll("g").data(d3.range(year0 - age1, year1 + 5, 5)).enter(), "g")
-                   { "transform": func(d, translate(x(year1 - d), 0)) };
+                   { "transform": λ(d -> translate(x(year1 - d), 0)) };
 
         add(years.selectAll("rect").data(d3.range(2)).enter(), "rect")
            { "x": 1, "width": x(5) - 2, "height": 1e-6 };
@@ -106,15 +105,15 @@ $(function () {
 
         // Add labels to show the age.
         (add((add(svg, "g"){}).selectAll("text").data(d3.range(0, age1 + 5, 5)).enter(), "text")
-            { "text-anchor": "middle", "transform": func(d, translate((x(d) + x(5) / 2), -4, s)),
+            { "text-anchor": "middle", "transform": λ(d -> translate((x(d) + x(5) / 2), -4, s)),
               "dy": ".71em" })
         .text(String);
 
         // Nest by year then birthyear.
         data = d3.nest()
-            .key(func(d, d.year))
-            .key(func(d, d.year - d.age))
-            .rollup(func(v, v.map(func(d, d.people))))
+            .key(λ(d -> d.year))
+            .key(λ(d -> d.year - d.age))
+            .rollup(λ(v -> v.map(λ(d -> d.people))))
             .map(data);
 
         // Allow the arrow keys to change the displayed year.
@@ -128,6 +127,5 @@ $(function () {
 
         redraw();
 
-        
     });
 });
