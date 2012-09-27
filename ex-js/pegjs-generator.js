@@ -226,7 +226,7 @@ module.exports = (function () {
             var lefts = { RepBlock: pegObj.string(null, ''),
                           Brace: pegObj.string(null, '{'),
                           Paren: pegObj.string(null, '('),
-                          Bracket: pegObj.string(null, ']') };
+                          Bracket: pegObj.string(null, '[') };
             var rights = { RepBlock: pegObj.string(null, ''),
                            Brace: pegObj.string(null, '}'),
                            Paren: pegObj.string(null, ')'),
