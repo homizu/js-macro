@@ -11,11 +11,12 @@ expression translate {
     { _ (tx, ty) => "translate(" + tx + ", " + ty + ")" }
 }
 
-expression add {
+expression Append {
     expression: s,t,e1,e2,f1,f2;
-    { _ (s) {} => s }
-    { _ (s) { [#e1:f1#], [#e2:f2#], ... } => add(s.attr(e1,f1)) { e2:f2, ... } }
-    { _ (s,t) { [#e1:f1#], ... } => add(s.append(t)) { e1:f1, ... } }
+    literal: to;
+    { _ s {} => s }
+    { _ s { [#e1:f1#], [#e2:f2#], ... } => Append s.attr(e1,f1) { e2:f2, ... } }
+    { _ t to s { [#e1:f1#], ... } => Append s.append(t) { e1:f1, ... } }
 }
 
 $(function () {
@@ -29,20 +30,20 @@ $(function () {
         .range([0, height - 40]);
 
     // An SVG element with a bottom-right origin.
-    var svg = add((add(d3.select("#chart-macro"), "svg")
-                      { "with": width, "height": height }).style("padding-right", "30px"), "g")
-                 { "transform": translate(x(1), (height - 20), s) };
+    var svg = Append "g" to 
+                (Append "svg" to d3.select("#chart-macro")
+                        { "with": width, "height": height }).style("padding-right", "30px")
+              { "transform": translate(x(1), (height - 20), s) };
 
     // A sliding container to hold the bars.
-    var body = svg.append("g")
-        .attr("transform", translate(0,0));
+    var body = Append "g" to svg { "transform": translate(0,0) };
 
     // A container to hold the y-axis rules.
-    var rules = add(svg, "g"){};
+    var rules = Append "g" to svg {};
 
     // A label for the current year.
-    var title = (add(svg, "text")
-                    { "class": "title", "dy": ".71em", "transform": translate(x(1), y(1), s) })
+    var title = (Append "text" to svg { "class": "title", "dy": ".71em",
+                                        "transform": translate(x(1), y(1), s) })
                 .text(2000);
 
     d3.csv("population.csv", function(data) {
@@ -82,29 +83,29 @@ $(function () {
         y.domain([0, d3.max(data, λ(d -> d.people))]);
 
         // Add rules to show the population values.
-        rules = add(rules.selectAll(".rule").data(y.ticks(10)).enter(), "g")
-                   { "class": "rule", "transform": λ(d -> translate(0, y(d))) };
+        rules = Append "g" to rules.selectAll(".rule").data(y.ticks(10)).enter()
+                    { "class": "rule", "transform": λ(d -> translate(0, y(d))) };
 
-        add(rules, "line") { "x2": width };
+        Append "line" to rules { "x2": width };
 
-        (add(rules, "text")
-            { "x": 6, "dy": ".35em", "transform": "rotate(180)" })
+        (Append "text" to rules { "x": 6, "dy": ".35em", "transform": "rotate(180)" })
         .text(λ(d -> Math.round(d / 1e6) + "M"));
 
         // Add labeled rects for each birthyear.
-        years = add(body.selectAll("g").data(d3.range(year0 - age1, year1 + 5, 5)).enter(), "g")
-                   { "transform": λ(d -> translate(x(year1 - d), 0)) };
+        years = Append "g" to body.selectAll("g").data(d3.range(year0 - age1, year1 + 5, 5)).enter()
+                    { "transform": λ(d -> translate(x(year1 - d), 0)) };
 
-        add(years.selectAll("rect").data(d3.range(2)).enter(), "rect")
-           { "x": 1, "width": x(5) - 2, "height": 1e-6 };
+        Append "rect" to years.selectAll("rect").data(d3.range(2)).enter()
+            { "x": 1, "width": x(5) - 2, "height": 1e-6 };
 
-        (add(years, "text")
+        (Append "text" to years
             { "y": -6, "x": -x(5) / 2, "transform": "rotate(180)", "text-anchor": "middle"})
         .style("fill", "#fff")
         .text(String);
 
         // Add labels to show the age.
-        (add((add(svg, "g"){}).selectAll("text").data(d3.range(0, age1 + 5, 5)).enter(), "text")
+        (Append "text" to 
+            (Append "g" to svg {}).selectAll("text").data(d3.range(0, age1 + 5, 5)).enter()
             { "text-anchor": "middle", "transform": λ(d -> translate((x(d) + x(5) / 2), -4, s)),
               "dy": ".71em" })
         .text(String);
