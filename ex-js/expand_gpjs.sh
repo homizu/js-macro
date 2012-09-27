@@ -15,8 +15,8 @@ treefile=$converted_dir/$base.tree
 sformfile=$converted_dir/$base-sform.scm
 expandedfile=$converted_dir/$base-expanded.js
 
-./make_exjs_tree.js $input_js &&
-./convert-json-simple.scm $treefile &&
-./expand-scm-simple.scm $sformfile &&
+time ./make_exjs_tree.js $input_js &&
+time ./convert-json-simple.scm $treefile &&
+time ./expand-scm-simple.scm $sformfile &&
 chmod 644 $expandedfile
 
