@@ -7,7 +7,8 @@
   var macroType = false;                // マクロの種類(expression, statement)を表す変数
   var metaVariables = { identifier: [],
                         expression: [], 
-                        statement: [], 
+                        statement: [],
+                        symbol: [],
                         literal: [] };  // メタ変数のリストを保持するオブジェクト
   var identifierType = "";              // パターン中の識別子の種類を表す変数
 
@@ -1790,7 +1791,7 @@ MacroDefinition
     }
 
 MetaVariableDecralation
-  = type:("identifier" / "expression" / "statement") __ ":" __ list:VariableList __ ";" { 
+  = type:("identifier" / "expression" / "statement" / "symbol") __ ":" __ list:VariableList __ ";" { 
         metaVariables[type] = metaVariables[type].concat(list);
     }
   / "literal" __ ":" __ list:LiteralKeywordList __ ";" {
@@ -1901,6 +1902,8 @@ SubPattern
            return identifierType = 'ExpressionVariable';
        } else if (metaVariables.statement.indexOf(name) >= 0) {
            return identifierType = 'StatementVariable';
+       } else if (metaVariables.symbol.indexOf(name) >= 0) {
+           return identifierType = 'SymbolVariable';
        } else if (metaVariables.literal.indexOf(name) >= 0) {
            return identifierType = 'LiteralKeyword';
        }
@@ -1966,6 +1969,11 @@ StatementInTemplate
 PatternIdentifier
   = name:IdentifierName {
       return { type: "Variable", name: name };
+    }
+
+PatternSymbol
+  = name:IdentifierName {
+      return { type: "StringLiteral", value: name };
     }
 
 PatternEllipsis
