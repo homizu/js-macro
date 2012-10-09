@@ -257,6 +257,7 @@ module.exports = (function(){
         "MacroStatement": parse_MacroStatement,
         "StatementInTemplate": parse_StatementInTemplate,
         "PatternIdentifier": parse_PatternIdentifier,
+        "PatternSymbol": parse_PatternSymbol,
         "PatternEllipsis": parse_PatternEllipsis
       };
       
@@ -15809,6 +15810,17 @@ module.exports = (function(){
                 matchFailed("\"statement\"");
               }
             }
+            if (result0 === null) {
+              if (input.substr(pos, 6) === "symbol") {
+                result0 = "symbol";
+                pos += 6;
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"symbol\"");
+                }
+              }
+            }
           }
         }
         if (result0 !== null) {
@@ -17023,6 +17035,8 @@ module.exports = (function(){
                            return identifierType = 'ExpressionVariable';
                        } else if (metaVariables.statement.indexOf(name) >= 0) {
                            return identifierType = 'StatementVariable';
+                       } else if (metaVariables.symbol.indexOf(name) >= 0) {
+                           return identifierType = 'SymbolVariable'; 
                        } else if (metaVariables.literal.indexOf(name) >= 0) {
                            return identifierType = 'LiteralKeyword';
                        }
@@ -17663,6 +17677,35 @@ module.exports = (function(){
         return result0;
       }
       
+      function parse_PatternSymbol() {
+        var cacheKey = "PatternSymbol@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_IdentifierName();
+        if (result0 !== null) {
+          result0 = (function(offset, name) {
+              return { type: "StringLiteral", value: name };
+            })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
       function parse_PatternEllipsis() {
         var cacheKey = "PatternEllipsis@" + pos;
         var cachedResult = cache[cacheKey];
@@ -17755,6 +17798,7 @@ module.exports = (function(){
         var metaVariables = { identifier: [],
                               expression: [], 
                               statement: [], 
+                              symbol: [],
                               literal: [] };  // メタ変数のリストを保持するオブジェクト
         var identifierType = "";              // パターン中の識別子の種類を表す変数
       
