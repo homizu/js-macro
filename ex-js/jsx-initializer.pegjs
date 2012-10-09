@@ -7,7 +7,8 @@
   var macroType = false;                // マクロの種類(expression, statement)を表す変数
   var metaVariables = { identifier: [],
                         expression: [], 
-                        statement: [], 
+                        statement: [],
+                        symbol: [],
                         literal: [] };  // メタ変数のリストを保持するオブジェクト
   var identifierType = "";              // パターン中の識別子の種類を表す変数
 
