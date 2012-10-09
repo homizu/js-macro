@@ -23,7 +23,7 @@
     var debug = true;
     var resultDir = 'converted/';
     var parserDir = './parsers/';
-    var jsxRevision = 1;
+    var jsxRevision = 2;
 
     var start, end; // 時間計測用変数
 

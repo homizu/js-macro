@@ -212,6 +212,14 @@ module.exports = (function () {
             };
         },
 
+        // Symbol
+        symbol: function() {
+            return {
+                type: 'Symbol',
+                toString: function() { return 'PatternSymbol'; }
+            };
+        },
+
         // Null Object
         'null': function() {
             return {
@@ -339,6 +347,14 @@ module.exports = (function () {
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               return pegObj.statement();
+          }
+        },
+
+        // SymbolVariable
+        { type: 'SymbolVariable',
+          isType: function(t) { return t === this.type; },
+          toPegObj: function(obj) {
+              return pegObj.symbol();
           }
         },
 

@@ -55,7 +55,7 @@
      (racket-variable->symbol hash 'name "" "-Macro"))
     ((MacroForm) ;; MacroForm
      (racket-hash-value->sexp hash 'inputForm))
-    ((Variable IdentifierVariable ExpressionVariable StatementVariable) ;; Variable, IdentifierVariable, ExpressionVariable, StatementVariable
+    ((Variable IdentifierVariable ExpressionVariable StatementVariable SymbolVariable) ;; Variable, IdentifierVariable, ExpressionVariable, StatementVariable
      (racket-variable->symbol hash 'name "V-" ""))
     ((LiteralKeyword) ;; LiteralKeyword
      (racket-variable->symbol hash 'name "LK-" ""))
