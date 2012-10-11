@@ -41,7 +41,7 @@
   (case type
     ((ExpressionMacroDefinition StatementMacroDefinition) ;; MacroDefinition
      (let* ((macro-name (racket-variable->symbol hash 'macroName "" "-Macro"))
-            (literals (racket-variable->symbol hash 'literals "LK-" ""))
+            (literals (racket-variable->symbol hash 'literals "V-" ""))
             (rules (racket-hash-value->sexp hash 'syntaxRules)))
        `(define-syntax ,macro-name
           (syntax-rules ,literals ,@rules))))
@@ -58,7 +58,7 @@
     ((Variable IdentifierVariable ExpressionVariable StatementVariable SymbolVariable) ;; Variable, IdentifierVariable, ExpressionVariable, StatementVariable
      (racket-variable->symbol hash 'name "V-" ""))
     ((LiteralKeyword) ;; LiteralKeyword
-     (racket-variable->symbol hash 'name "LK-" ""))
+     (racket-variable->symbol hash 'name "V-" ""))
     ((Repetition) ;; Repetition (in pattern of MacroDefinition)
      (racket-hash-value->sexp hash 'elements))
     ((Repeat) ;; Repeat (in MacroForm)
