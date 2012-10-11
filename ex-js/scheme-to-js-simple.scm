@@ -105,7 +105,7 @@
   (let ((constructor (car e))
         (arg* (cdr e)))
     (bformat "new ")
-    (s2j counstructor)
+    (s2j constructor)
     (if (not (null? arg*))
         (begin (bformat " ")
                (do-fargs arg*))))
