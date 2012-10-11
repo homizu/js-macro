@@ -4,8 +4,8 @@ expression money {
     { money(n million e ...) => n * 1000000 + (money(e ...)) }
     { money(n thousand e ...) => n * 1000 + (money(e ...)) }
     { money(n hundred e ...) => n * 100 + (money (e ...)) }
-    { money(e ...) => alart("syntax-error") }
     { money() => 0 }
+    { money(e ...) => alart("syntax-error") }
 
 }
 
