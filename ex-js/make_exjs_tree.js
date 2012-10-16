@@ -14,7 +14,7 @@
     var crypto = require('crypto');
     var path = require('path');
     var PEG = require('pegjs');
-    var generator = require('./pegjs-generator');
+    var generator = require('./pegjs-generator2');
     var parser = require('./ex-javascript-parser');
     //var parser = require('./jsx-parser');
 
