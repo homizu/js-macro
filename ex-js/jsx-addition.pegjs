@@ -211,6 +211,11 @@ MacroSymbol
       return { type: "StringLiteral", value: name };
     }
 
+MacroKeyword
+  = name:LiteralKeyword {
+      return { type: "LiteralKeyword", name: name };
+    }
+
 MacroEllipsis
   = "..." {
       return { type: "Repeat",
