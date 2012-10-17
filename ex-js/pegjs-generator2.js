@@ -19,6 +19,28 @@ module.exports = (function () {
                 type: 'Repetition',
                 elements: elements,
                 mark: mark,
+                programPeg: function () {
+                    var m = mark? '__ "' + mark + '" ' : '';
+                    return '(head:' + this.elements.programPeg() + '\n\
+tail:(' + m + '__ ' + this.elements.programPeg() + ')*\n\
+{ var elements = [head];\n\
+for (var i=0; i<tail.length; i++) {\n\
+elements.push(tail[i][' + (m? 3 : 1) + ']);\n\
+}\n\
+return { type: "Repeat", elements: elements };\n\
+})?\n'; },
+                templatePeg: function () {
+                    var m = mark? '__ "' + mark + '" ' : '';
+                     return '(head:' + this.elements.templatePeg() + '\n\
+tail:(' + m + '__ ' + this.elements.templatePeg() + ')*\n\
+ellipsis:(' + m + '__ "...")?\n\
+{ var elements = [head];\n\
+for (var i=0; i<tail.length; i++) {\n\
+elements.push(tail[i][' + (m? 3 : 1) + ']);\n\
+}\n\
+if (ellipsis) elements.push({ type: "Ellipsis" });\n\
+return { type: "Repeat", elements: elements };\n\
+})?\n'; },
                 toString: function() {
                     return '(head:' + elements + ' tail:(' + (mark? ('__ "' + mark + '" ') : '') + '__ ' + elements + ')*\n\
 { var elements = [head];\n\
@@ -40,6 +62,14 @@ return { type: "Repeat", elements: elements };\n\
                 return {
                     type: type,
                     elements: elements,
+                    programPeg: function () {
+                        return '(' + (isNull? '' : (this.elements.programPeg() + ' __ ')) + '\n\
+{ return { type: "RepBlock", elements: ' + (isNull? '[]' : 't0') + ' }; })';
+                    },
+                    templatePeg: function () {
+                        return '(' + (isNull? '' : (this.elements.templatePeg() + ' __ ')) + '\n\
+{ return { type: "RepBlock", elements: ' + (isNull? '[]' : 't0') + ' }; })';
+                    },
                     toString: function () {
                         return '(' + (isNull? '' : (elements + ' __ ')) + '\n\
 { return { type: "RepBlock", elements: ' + (isNull? '[]' : 't0') + ' }; })';
@@ -52,6 +82,14 @@ return { type: "Repeat", elements: elements };\n\
                 return {
                     type: type,
                     elements: elements,
+                    programPeg: function () {
+                        return '(' + pegObj2[type].left + ' __ ' + (isNull? '' : (this.elements.programPeg() + ' __ ')) + pegObj2[type].right + '\n\
+{ return { type: "' + type + '", elements: ' + (isNull? '[]' : 't0') + ' }; })';
+                    },
+                    templatePeg: function () {
+                        return '(' + pegObj2[type].left + ' __ ' + (isNull? '' : (this.elements.templatePeg() + ' __ ')) + pegObj2[type].right + '\n\
+{ return { type: "' + type + '", elements: ' + (isNull? '[]' : 't0') + ' }; })';
+                    },
                     toString: function () {
                         return '(' + pegObj2[type].left + ' __ ' + (isNull? '' : (elements + ' __ ')) + pegObj2[type].right + '\n\
 { return { type: "' + type + '", elements: ' + (isNull? '[]' : 't0') + ' }; })';
@@ -65,6 +103,8 @@ return { type: "Repeat", elements: elements };\n\
         identifier: function () {
             return {
                 type: 'Identifier',
+                programPeg: function () { return 'MacroIdentifier'; },
+                templatePeg: function () { return this.programPeg(); },
                 toString: function () { return 'MacroIdentifier'; }
             };
         },
@@ -73,6 +113,8 @@ return { type: "Repeat", elements: elements };\n\
         expression: function () {
             return {
                 type: 'Expression',
+                programPeg: function () { return 'AssignmentExpression'; },
+                templatePeg: function () { return this.programPeg(); },
                 toString: function () { return 'AssignmentExpression'; }
             };
         },
@@ -81,6 +123,8 @@ return { type: "Repeat", elements: elements };\n\
         statement: function () {
             return {
                 type: 'Statement',
+                programPeg: function () { return 'Statement'; },
+                templatePeg: function () { return this.programPeg(); },
                 toString: function () { return 'Statement'; }
             };
         },
@@ -89,6 +133,8 @@ return { type: "Repeat", elements: elements };\n\
         symbol: function () {
             return {
                 type: 'Symbol',
+                programPeg: function () { return 'MacroSymbol'; },
+                templatePeg: function () { return this.programPeg(); },
                 toString: function () { return 'MacroSymbol'; }
             };
         },
@@ -98,6 +144,11 @@ return { type: "Repeat", elements: elements };\n\
             return {
                 type: 'LiteralKeyword',
                 name: name,
+                programPeg: function () {
+                    return '(v:MacroKeyword &{ return v.name === "' + name + '"; }\n\
+{ return v; })';
+                },
+                templatePeg: function () { return this.programPeg(); },
                 toString: function () {
                     return '(v:MacroKeyword &{ return v.name === "' + name + '"; }\n\
 { return v; })';
@@ -110,6 +161,11 @@ return { type: "Repeat", elements: elements };\n\
             return {
                 type: type,
                 value: value,
+                programPeg: function () {
+                    return '("' + value + '"\n\
+{ return { type: "' + type + '", value: "' + value + '" }; })';
+                },
+                templatePeg: function () { return this.programPeg(); },
                 toString: function () { return '("' + value + '"\n\
 { return { type: "' + type + '", value: "' + value + '" }; })'; }
             };
@@ -123,6 +179,11 @@ return { type: "Repeat", elements: elements };\n\
                 return {
                     type: type,
                     value: value,
+                    programPeg: function () {
+                        return '(v:' + type + ' &{ return eval(v) === ' + value + '; }\n\
+{ return { type: "' + type + '", value: v }; })';
+                    },
+                    templatePeg: function () { return this.programPeg(); },
                     toString: function () {
                         return '(v:' + type + ' &{ return eval(v) === ' + value + '; }\n\
 { return { type: "' + type + '", value: v }; })';
@@ -134,6 +195,11 @@ return { type: "Repeat", elements: elements };\n\
                 return {
                     type: type,
                     value: value,
+                    programPeg: function () {
+                        return '(v:' + type + ' &{ return eval(v.value) === ' + value + '; }\n\
+{ return v; })';
+                    },
+                    templatePeg: function () { return this.programPeg(); },
                     toString: function () {
                         return '(v:' + type + ' &{ return eval(v.value) === ' + value + '; }\n\
 { return v; })';
@@ -144,6 +210,8 @@ return { type: "Repeat", elements: elements };\n\
                 return {
                     type: type,
                     value: value,
+                    programPeg: function () { return 'NullLiteral'; },
+                    templatePeg: function () { return this.programPeg(); },
                     toString: function () {
                         return 'NullLiteral';
                     }
@@ -157,6 +225,11 @@ return { type: "Repeat", elements: elements };\n\
             return {
                 type: 'MacroName',
                 name: name,
+                programPeg: function () {
+                    return '("' + name + '" !IdentifierPart\n\
+{ return { type: "MacroName", name:"' + name + '" }; })';
+                },
+                templatePeg: function () { return this.programPeg(); },
                 toString: function () {
                     return '("' + name + '" !IdentifierPart\n\
 { return { type: "MacroName", name:"' + name + '" }; })' }
@@ -173,6 +246,14 @@ return { type: "Repeat", elements: elements };\n\
                 type: 'MacroForm',
                 name: name.name,
                 inputForm: form,
+                programPeg: function () {
+                    return 'form:' + form.programPeg() + '\n\
+{ return { type: "MacroForm", inputForm: form }; }';
+                },
+                templatePeg: function () {
+                    return 'form:' + form.templatePeg() + '\n\
+{ return { type: "MacroForm", inputForm: form }; }';
+                },
                 toString: function () {
                     return 'form:' + form + '\n\
 { return { type: "MacroForm", inputForm: form }; }';
@@ -186,6 +267,8 @@ return { type: "Repeat", elements: elements };\n\
                 type: 'Tag',
                 value: value,
                 tag: tag,
+                programPeg: function () { return tag + ':' + this.value.programPeg(); },
+                templatePeg: function () { return tag + ':' + this.value.templatePeg(); },
                 toString: function() { return tag + ':' + value; }
             };
         },
@@ -206,6 +289,20 @@ return { type: "Repeat", elements: elements };\n\
             return {
                 type: 'Sequence',
                 elements: result,
+                programPeg: function () {
+                    var es = [];
+                    for (var i=0; i<this.elements.length; i++) {
+                        es.push(this.elements[i].programPeg());
+                    }
+                    return '(' + es.join(' __ ') + ' { return [' + tags.join(', ') + ']; })';
+                },
+                templatePeg: function () {
+                    var es = [];
+                    for (var i=0; i<this.elements.length; i++) {
+                        es.push(this.elements[i].templatePeg());
+                    }
+                    return '(' + es.join(' __ ') + ' { return [' + tags.join(', ') + ']; })';
+                },
                 toString: function() { return '(' + this.elements.join(' __ ') + ' { return [' + tags.join(', ') + ']; })'; }
             };
         },
@@ -221,6 +318,20 @@ return { type: "Repeat", elements: elements };\n\
             return {
                 type: 'Choice',
                 elements: newArray,
+                programPeg: function () {
+                    var es = [];
+                    for (var i=0; i<this.elements.length; i++) {
+                        es.push(this.elements[i].programPeg());
+                    }
+                    return es.join('\n / ');
+                },
+                templatePeg: function () {
+                    var es = [];
+                    for (var i=0; i<this.elements.length; i++) {
+                        es.push(this.elements[i].templatePeg());
+                    }
+                    return es.join('\n / ');
+                },
                 toString: function() { return this.elements.join('\n / '); } 
             };
         }, 
@@ -238,6 +349,8 @@ return { type: "Repeat", elements: elements };\n\
         'null': function() {
             return {
                 type: '-Null',
+                programPeg: function () { return ''; },
+                tempaltePeg: function () { return ''; },
                 toString: function() { return ''; }
             };
         }
@@ -440,8 +553,8 @@ return { type: "Repeat", elements: elements };\n\
             }
 
             return template + characterStatement
-                + (expressionMacros.length > 0 ?  macroExpression + pegObj2.choice(expressionMacros) + '\n\n' : '')
-                + (statementMacros.length > 0 ? macroStatement + pegObj2.choice(statementMacros) + '\n\n' : '');
+                + (expressionMacros.length > 0 ?  macroExpression + pegObj2.choice(expressionMacros).templatePeg() + '\n\n' : '')
+                + (statementMacros.length > 0 ? macroStatement + pegObj2.choice(statementMacros).templatePeg() + '\n\n' : '');
             
         } else {
             return 'error';
