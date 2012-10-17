@@ -7,7 +7,7 @@ module.exports = (function () {
     var macroExpression = 'MacroExpression\n = '
     var macroStatement = 'MacroStatement\n = '
     
-    var pegObj2 = {
+    var pegObj = {
         // enclosing types
         Brace: { left: '"{"', right: '"}"' },
         Paren: { left: '"("', right: '")"' },
@@ -25,42 +25,27 @@ module.exports = (function () {
                     return '(head:' + this.elements.toCode(context)
                         + '\n tail:(' + m + '__ ' + this.elements.toCode(context) + ')*\n'
                         + (template? 'ellipsis:(' + m + '__ "...")?\n' : '')
-                        + '{ var elements = [head];\n\
-for (var i=0; i<tail.length; i++) {\n\
-elements.push(tail[i][' + (m? 3 : 1) + ']);\n\
-}\n'
-                        + (template? 'if (ellipsis) elements.push({ type: "Ellipsis" });\n' : '')
-                        + 'return { type: "Repeat", elements: elements };\n\
-})?\n';
-                },
-                toString: function() {
-                    return '(head:' + elements + ' tail:(' + (mark? ('__ "' + mark + '" ') : '') + '__ ' + elements + ')*\n\
-{ var elements = [head];\n\
-for (var i=0; i<tail.length; i++) {\n\
-elements.push(tail[i][' + (mark? 3 : 1) + ']);\n\
-}\n\
-return { type: "Repeat", elements: elements };\n\
-})?\n'; }
+                        + '{ var elements = [head];\n'
+                        + '  for (var i=0; i<tail.length; i++) {\n'
+                        + '    elements.push(tail[i][' + (m? 3 : 1) + ']);\n'
+                        + '  }\n'
+                        + (template? '  if (ellipsis) elements.push({ type: "Ellipsis" });\n' : '')
+                        + '  return { type: "Repeat", elements: elements };\n'
+                        + '})?\n';
+                }
             };
         },
 
         // Enclosing
         enclosing: function (type, elements) {
-            var isNull = elements.type.charAt(0) === '-';
-            if (!isNull)
-                elements = pegObj2.tag('t0', elements);
             switch (type) {
             case 'RepBlock':
                 return {
                     type: type,
                     elements: elements,
                     toCode: function (context) {
-                        return '(' + (isNull? '' : (this.elements.toCode(context) + ' __ ')) + '\n\
-{ return { type: "RepBlock", elements: ' + (isNull? '[]' : 't0') + ' }; })';
-                    },
-                    toString: function () {
-                        return '(' + (isNull? '' : (elements + ' __ ')) + '\n\
-{ return { type: "RepBlock", elements: ' + (isNull? '[]' : 't0') + ' }; })';
+                        return '(' + (elements? 't0:' + this.elements.toCode(context) + ' __ ' : '') + '\n\
+{ return { type: "RepBlock", elements: ' + (elements? 't0' : '[]') + ' }; })';
                     }
                 };
                 break;
@@ -71,12 +56,8 @@ return { type: "Repeat", elements: elements };\n\
                     type: type,
                     elements: elements,
                     toCode: function (context) {
-                        return '(' + pegObj2[type].left + ' __ ' + (isNull? '' : (this.elements.toCode(context) + ' __ ')) + pegObj2[type].right + '\n\
-{ return { type: "' + type + '", elements: ' + (isNull? '[]' : 't0') + ' }; })';
-                    },
-                    toString: function () {
-                        return '(' + pegObj2[type].left + ' __ ' + (isNull? '' : (elements + ' __ ')) + pegObj2[type].right + '\n\
-{ return { type: "' + type + '", elements: ' + (isNull? '[]' : 't0') + ' }; })';
+                        return '(' + pegObj[type].left + ' __ ' + (elements? 't0:' + this.elements.toCode(context) + ' __ ' : '') + pegObj[type].right + '\n\
+{ return { type: "' + type + '", elements: ' + (elements? 't0' : '[]') + ' }; })';
                     }
                 };
                 break;
@@ -87,8 +68,7 @@ return { type: "Repeat", elements: elements };\n\
         identifier: function () {
             return {
                 type: 'Identifier',
-                toCode: function (context) { return 'MacroIdentifier'; },
-                toString: function () { return 'MacroIdentifier'; }
+                toCode: function (context) { return 'MacroIdentifier'; }
             };
         },
 
@@ -96,8 +76,7 @@ return { type: "Repeat", elements: elements };\n\
         expression: function () {
             return {
                 type: 'Expression',
-                toCode: function (context) { return 'AssignmentExpression'; },
-                toString: function () { return 'AssignmentExpression'; }
+                toCode: function (context) { return 'AssignmentExpression'; }
             };
         },
 
@@ -105,8 +84,7 @@ return { type: "Repeat", elements: elements };\n\
         statement: function () {
             return {
                 type: 'Statement',
-                toCode: function (context) { return 'Statement'; },
-                toString: function () { return 'Statement'; }
+                toCode: function (context) { return 'Statement'; }
             };
         },
 
@@ -114,8 +92,7 @@ return { type: "Repeat", elements: elements };\n\
         symbol: function () {
             return {
                 type: 'Symbol',
-                toCode: function (context) { return 'MacroSymbol'; },
-                toString: function () { return 'MacroSymbol'; }
+                toCode: function (context) { return 'MacroSymbol'; }
             };
         },
 
@@ -126,10 +103,6 @@ return { type: "Repeat", elements: elements };\n\
                 name: name,
                 toCode: function (context) {
                      return '(v:MacroKeyword &{ return v.name === "' + name + '"; }\n\
-{ return v; })';
-                },
-                toString: function () {
-                    return '(v:MacroKeyword &{ return v.name === "' + name + '"; }\n\
 { return v; })';
                 }
             };
@@ -143,9 +116,7 @@ return { type: "Repeat", elements: elements };\n\
                 toCode: function (context) {
                     return '("' + value + '"\n\
 { return { type: "' + type + '", value: "' + value + '" }; })';
-                },
-                toString: function () { return '("' + value + '"\n\
-{ return { type: "' + type + '", value: "' + value + '" }; })'; }
+                }
             };
         },
 
@@ -160,10 +131,6 @@ return { type: "Repeat", elements: elements };\n\
                     toCode: function (context) {
                         return '(v:' + type + ' &{ return eval(v) === ' + value + '; }\n\
 { return { type: "' + type + '", value: v }; })';
-                    },
-                    toString: function () {
-                        return '(v:' + type + ' &{ return eval(v) === ' + value + '; }\n\
-{ return { type: "' + type + '", value: v }; })';
                     }
                 };
                 break;
@@ -175,10 +142,6 @@ return { type: "Repeat", elements: elements };\n\
                     toCode: function (context) {
                         return '(v:' + type + ' &{ return eval(v.value) === ' + value + '; }\n\
 { return v; })';
-                    },
-                    toString: function () {
-                        return '(v:' + type + ' &{ return eval(v.value) === ' + value + '; }\n\
-{ return v; })';
                     }
                 };
                 break;
@@ -186,10 +149,7 @@ return { type: "Repeat", elements: elements };\n\
                 return {
                     type: type,
                     value: value,
-                    toCode: function (context) { return 'NullLiteral'; },
-                    toString: function () {
-                        return 'NullLiteral';
-                    }
+                    toCode: function (context) { return 'NullLiteral'; }
                 };
                 break;
             }
@@ -203,10 +163,7 @@ return { type: "Repeat", elements: elements };\n\
                 toCode: function (context) {
                     return '("' + name + '" !IdentifierPart\n\
 { return { type: "MacroName", name:"' + name + '" }; })';
-                },
-                toString: function () {
-                    return '("' + name + '" !IdentifierPart\n\
-{ return { type: "MacroName", name:"' + name + '" }; })' }
+                }
             };
         },
 
@@ -215,7 +172,7 @@ return { type: "Repeat", elements: elements };\n\
             for (var i=0; i<body.length; i++) {
                 form.push(convertToPegObj(body[i]));
             }
-            form = pegObj2.sequence(form);
+            form = pegObj.sequence(form);
             return {
                 type: 'MacroForm',
                 name: name.name,
@@ -225,87 +182,47 @@ return { type: "Repeat", elements: elements };\n\
                     return (template? '&{ return macroType; } ' : '')
                         + 'form:' + form.toCode(context) + '\n\
 { return { type: "MacroForm", inputForm: form }; }';
-                },
-                toString: function () {
-                    return 'form:' + form + '\n\
-{ return { type: "MacroForm", inputForm: form }; }';
                 }
             };
         },
 
-        // Tag (Label)
-        tag: function(tag, value) {
-            return {
-                type: 'Tag',
-                value: value,
-                tag: tag,
-                toCode: function (context) {
-                    return tag + ':' + this.value.toCode(context);
-                },
-                toString: function() { return tag + ':' + value; }
-            };
-        },
-
         // Sequence
-        sequence: function(array) {
-            var newArray = [];
-            for (var i=0; i<array.length; i++) {
-                if (array[i].type.charAt(0) !== '-')
-                    newArray.push(array[i]);
-            }
-            var result = [];
-            var tags = [];
-            for (var i=0; i<newArray.length; i++) {
-                result.push(pegObj2.tag('t'+i, newArray[i]));
-                tags.push('t'+i);
-            }
+        sequence: function(elements) {
             return {
                 type: 'Sequence',
-                elements: result,
+                elements: elements,
                 toCode: function (context) {
                     var es = [];
-                    for (var i=0; i<this.elements.length; i++) {
-                        es.push(this.elements[i].toCode(context));
+                    var tags = [];
+                    for (var i=0, n=0; i<this.elements.length; i++) {
+                        if (this.elements[i]) {
+                            es.push('t' + n + ':' + this.elements[i].toCode(context));
+                            tags.push('t' + n);
+                            n++;
+                        }
                     }
                     return '(' + es.join(' __ ') + ' { return [' + tags.join(', ') + ']; })';
-                },
-                toString: function() { return '(' + this.elements.join(' __ ') + ' { return [' + tags.join(', ') + ']; })'; }
+                }
             };
         },
 
         // Prioritized choice
-        choice: function(array) {
-            var newArray = [];
-            for (var i=0; i<array.length; i++) {
-                if (array[i].type.charAt(0) !== '-')
-                    newArray.push(array[i]);
-            }
-            
+        choice: function(elements) {
             return {
                 type: 'Choice',
-                elements: newArray,
+                elements: elements,
                 toCode: function (context) {
                     var es = [];
                     for (var i=0; i<this.elements.length; i++) {
-                        es.push(this.elements[i].toCode(context));
+                        if (this.elements[i])
+                            es.push(this.elements[i].toCode(context));
                     }
                     return es.join('\n / ');
-                },
-                toString: function() { return this.elements.join('\n / '); } 
-            };
-        }, 
-
-       // Null Object
-        'null': function() {
-            return {
-                type: '-Null',
-                toCode: function (context)  { return ''; },
-                toString: function() { return ''; }
+                }
             };
         }
-        
+     
     };
-    
     
     var jsMacroTypes = [
 
@@ -314,7 +231,7 @@ return { type: "Repeat", elements: elements };\n\
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.repetition(elements, obj.punctuationMark);
+              return pegObj.repetition(elements, obj.punctuationMark);
           }          
         },
 
@@ -323,7 +240,7 @@ return { type: "Repeat", elements: elements };\n\
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.enclosing(this.type, elements);
+              return pegObj.enclosing(this.type, elements);
           }
         },
 
@@ -332,7 +249,7 @@ return { type: "Repeat", elements: elements };\n\
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.enclosing(this.type, elements);
+              return pegObj.enclosing(this.type, elements);
           }
         },
 
@@ -341,7 +258,7 @@ return { type: "Repeat", elements: elements };\n\
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.enclosing(this.type, elements);
+              return pegObj.enclosing(this.type, elements);
           }
         },
 
@@ -350,7 +267,7 @@ return { type: "Repeat", elements: elements };\n\
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.enclosing(this.type, elements);
+              return pegObj.enclosing(this.type, elements);
           }
         },
 
@@ -358,7 +275,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'IdentifierVariable',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.identifier();
+              return pegObj.identifier();
           }
         },
 
@@ -366,7 +283,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'ExpressionVariable',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.expression();
+              return pegObj.expression();
           }
         },
 
@@ -374,7 +291,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'StatementVariable',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.statement();
+              return pegObj.statement();
           }
         },
 
@@ -382,7 +299,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'SymbolVariable',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.symbol();
+              return pegObj.symbol();
           }
         },
 
@@ -390,7 +307,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'LiteralKeyword',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.keyword(obj.name);
+              return pegObj.keyword(obj.name);
           }
         },
 
@@ -398,7 +315,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'Punctuator',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.punct(this.type, obj.value);
+              return pegObj.punct(this.type, obj.value);
           }
         },
 
@@ -406,7 +323,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'PunctuationMark',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.punct(this.type, obj.value);
+              return pegObj.punct(this.type, obj.value);
           }
         },
 
@@ -414,7 +331,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'BooleanLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, obj.value);
+              return pegObj.literal(this.type, obj.value);
           }
         },
 
@@ -422,7 +339,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'NumericLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, obj.value);
+              return pegObj.literal(this.type, obj.value);
           }
         },
 
@@ -430,7 +347,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'StringLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, obj.value);
+              return pegObj.literal(this.type, obj.value);
           }
         },
 
@@ -438,7 +355,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'NullLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, null);
+              return pegObj.literal(this.type, null);
           }
         },
         
@@ -446,7 +363,7 @@ return { type: "Repeat", elements: elements };\n\
         { type: 'RegularExpressionLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, obj.value);
+              return pegObj.literal(this.type, obj.value);
           }
         }
     ];
@@ -455,12 +372,12 @@ return { type: "Repeat", elements: elements };\n\
 
         if (pattern instanceof Array) {
             if (pattern.length === 0)
-                return pegObj2.null();
+                return null;
             var result = [convertToPegObj(pattern[0])];
             for (var i=1; i<pattern.length; i++) {
                 result.push(convertToPegObj(pattern[i]));
             }
-            return pegObj2.sequence(result);
+            return pegObj.sequence(result);
         } else if (pattern) {
             for (var i=0; i<jsMacroTypes.length; i++) {
                 var type = jsMacroTypes[i];
@@ -468,9 +385,9 @@ return { type: "Repeat", elements: elements };\n\
                     return type.toPegObj(pattern);
                 }
             }
-            return pegObj2.null();
+            return null;
         }
-        return pegObj2.null();            
+        return null;
     };
 
     generator.generate = function(jsObj) {
@@ -488,21 +405,21 @@ return { type: "Repeat", elements: elements };\n\
 
             for (var i=0; i<macroDefs.length; i++) {
                 var macroDef = macroDefs[i];
-                var macroName = pegObj2.macroName(macroDef.macroName);
+                var macroName = pegObj.macroName(macroDef.macroName);
                 var syntaxRules = macroDef.syntaxRules;
                 var patterns = [];
                 for (var j=0; j<syntaxRules.length; j++) {
-                    patterns.push(pegObj2.macroForm(macroName, syntaxRules[j].pattern));
+                    patterns.push(pegObj.macroForm(macroName, syntaxRules[j].pattern));
                 }
-                patterns = pegObj2.choice(patterns);
+                patterns = pegObj.choice(patterns);
                 if (macroDef.type.indexOf('Expression') >= 0)
                     expressionMacros.push(patterns);
                 else
                     statementMacros.push(patterns);
             }
 
-            expressionMacros = expressionMacros.length > 0 ? pegObj2.choice(expressionMacros) : '';
-            statementMacros = statementMacros.length > 0 ? pegObj2.choice(statementMacros) : '';
+            expressionMacros = expressionMacros.length > 0 ? pegObj.choice(expressionMacros) : '';
+            statementMacros = statementMacros.length > 0 ? pegObj.choice(statementMacros) : '';
 
             return template + characterStatement
                 + (expressionMacros?  macroExpression + expressionMacros.toCode('program') + '\n / ' + expressionMacros.toCode('template') + '\n\n' : '')
