@@ -41,6 +41,20 @@ elements.push(tail[i][' + (m? 3 : 1) + ']);\n\
 if (ellipsis) elements.push({ type: "Ellipsis" });\n\
 return { type: "Repeat", elements: elements };\n\
 })?\n'; },
+                toCode: function (context) {
+                    var template = context === 'template';
+                    var m = mark? '__ "' + mark + '" ' : '';
+                    return '(head:' + this.elements.toCode(context)
+                        + '\n tail:(' + m + '__ ' + this.elements.toCode(context) + ')*\n'
+                        + (template? 'ellipsis:(' + m + '__ "...")?\n' : '')
+                        + '{ var elements = [head];\n\
+for (var i=0; i<tail.length; i++) {\n\
+elements.push(tail[i][' + (m? 3 : 1) + ']);\n\
+}\n'
+                        + (template? 'if (ellipsis) elements.push({ type: "Ellipsis" });\n' : '')
+                        + 'return { type: "Repeat", elements: elements };\n\
+})?\n';
+                },
                 toString: function() {
                     return '(head:' + elements + ' tail:(' + (mark? ('__ "' + mark + '" ') : '') + '__ ' + elements + ')*\n\
 { var elements = [head];\n\
@@ -70,6 +84,10 @@ return { type: "Repeat", elements: elements };\n\
                         return '(' + (isNull? '' : (this.elements.templatePeg() + ' __ ')) + '\n\
 { return { type: "RepBlock", elements: ' + (isNull? '[]' : 't0') + ' }; })';
                     },
+                    toCode: function (context) {
+                        return '(' + (isNull? '' : (this.elements.toCode(context) + ' __ ')) + '\n\
+{ return { type: "RepBlock", elements: ' + (isNull? '[]' : 't0') + ' }; })';
+                    },
                     toString: function () {
                         return '(' + (isNull? '' : (elements + ' __ ')) + '\n\
 { return { type: "RepBlock", elements: ' + (isNull? '[]' : 't0') + ' }; })';
@@ -90,6 +108,10 @@ return { type: "Repeat", elements: elements };\n\
                         return '(' + pegObj2[type].left + ' __ ' + (isNull? '' : (this.elements.templatePeg() + ' __ ')) + pegObj2[type].right + '\n\
 { return { type: "' + type + '", elements: ' + (isNull? '[]' : 't0') + ' }; })';
                     },
+                    toCode: function (context) {
+                        return '(' + pegObj2[type].left + ' __ ' + (isNull? '' : (this.elements.toCode(context) + ' __ ')) + pegObj2[type].right + '\n\
+{ return { type: "' + type + '", elements: ' + (isNull? '[]' : 't0') + ' }; })';
+                    },
                     toString: function () {
                         return '(' + pegObj2[type].left + ' __ ' + (isNull? '' : (elements + ' __ ')) + pegObj2[type].right + '\n\
 { return { type: "' + type + '", elements: ' + (isNull? '[]' : 't0') + ' }; })';
@@ -105,6 +127,7 @@ return { type: "Repeat", elements: elements };\n\
                 type: 'Identifier',
                 programPeg: function () { return 'MacroIdentifier'; },
                 templatePeg: function () { return this.programPeg(); },
+                toCode: function (context) { return 'MacroIdentifier'; },
                 toString: function () { return 'MacroIdentifier'; }
             };
         },
@@ -115,6 +138,7 @@ return { type: "Repeat", elements: elements };\n\
                 type: 'Expression',
                 programPeg: function () { return 'AssignmentExpression'; },
                 templatePeg: function () { return this.programPeg(); },
+                toCode: function (context) { return 'AssignmentExpression'; },
                 toString: function () { return 'AssignmentExpression'; }
             };
         },
@@ -125,6 +149,7 @@ return { type: "Repeat", elements: elements };\n\
                 type: 'Statement',
                 programPeg: function () { return 'Statement'; },
                 templatePeg: function () { return this.programPeg(); },
+                toCode: function (context) { return 'Statement'; },
                 toString: function () { return 'Statement'; }
             };
         },
@@ -135,6 +160,7 @@ return { type: "Repeat", elements: elements };\n\
                 type: 'Symbol',
                 programPeg: function () { return 'MacroSymbol'; },
                 templatePeg: function () { return this.programPeg(); },
+                toCode: function (context) { return 'MacroSymbol'; },
                 toString: function () { return 'MacroSymbol'; }
             };
         },
@@ -149,6 +175,10 @@ return { type: "Repeat", elements: elements };\n\
 { return v; })';
                 },
                 templatePeg: function () { return this.programPeg(); },
+                toCode: function (context) {
+                     return '(v:MacroKeyword &{ return v.name === "' + name + '"; }\n\
+{ return v; })';
+                },
                 toString: function () {
                     return '(v:MacroKeyword &{ return v.name === "' + name + '"; }\n\
 { return v; })';
@@ -166,6 +196,10 @@ return { type: "Repeat", elements: elements };\n\
 { return { type: "' + type + '", value: "' + value + '" }; })';
                 },
                 templatePeg: function () { return this.programPeg(); },
+                toCode: function (context) {
+                    return '("' + value + '"\n\
+{ return { type: "' + type + '", value: "' + value + '" }; })';
+                },
                 toString: function () { return '("' + value + '"\n\
 { return { type: "' + type + '", value: "' + value + '" }; })'; }
             };
@@ -184,6 +218,10 @@ return { type: "Repeat", elements: elements };\n\
 { return { type: "' + type + '", value: v }; })';
                     },
                     templatePeg: function () { return this.programPeg(); },
+                    toCode: function (context) {
+                        return '(v:' + type + ' &{ return eval(v) === ' + value + '; }\n\
+{ return { type: "' + type + '", value: v }; })';
+                    },
                     toString: function () {
                         return '(v:' + type + ' &{ return eval(v) === ' + value + '; }\n\
 { return { type: "' + type + '", value: v }; })';
@@ -200,6 +238,10 @@ return { type: "Repeat", elements: elements };\n\
 { return v; })';
                     },
                     templatePeg: function () { return this.programPeg(); },
+                    toCode: function (context) {
+                        return '(v:' + type + ' &{ return eval(v.value) === ' + value + '; }\n\
+{ return v; })';
+                    },
                     toString: function () {
                         return '(v:' + type + ' &{ return eval(v.value) === ' + value + '; }\n\
 { return v; })';
@@ -212,6 +254,7 @@ return { type: "Repeat", elements: elements };\n\
                     value: value,
                     programPeg: function () { return 'NullLiteral'; },
                     templatePeg: function () { return this.programPeg(); },
+                    toCode: function (context) { return 'NullLiteral'; },
                     toString: function () {
                         return 'NullLiteral';
                     }
@@ -230,6 +273,10 @@ return { type: "Repeat", elements: elements };\n\
 { return { type: "MacroName", name:"' + name + '" }; })';
                 },
                 templatePeg: function () { return this.programPeg(); },
+                toCode: function (context) {
+                    return '("' + name + '" !IdentifierPart\n\
+{ return { type: "MacroName", name:"' + name + '" }; })';
+                },
                 toString: function () {
                     return '("' + name + '" !IdentifierPart\n\
 { return { type: "MacroName", name:"' + name + '" }; })' }
@@ -254,6 +301,12 @@ return { type: "Repeat", elements: elements };\n\
                     return 'form:' + form.templatePeg() + '\n\
 { return { type: "MacroForm", inputForm: form }; }';
                 },
+                toCode: function (context) {
+                    var template = context === 'template';
+                    return (template? '&{ return macroType; } ' : '')
+                        + 'form:' + form.toCode(context) + '\n\
+{ return { type: "MacroForm", inputForm: form }; }';
+                },
                 toString: function () {
                     return 'form:' + form + '\n\
 { return { type: "MacroForm", inputForm: form }; }';
@@ -269,6 +322,9 @@ return { type: "Repeat", elements: elements };\n\
                 tag: tag,
                 programPeg: function () { return tag + ':' + this.value.programPeg(); },
                 templatePeg: function () { return tag + ':' + this.value.templatePeg(); },
+                toCode: function (context) {
+                    return tag + ':' + this.value.toCode(context);
+                },
                 toString: function() { return tag + ':' + value; }
             };
         },
@@ -303,6 +359,13 @@ return { type: "Repeat", elements: elements };\n\
                     }
                     return '(' + es.join(' __ ') + ' { return [' + tags.join(', ') + ']; })';
                 },
+                toCode: function (context) {
+                    var es = [];
+                    for (var i=0; i<this.elements.length; i++) {
+                        es.push(this.elements[i].toCode(context));
+                    }
+                    return '(' + es.join(' __ ') + ' { return [' + tags.join(', ') + ']; })';
+                },
                 toString: function() { return '(' + this.elements.join(' __ ') + ' { return [' + tags.join(', ') + ']; })'; }
             };
         },
@@ -332,6 +395,13 @@ return { type: "Repeat", elements: elements };\n\
                     }
                     return es.join('\n / ');
                 },
+                toCode: function (context) {
+                    var es = [];
+                    for (var i=0; i<this.elements.length; i++) {
+                        es.push(this.elements[i].toCode(context));
+                    }
+                    return es.join('\n / ');
+                },
                 toString: function() { return this.elements.join('\n / '); } 
             };
         }, 
@@ -351,6 +421,7 @@ return { type: "Repeat", elements: elements };\n\
                 type: '-Null',
                 programPeg: function () { return ''; },
                 tempaltePeg: function () { return ''; },
+                toCode: function (context)  { return ''; },
                 toString: function() { return ''; }
             };
         }
@@ -552,9 +623,12 @@ return { type: "Repeat", elements: elements };\n\
                     statementMacros.push(patterns);
             }
 
+            expressionMacros = expressionMacros.length > 0 ? pegObj2.choice(expressionMacros) : '';
+            statementMacros = statementMacros.length > 0 ? pegObj2.choice(statementMacros) : '';
+
             return template + characterStatement
-                + (expressionMacros.length > 0 ?  macroExpression + pegObj2.choice(expressionMacros).templatePeg() + '\n\n' : '')
-                + (statementMacros.length > 0 ? macroStatement + pegObj2.choice(statementMacros).templatePeg() + '\n\n' : '');
+                + (expressionMacros?  macroExpression + expressionMacros.toCode('program') + '\n / ' + expressionMacros.toCode('template') + '\n\n' : '')
+                + (statementMacros? macroStatement + statementMacros.toCode('program') + '\n / ' + statementMacros.toCode('template') + '\n\n' : '');
             
         } else {
             return 'error';
