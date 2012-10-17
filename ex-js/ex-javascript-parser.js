@@ -248,17 +248,18 @@ module.exports = (function(){
         "SubPatternList": parse_SubPatternList,
         "SubPattern": parse_SubPattern,
         "PunctuationMark": parse_PunctuationMark,
-        "PatternPunctuator": parse_PatternPunctuator,
         "Punctuator": parse_Punctuator,
+        "PunctuatorSymbol": parse_PunctuatorSymbol,
         "Template": parse_Template,
         "CharacterStatement": parse_CharacterStatement,
         "ExcludeWord": parse_ExcludeWord,
         "MacroExpression": parse_MacroExpression,
         "MacroStatement": parse_MacroStatement,
         "StatementInTemplate": parse_StatementInTemplate,
-        "PatternIdentifier": parse_PatternIdentifier,
-        "PatternSymbol": parse_PatternSymbol,
-        "PatternEllipsis": parse_PatternEllipsis
+        "MacroIdentifier": parse_MacroIdentifier,
+        "MacroSymbol": parse_MacroSymbol,
+        "MacroKeyword": parse_MacroKeyword,
+        "MacroEllipsis": parse_MacroEllipsis
       };
       
       if (startRule !== undefined) {
@@ -16222,7 +16223,7 @@ module.exports = (function(){
         
         result0 = parse_IdentifierName();
         if (result0 === null) {
-          result0 = parse_PatternPunctuator();
+          result0 = parse_Punctuator();
         }
         
         cache[cacheKey] = {
@@ -17064,7 +17065,7 @@ module.exports = (function(){
               }
               if (result0 === null) {
                 pos0 = pos;
-                result0 = parse_PatternPunctuator();
+                result0 = parse_Punctuator();
                 if (result0 !== null) {
                   result0 = (function(offset, punc) {
                         return {
@@ -17152,8 +17153,8 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_PatternPunctuator() {
-        var cacheKey = "PatternPunctuator@" + pos;
+      function parse_Punctuator() {
+        var cacheKey = "Punctuator@" + pos;
         var cachedResult = cache[cacheKey];
         if (cachedResult) {
           pos = cachedResult.nextPos;
@@ -17165,12 +17166,12 @@ module.exports = (function(){
         
         pos0 = pos;
         pos1 = pos;
-        result1 = parse_Punctuator();
+        result1 = parse_PunctuatorSymbol();
         if (result1 !== null) {
           result0 = [];
           while (result1 !== null) {
             result0.push(result1);
-            result1 = parse_Punctuator();
+            result1 = parse_PunctuatorSymbol();
           }
         } else {
           result0 = null;
@@ -17201,8 +17202,8 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_Punctuator() {
-        var cacheKey = "Punctuator@" + pos;
+      function parse_PunctuatorSymbol() {
+        var cacheKey = "PunctuatorSymbol@" + pos;
         var cachedResult = cache[cacheKey];
         if (cachedResult) {
           pos = cachedResult.nextPos;
@@ -17648,8 +17649,8 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_PatternIdentifier() {
-        var cacheKey = "PatternIdentifier@" + pos;
+      function parse_MacroIdentifier() {
+        var cacheKey = "MacroIdentifier@" + pos;
         var cachedResult = cache[cacheKey];
         if (cachedResult) {
           pos = cachedResult.nextPos;
@@ -17677,8 +17678,8 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_PatternSymbol() {
-        var cacheKey = "PatternSymbol@" + pos;
+      function parse_MacroSymbol() {
+        var cacheKey = "MacroSymbol@" + pos;
         var cachedResult = cache[cacheKey];
         if (cachedResult) {
           pos = cachedResult.nextPos;
@@ -17706,8 +17707,37 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_PatternEllipsis() {
-        var cacheKey = "PatternEllipsis@" + pos;
+      function parse_MacroKeyword() {
+        var cacheKey = "MacroKeyword@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_LiteralKeyword();
+        if (result0 !== null) {
+          result0 = (function(offset, name) {
+              return { type: "LiteralKeyword", name: name };
+            })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_MacroEllipsis() {
+        var cacheKey = "MacroEllipsis@" + pos;
         var cachedResult = cache[cacheKey];
         if (cachedResult) {
           pos = cachedResult.nextPos;

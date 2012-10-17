@@ -82,7 +82,7 @@ module.exports = (function () {
                 type: 'Repetition',
                 elements: elements,
                 mark: mark,
-                toString: function() { return '(PatternEllipsis\n' +
+                toString: function() { return '(MacroEllipsis\n' +
 ' / (head:'+ elements + ' tail:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + ' ' + elements + ')* ellipsis:(' + (mark? (pegObj.whitespace() + ' ' + pegObj.string(null, mark) + ' ') : '') + pegObj.whitespace() + '"...")? !{ return !macroType && ellipsis; }\n\
  { var elements = [head];\n\
    for (var i=0; i<tail.length; i++) {\n\
@@ -192,7 +192,7 @@ module.exports = (function () {
         identifier: function() {
             return {
                 type: 'Identifier',
-                toString: function() { return 'PatternIdentifier'; }
+                toString: function() { return 'MacroIdentifier'; }
             };
         },
         
@@ -216,7 +216,7 @@ module.exports = (function () {
         symbol: function() {
             return {
                 type: 'Symbol',
-                toString: function() { return 'PatternSymbol'; }
+                toString: function() { return 'MacroSymbol'; }
             };
         },
 

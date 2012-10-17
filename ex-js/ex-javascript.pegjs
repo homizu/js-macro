@@ -1604,7 +1604,7 @@ LiteralKeywordList
 // リテラルキーワード "=>" は禁止
 LiteralKeyword
   = IdentifierName
-  / PatternPunctuator
+  / Punctuator
 
 SyntaxRuleList
   = head:SyntaxRule tail:(__ SyntaxRule)* {
@@ -1698,7 +1698,7 @@ SubPattern
           name: name
       };                 
     }
-  / punc:PatternPunctuator {
+  / punc:Punctuator {
         return {
            type: "Punctuator",
            value: punc
@@ -1712,10 +1712,10 @@ PunctuationMark
       return metaVariables.literal.indexOf(name) >= 0;
     }{ return name; }
 
-PatternPunctuator
-  =  puncs:Punctuator+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
-
 Punctuator
+  =  puncs:PunctuatorSymbol+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
+
+PunctuatorSymbol
   = "<" / ">" / "=" / "!" / "+"
   / "-" / "*" / "%" / "&" / "|"
   / "^" / "!" / "~" / "?" / ":"
@@ -1751,17 +1751,22 @@ StatementInTemplate
   = &{ return macroType === "expression"; } e:AssignmentExpression { return e; }
   / &{ return macroType === "statement"; } s:Statement { return s; }
 
-PatternIdentifier
+MacroIdentifier
   = name:IdentifierName {
       return { type: "Variable", name: name };
     }
 
-PatternSymbol
+MacroSymbol
   = name:IdentifierName {
       return { type: "StringLiteral", value: name };
     }
 
-PatternEllipsis
+MacroKeyword
+  = name:LiteralKeyword {
+      return { type: "LiteralKeyword", name: name };
+    }
+
+MacroEllipsis
   = "..." {
       return { type: "Repeat",
                elements: [{ type: "Ellipsis" }] };
