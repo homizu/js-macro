@@ -7,7 +7,7 @@ module.exports = (function () {
     var macroExpression = 'MacroExpression\n = '
     var macroStatement = 'MacroStatement\n = '
     
-    var pegObj2 = {
+    var pegObj = {
         // enclosing types
         Brace: { left: '"{"', right: '"}"' },
         Paren: { left: '"("', right: '")"' },
@@ -56,7 +56,7 @@ module.exports = (function () {
                     type: type,
                     elements: elements,
                     toCode: function (context) {
-                        return '(' + pegObj2[type].left + ' __ ' + (elements? 't0:' + this.elements.toCode(context) + ' __ ' : '') + pegObj2[type].right + '\n\
+                        return '(' + pegObj[type].left + ' __ ' + (elements? 't0:' + this.elements.toCode(context) + ' __ ' : '') + pegObj[type].right + '\n\
 { return { type: "' + type + '", elements: ' + (elements? 't0' : '[]') + ' }; })';
                     }
                 };
@@ -172,7 +172,7 @@ module.exports = (function () {
             for (var i=0; i<body.length; i++) {
                 form.push(convertToPegObj(body[i]));
             }
-            form = pegObj2.sequence(form);
+            form = pegObj.sequence(form);
             return {
                 type: 'MacroForm',
                 name: name.name,
@@ -231,7 +231,7 @@ module.exports = (function () {
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.repetition(elements, obj.punctuationMark);
+              return pegObj.repetition(elements, obj.punctuationMark);
           }          
         },
 
@@ -240,7 +240,7 @@ module.exports = (function () {
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.enclosing(this.type, elements);
+              return pegObj.enclosing(this.type, elements);
           }
         },
 
@@ -249,7 +249,7 @@ module.exports = (function () {
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.enclosing(this.type, elements);
+              return pegObj.enclosing(this.type, elements);
           }
         },
 
@@ -258,7 +258,7 @@ module.exports = (function () {
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.enclosing(this.type, elements);
+              return pegObj.enclosing(this.type, elements);
           }
         },
 
@@ -267,7 +267,7 @@ module.exports = (function () {
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
               var elements = convertToPegObj(obj.elements);
-              return pegObj2.enclosing(this.type, elements);
+              return pegObj.enclosing(this.type, elements);
           }
         },
 
@@ -275,7 +275,7 @@ module.exports = (function () {
         { type: 'IdentifierVariable',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.identifier();
+              return pegObj.identifier();
           }
         },
 
@@ -283,7 +283,7 @@ module.exports = (function () {
         { type: 'ExpressionVariable',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.expression();
+              return pegObj.expression();
           }
         },
 
@@ -291,7 +291,7 @@ module.exports = (function () {
         { type: 'StatementVariable',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.statement();
+              return pegObj.statement();
           }
         },
 
@@ -299,7 +299,7 @@ module.exports = (function () {
         { type: 'SymbolVariable',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.symbol();
+              return pegObj.symbol();
           }
         },
 
@@ -307,7 +307,7 @@ module.exports = (function () {
         { type: 'LiteralKeyword',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.keyword(obj.name);
+              return pegObj.keyword(obj.name);
           }
         },
 
@@ -315,7 +315,7 @@ module.exports = (function () {
         { type: 'Punctuator',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.punct(this.type, obj.value);
+              return pegObj.punct(this.type, obj.value);
           }
         },
 
@@ -323,7 +323,7 @@ module.exports = (function () {
         { type: 'PunctuationMark',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.punct(this.type, obj.value);
+              return pegObj.punct(this.type, obj.value);
           }
         },
 
@@ -331,7 +331,7 @@ module.exports = (function () {
         { type: 'BooleanLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, obj.value);
+              return pegObj.literal(this.type, obj.value);
           }
         },
 
@@ -339,7 +339,7 @@ module.exports = (function () {
         { type: 'NumericLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, obj.value);
+              return pegObj.literal(this.type, obj.value);
           }
         },
 
@@ -347,7 +347,7 @@ module.exports = (function () {
         { type: 'StringLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, obj.value);
+              return pegObj.literal(this.type, obj.value);
           }
         },
 
@@ -355,7 +355,7 @@ module.exports = (function () {
         { type: 'NullLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, null);
+              return pegObj.literal(this.type, null);
           }
         },
         
@@ -363,7 +363,7 @@ module.exports = (function () {
         { type: 'RegularExpressionLiteral',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj2.literal(this.type, obj.value);
+              return pegObj.literal(this.type, obj.value);
           }
         }
     ];
@@ -373,12 +373,11 @@ module.exports = (function () {
         if (pattern instanceof Array) {
             if (pattern.length === 0)
                 return null;
-//                return pegObj2.null();
             var result = [convertToPegObj(pattern[0])];
             for (var i=1; i<pattern.length; i++) {
                 result.push(convertToPegObj(pattern[i]));
             }
-            return pegObj2.sequence(result);
+            return pegObj.sequence(result);
         } else if (pattern) {
             for (var i=0; i<jsMacroTypes.length; i++) {
                 var type = jsMacroTypes[i];
@@ -387,10 +386,8 @@ module.exports = (function () {
                 }
             }
             return null;
-//            return pegObj2.null();
         }
         return null;
-//        return pegObj2.null();            
     };
 
     generator.generate = function(jsObj) {
@@ -408,21 +405,21 @@ module.exports = (function () {
 
             for (var i=0; i<macroDefs.length; i++) {
                 var macroDef = macroDefs[i];
-                var macroName = pegObj2.macroName(macroDef.macroName);
+                var macroName = pegObj.macroName(macroDef.macroName);
                 var syntaxRules = macroDef.syntaxRules;
                 var patterns = [];
                 for (var j=0; j<syntaxRules.length; j++) {
-                    patterns.push(pegObj2.macroForm(macroName, syntaxRules[j].pattern));
+                    patterns.push(pegObj.macroForm(macroName, syntaxRules[j].pattern));
                 }
-                patterns = pegObj2.choice(patterns);
+                patterns = pegObj.choice(patterns);
                 if (macroDef.type.indexOf('Expression') >= 0)
                     expressionMacros.push(patterns);
                 else
                     statementMacros.push(patterns);
             }
 
-            expressionMacros = expressionMacros.length > 0 ? pegObj2.choice(expressionMacros) : '';
-            statementMacros = statementMacros.length > 0 ? pegObj2.choice(statementMacros) : '';
+            expressionMacros = expressionMacros.length > 0 ? pegObj.choice(expressionMacros) : '';
+            statementMacros = statementMacros.length > 0 ? pegObj.choice(statementMacros) : '';
 
             return template + characterStatement
                 + (expressionMacros?  macroExpression + expressionMacros.toCode('program') + '\n / ' + expressionMacros.toCode('template') + '\n\n' : '')
