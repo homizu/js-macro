@@ -108,7 +108,7 @@ module.exports = (function () {
             };
         }, 
 
-        // Punct
+        // Punct (Punctuator, PunctuationMark)
         punct: function(type, value) {
             return {
                 type: type,
@@ -180,7 +180,7 @@ module.exports = (function () {
                 toCode: function (context) {
                     var template = context === 'template';
                     return (template? '&{ return macroType; } ' : '')
-                        + 'form:' + form.toCode(context) + '\n\
+                        + 'form:' + this.inputForm.toCode(context) + '\n\
 { return { type: "MacroForm", inputForm: form }; }';
                 }
             };
@@ -390,6 +390,61 @@ module.exports = (function () {
         return null;
     };
 
+    var canDeleteNode = function (element) {
+        var type = element.type;
+        if (type === 'Repetition') {
+            if (element.elements === null) return true;
+            return canDeleteNode(element.elements);
+        } else if (type === 'RepBlock') {
+            if (element.elements === null) return true;
+            for (var i=0; i<element.elements.elements.length; i++) {
+                if (i === element.elements.elements.length - 1 && element.elements.elements[i] !== null)
+                    return canDeleteNode(element.elements.elements[i]);
+                if (element.elements.elements[i] !== null)
+                    return false;
+            }
+            return true;
+        } else if (['Brace', 'Paren', 'Bracket'].indexOf(type) >= 0) {
+            if (element.elements === null) return true;
+            for (var i=0; i<element.elements.elements.length; i++) {
+                if (element.elements.elements[i] !== null)
+                    return false;
+            }
+            return true;
+        } else if (['Identifier', 'Expression', 'Statement', 'Symbol', 'LiteralKeyword', 'Punctuator', 'PunctuationMark', 'NumericLiteral', 'StringLiteral', 'BooleanLiteral', 'RegularExpressionLiteral', 'NullLiteral'].indexOf(type) >= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    var delete1Node = function (elements, start) {
+        for (var i=start; i<elements.length; i++) {
+            if (elements[i] && canDeleteNode(elements[i])) {
+                elements[i] = null;
+                console.log('delete true');
+                return true;
+            } else if (elements[i]) { // elements[i] は RepBlock, Brace, Paren, Bracket, Repetition のいずれか   
+                console.log('delete recursive');
+                if (elements[i].type === 'Repetition') {
+                    console.log('rep');
+                    return delete1Node(elements[i].elements, 0);
+                }
+                else
+                    return delete1Node(elements[i].elements.elements, 0);
+            }
+        }
+        console.log('delete false');
+        return false;
+    };
+    
+    var getSuffixTree = function (tree) {
+        if (tree.type !== 'MacroForm')
+            throw 'error. type property is not "MacroForm"';
+        return delete1Node(tree.inputForm.elements, 1);
+
+    };
+
     generator.generate = function(jsObj) {
 
         if (jsObj.type === 'Program') {
@@ -408,9 +463,11 @@ module.exports = (function () {
                 var macroName = pegObj.macroName(macroDef.macroName);
                 var syntaxRules = macroDef.syntaxRules;
                 var patterns = [];
+                var p;
                 for (var j=0; j<syntaxRules.length; j++) {
                     patterns.push(pegObj.macroForm(macroName, syntaxRules[j].pattern));
                 }
+                p = patterns[0];
                 patterns = pegObj.choice(patterns);
                 if (macroDef.type.indexOf('Expression') >= 0)
                     expressionMacros.push(patterns);
@@ -421,9 +478,18 @@ module.exports = (function () {
             expressionMacros = expressionMacros.length > 0 ? pegObj.choice(expressionMacros) : '';
             statementMacros = statementMacros.length > 0 ? pegObj.choice(statementMacros) : '';
 
+            console.log(JSON.stringify(p));
+            console.log(getSuffixTree(p));
+            console.log('\n\n\n\n\n\n');
+            console.log(p.toCode('template'));
+/*            var s ={ type: 'MacroForm', inputForm: { type: 'Sequence', elements: [{ type: 'Identifier' }, { type: 'Expression' }] } }
+            getSuffixTree(s);
+            console.log(s.inputForm.elements[1]);
+*/
             return template + characterStatement
                 + (expressionMacros?  macroExpression + expressionMacros.toCode('program') + '\n / ' + expressionMacros.toCode('template') + '\n\n' : '')
                 + (statementMacros? macroStatement + statementMacros.toCode('program') + '\n / ' + statementMacros.toCode('template') + '\n\n' : '');
+
             
         } else {
             return 'error';
