@@ -1644,12 +1644,14 @@ SubPatternList
               var secondLast = result.pop();
               if (secondLast.type === "RepBlock") {
                  mark = last.name;
-                 elements = secondLast.elements;
+//                 elements = secondLast.elements;
+                 elements = secondLast;
               } else {
                  result.push(secondLast);
               }
            } else if (last.type === "RepBlock")
-             elements = last.elements;
+//             elements = last.elements;
+             ;
            result.push({ type: "Repetition",
                          elements: elements,
                          punctuationMark: mark });
