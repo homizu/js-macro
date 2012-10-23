@@ -1819,7 +1819,7 @@ LiteralKeywordList
 // リテラルキーワード "=>" は禁止
 LiteralKeyword
   = IdentifierName
-  / PatternPunctuator
+  / Punctuator
 
 SyntaxRuleList
   = head:SyntaxRule tail:(__ SyntaxRule)* {
@@ -1858,13 +1858,15 @@ SubPatternList
            if (!mark && last.type === "LiteralKeyword") {
               var secondLast = result.pop();
               if (secondLast.type === "RepBlock") {
-                 mark = last.name;
-                 elements = secondLast.elements;
+                  mark = last.name;
+//                 elements = secondLast.elements;
+                  elements = secondLast;
               } else {
                  result.push(secondLast);
               }
            } else if (last.type === "RepBlock")
-             elements = last.elements;
+//             elements = last.elements;
+               ;
            result.push({ type: "Repetition",
                          elements: elements,
                          punctuationMark: mark });
@@ -1913,7 +1915,7 @@ SubPattern
           name: name
       };                 
     }
-  / punc:PatternPunctuator {
+  / punc:Punctuator {
         return {
            type: "Punctuator",
            value: punc
@@ -1927,10 +1929,10 @@ PunctuationMark
       return metaVariables.literal.indexOf(name) >= 0;
     }{ return name; }
 
-PatternPunctuator
-  =  puncs:Punctuator+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
-
 Punctuator
+  =  puncs:PunctuatorSymbol+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
+
+PunctuatorSymbol
   = "<" / ">" / "=" / "!" / "+"
   / "-" / "*" / "%" / "&" / "|"
   / "^" / "!" / "~" / "?" / ":"
@@ -1966,17 +1968,22 @@ StatementInTemplate
   = &{ return macroType === "expression"; } e:AssignmentExpression { return e; }
   / &{ return macroType === "statement"; } s:Statement { return s; }
 
-PatternIdentifier
+MacroIdentifier
   = name:IdentifierName {
       return { type: "Variable", name: name };
     }
 
-PatternSymbol
+MacroSymbol
   = name:IdentifierName {
       return { type: "StringLiteral", value: name };
     }
 
-PatternEllipsis
+MacroKeyword
+  = name:LiteralKeyword {
+      return { type: "LiteralKeyword", name: name };
+    }
+
+MacroEllipsis
   = "..." {
       return { type: "Repeat",
                elements: [{ type: "Ellipsis" }] };
