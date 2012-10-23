@@ -44,8 +44,8 @@ module.exports = (function () {
                     type: type,
                     elements: elements,
                     toCode: function (context) {
-                        return '(' + (elements? 't0:' + this.elements.toCode(context) + ' __ ' : '') + '\n\
-{ return { type: "RepBlock", elements: ' + (elements? 't0' : '[]') + ' }; })';
+                        return '(' + (this.elements? 't0:' + this.elements.toCode(context) + ' __ ' : '') + '\n\
+{ return { type: "RepBlock", elements: ' + (this.elements? 't0' : '[]') + ' }; })';
                     }
                 };
                 break;
@@ -56,8 +56,8 @@ module.exports = (function () {
                     type: type,
                     elements: elements,
                     toCode: function (context) {
-                        return '(' + pegObj[type].left + ' __ ' + (elements? 't0:' + this.elements.toCode(context) + ' __ ' : '') + pegObj[type].right + '\n\
-{ return { type: "' + type + '", elements: ' + (elements? 't0' : '[]') + ' }; })';
+                        return '(' + pegObj[type].left + ' __ ' + (this.elements? 't0:' + this.elements.toCode(context) + ' __ ' : '') + pegObj[type].right + '\n\
+{ return { type: "' + type + '", elements: ' + (this.elements? 't0' : '[]') + ' }; })';
                     }
                 };
                 break;
@@ -108,7 +108,7 @@ module.exports = (function () {
             };
         }, 
 
-        // Punct
+        // Punct (Punctuator, PunctuationMark)
         punct: function(type, value) {
             return {
                 type: type,
@@ -169,8 +169,11 @@ module.exports = (function () {
 
         macroForm: function (name, body) {
             var form = [name];
+            var obj;
             for (var i=0; i<body.length; i++) {
-                form.push(convertToPegObj(body[i]));
+                obj = convertToPegObj(body[i]);
+                if (obj) // not null
+                    form.push(obj);
             }
             form = pegObj.sequence(form);
             return {
@@ -179,9 +182,11 @@ module.exports = (function () {
                 inputForm: form,
                 toCode: function (context) {
                     var template = context === 'template';
-                    return (template? '&{ return macroType; } ' : '')
-                        + 'form:' + form.toCode(context) + '\n\
+                    return  'form:' + this.inputForm.toCode(context) + '\n\
 { return { type: "MacroForm", inputForm: form }; }';
+                },
+                makeSuffix: function () { // 接尾辞木に変換
+                    return delete1Node(this.inputForm.elements, 1);
                 }
             };
         },
@@ -369,18 +374,21 @@ module.exports = (function () {
     ];
 
     var convertToPegObj = function(pattern) {
+        var result = [];
+        var obj, type;
 
         if (pattern instanceof Array) {
             if (pattern.length === 0)
                 return null;
-            var result = [convertToPegObj(pattern[0])];
-            for (var i=1; i<pattern.length; i++) {
-                result.push(convertToPegObj(pattern[i]));
+            for (var i=0; i<pattern.length; i++) {
+                obj = convertToPegObj(pattern[i]);
+                if (obj)
+                    result.push(obj);
             }
-            return pegObj.sequence(result);
+            return result.length > 0 ? pegObj.sequence(result) : null;
         } else if (pattern) {
             for (var i=0; i<jsMacroTypes.length; i++) {
-                var type = jsMacroTypes[i];
+                type = jsMacroTypes[i];
                 if (type.isType(pattern.type)) {
                     return type.toPegObj(pattern);
                 }
@@ -390,6 +398,65 @@ module.exports = (function () {
         return null;
     };
 
+    // 引数として与えられたノードが削除できるノードかどうかを返す関数
+    var canDeleteNode = function (element) {
+        var type = element.type;
+        if (type === 'Repetition') {
+            if (element.elements === null) return true;
+            return canDeleteNode(element.elements);
+        } else if (type === 'RepBlock') {
+            if (element.elements === null) return true;
+            for (var i=0; i<element.elements.elements.length; i++) {
+                if (i === element.elements.elements.length - 1 && element.elements.elements[i] !== null)
+                    return canDeleteNode(element.elements.elements[i]);
+                if (element.elements.elements[i] !== null)
+                    return false;
+            }
+            return true;
+        } else if (['Brace', 'Paren', 'Bracket'].indexOf(type) >= 0) {
+            if (element.elements === null) return true;
+            for (var i=0; i<element.elements.elements.length; i++) {
+                if (element.elements.elements[i] !== null)
+                    return false;
+            }
+            return true;
+        } else if (['Identifier', 'Expression', 'Statement', 'Symbol', 'LiteralKeyword', 'Punctuator', 'PunctuationMark', 'NumericLiteral', 'StringLiteral', 'BooleanLiteral', 'RegularExpressionLiteral', 'NullLiteral'].indexOf(type) >= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    // 引数で与えられたリストの最も左にある要素を削除(実際にはnullを代入)する関数
+    var delete1Node = function (elements, start) {
+        var result;
+        for (var i=start; i<elements.length; i++) {
+            if (elements[i] && canDeleteNode(elements[i])) {
+                if (start && i === elements.length - 1)
+                    return false;
+                elements[i] = null;
+                if (i === elements.length - 1)
+                    return 'all';
+                return true;
+            } else if (elements[i]) { // elements[i] は RepBlock, Brace, Paren, Bracket, Repetition のいずれか   
+//                console.log('delete recursive');
+                if (elements[i].type === 'Repetition') {
+//                    console.log('rep');
+                    return delete1Node([elements[i].elements], 0);
+                }
+                else {
+                    result = delete1Node(elements[i].elements.elements, 0);
+                    if (result === 'all')
+                        elements[i].elements = null;
+                    return result;
+                }
+            }
+        }
+//        console.log('delete false');
+        return false;
+    };
+    
+
     generator.generate = function(jsObj) {
 
         if (jsObj.type === 'Program') {
@@ -397,6 +464,7 @@ module.exports = (function () {
             var macroDefs = [];
             var expressionMacros = [];
             var statementMacros = [];
+            var macros, pmacros, tmacros, macro, code;
             for (var i=0; i<elements.length; i++) {
                 var element = elements[i];
                 if (element.type.indexOf('MacroDefinition') >= 0)
@@ -408,22 +476,44 @@ module.exports = (function () {
                 var macroName = pegObj.macroName(macroDef.macroName);
                 var syntaxRules = macroDef.syntaxRules;
                 var patterns = [];
+                var p;
+                
+                macros = [];
+
                 for (var j=0; j<syntaxRules.length; j++) {
-                    patterns.push(pegObj.macroForm(macroName, syntaxRules[j].pattern));
+                    macro = pegObj.macroForm(macroName, syntaxRules[j].pattern)
+                    patterns.push(macro);
+                    macros.push(macro.toCode('program'));
                 }
-                patterns = pegObj.choice(patterns);
+/*                p = patterns[0];
+                console.log(p.toCode().length);
+*/
+                for (var j=0; j<patterns.length; j++) {
+                    code = patterns[j].toCode('template');
+                    if (macros.indexOf(code) < 0)
+                        macros.push('(&{ return macroType; } ' + code + ')');
+
+                    while (patterns[j].makeSuffix()) {
+                        code = patterns[j].toCode('template');
+                        if (macros.indexOf(code) < 0)
+                            macros.push('(&{ return macroType; } ' + code + ')');
+                    }
+                }
+                
+                pmacros = macros.slice(0, patterns.length);
+                tmacros = macros.slice(patterns.length);
+                tmacros.sort(function (a, b) { return b.length - a.length; }); // PEGコードが長い順に並び替え
+                
                 if (macroDef.type.indexOf('Expression') >= 0)
-                    expressionMacros.push(patterns);
+                    expressionMacros = expressionMacros.concat(pmacros, tmacros);
                 else
-                    statementMacros.push(patterns);
+                    statementMacros = statementMacros.concat(pmacros, tmacros);
+
             }
 
-            expressionMacros = expressionMacros.length > 0 ? pegObj.choice(expressionMacros) : '';
-            statementMacros = statementMacros.length > 0 ? pegObj.choice(statementMacros) : '';
-
             return template + characterStatement
-                + (expressionMacros?  macroExpression + expressionMacros.toCode('program') + '\n / ' + expressionMacros.toCode('template') + '\n\n' : '')
-                + (statementMacros? macroStatement + statementMacros.toCode('program') + '\n / ' + statementMacros.toCode('template') + '\n\n' : '');
+                + (expressionMacros.length > 0 ?  macroExpression + expressionMacros.join(' \n / ') + '\n\n' : '')
+                + (statementMacros.length > 0 ? macroStatement + statementMacros.join(' \n / ') + '\n\n' : '');
             
         } else {
             return 'error';
