@@ -10,7 +10,6 @@
                         statement: [],
                         symbol: [],
                         literal: [] };  // メタ変数のリストを保持するオブジェクト
-  var identifierType = "";              // パターン中の識別子の種類を表す変数
 
   // ...が出現する要素の並びからリストを作る関数
   var makeElementsList = function (head, ellipsis, tail, elementIndex, ellipsisIndex) {

@@ -265,7 +265,6 @@ module.exports = (function(){
         "Pattern": parse_Pattern,
         "SubPatternList": parse_SubPatternList,
         "SubPattern": parse_SubPattern,
-        "PunctuationMark": parse_PunctuationMark,
         "Punctuator": parse_Punctuator,
         "PunctuatorSymbol": parse_PunctuatorSymbol,
         "Template": parse_Template,
@@ -18572,7 +18571,7 @@ module.exports = (function(){
           return cachedResult.result;
         }
         
-        var result0, result1, result2, result3, result4, result5, result6, result7;
+        var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
         
         pos0 = pos;
@@ -18583,41 +18582,9 @@ module.exports = (function(){
           pos2 = pos;
           result2 = parse___();
           if (result2 !== null) {
-            if (input.charCodeAt(pos) === 44) {
-              result3 = ",";
-              pos++;
-            } else {
-              result3 = null;
-              if (reportFailures === 0) {
-                matchFailed("\",\"");
-              }
-            }
-            if (result3 === null) {
-              if (input.charCodeAt(pos) === 59) {
-                result3 = ";";
-                pos++;
-              } else {
-                result3 = null;
-                if (reportFailures === 0) {
-                  matchFailed("\";\"");
-                }
-              }
-            }
-            result3 = result3 !== null ? result3 : "";
+            result3 = parse_SubPattern();
             if (result3 !== null) {
-              result4 = parse___();
-              if (result4 !== null) {
-                result5 = parse_SubPattern();
-                if (result5 !== null) {
-                  result2 = [result2, result3, result4, result5];
-                } else {
-                  result2 = null;
-                  pos = pos2;
-                }
-              } else {
-                result2 = null;
-                pos = pos2;
-              }
+              result2 = [result2, result3];
             } else {
               result2 = null;
               pos = pos2;
@@ -18631,41 +18598,9 @@ module.exports = (function(){
             pos2 = pos;
             result2 = parse___();
             if (result2 !== null) {
-              if (input.charCodeAt(pos) === 44) {
-                result3 = ",";
-                pos++;
-              } else {
-                result3 = null;
-                if (reportFailures === 0) {
-                  matchFailed("\",\"");
-                }
-              }
-              if (result3 === null) {
-                if (input.charCodeAt(pos) === 59) {
-                  result3 = ";";
-                  pos++;
-                } else {
-                  result3 = null;
-                  if (reportFailures === 0) {
-                    matchFailed("\";\"");
-                  }
-                }
-              }
-              result3 = result3 !== null ? result3 : "";
+              result3 = parse_SubPattern();
               if (result3 !== null) {
-                result4 = parse___();
-                if (result4 !== null) {
-                  result5 = parse_SubPattern();
-                  if (result5 !== null) {
-                    result2 = [result2, result3, result4, result5];
-                  } else {
-                    result2 = null;
-                    pos = pos2;
-                  }
-                } else {
-                  result2 = null;
-                  pos = pos2;
-                }
+                result2 = [result2, result3];
               } else {
                 result2 = null;
                 pos = pos2;
@@ -18679,30 +18614,17 @@ module.exports = (function(){
             pos2 = pos;
             result2 = parse___();
             if (result2 !== null) {
-              result3 = parse_PunctuationMark();
-              result3 = result3 !== null ? result3 : "";
-              if (result3 !== null) {
-                result4 = parse___();
-                if (result4 !== null) {
-                  if (input.substr(pos, 3) === "...") {
-                    result5 = "...";
-                    pos += 3;
-                  } else {
-                    result5 = null;
-                    if (reportFailures === 0) {
-                      matchFailed("\"...\"");
-                    }
-                  }
-                  if (result5 !== null) {
-                    result2 = [result2, result3, result4, result5];
-                  } else {
-                    result2 = null;
-                    pos = pos2;
-                  }
-                } else {
-                  result2 = null;
-                  pos = pos2;
+              if (input.substr(pos, 3) === "...") {
+                result3 = "...";
+                pos += 3;
+              } else {
+                result3 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"...\"");
                 }
+              }
+              if (result3 !== null) {
+                result2 = [result2, result3];
               } else {
                 result2 = null;
                 pos = pos2;
@@ -18717,41 +18639,9 @@ module.exports = (function(){
               pos2 = pos;
               result4 = parse___();
               if (result4 !== null) {
-                if (input.charCodeAt(pos) === 44) {
-                  result5 = ",";
-                  pos++;
-                } else {
-                  result5 = null;
-                  if (reportFailures === 0) {
-                    matchFailed("\",\"");
-                  }
-                }
-                if (result5 === null) {
-                  if (input.charCodeAt(pos) === 59) {
-                    result5 = ";";
-                    pos++;
-                  } else {
-                    result5 = null;
-                    if (reportFailures === 0) {
-                      matchFailed("\";\"");
-                    }
-                  }
-                }
-                result5 = result5 !== null ? result5 : "";
+                result5 = parse_SubPattern();
                 if (result5 !== null) {
-                  result6 = parse___();
-                  if (result6 !== null) {
-                    result7 = parse_SubPattern();
-                    if (result7 !== null) {
-                      result4 = [result4, result5, result6, result7];
-                    } else {
-                      result4 = null;
-                      pos = pos2;
-                    }
-                  } else {
-                    result4 = null;
-                    pos = pos2;
-                  }
+                  result4 = [result4, result5];
                 } else {
                   result4 = null;
                   pos = pos2;
@@ -18765,41 +18655,9 @@ module.exports = (function(){
                 pos2 = pos;
                 result4 = parse___();
                 if (result4 !== null) {
-                  if (input.charCodeAt(pos) === 44) {
-                    result5 = ",";
-                    pos++;
-                  } else {
-                    result5 = null;
-                    if (reportFailures === 0) {
-                      matchFailed("\",\"");
-                    }
-                  }
-                  if (result5 === null) {
-                    if (input.charCodeAt(pos) === 59) {
-                      result5 = ";";
-                      pos++;
-                    } else {
-                      result5 = null;
-                      if (reportFailures === 0) {
-                        matchFailed("\";\"");
-                      }
-                    }
-                  }
-                  result5 = result5 !== null ? result5 : "";
+                  result5 = parse_SubPattern();
                   if (result5 !== null) {
-                    result6 = parse___();
-                    if (result6 !== null) {
-                      result7 = parse_SubPattern();
-                      if (result7 !== null) {
-                        result4 = [result4, result5, result6, result7];
-                      } else {
-                        result4 = null;
-                        pos = pos2;
-                      }
-                    } else {
-                      result4 = null;
-                      pos = pos2;
-                    }
+                    result4 = [result4, result5];
                   } else {
                     result4 = null;
                     pos = pos2;
@@ -18810,28 +18668,7 @@ module.exports = (function(){
                 }
               }
               if (result3 !== null) {
-                result4 = parse___();
-                if (result4 !== null) {
-                  if (input.charCodeAt(pos) === 59) {
-                    result5 = ";";
-                    pos++;
-                  } else {
-                    result5 = null;
-                    if (reportFailures === 0) {
-                      matchFailed("\";\"");
-                    }
-                  }
-                  result5 = result5 !== null ? result5 : "";
-                  if (result5 !== null) {
-                    result0 = [result0, result1, result2, result3, result4, result5];
-                  } else {
-                    result0 = null;
-                    pos = pos1;
-                  }
-                } else {
-                  result0 = null;
-                  pos = pos1;
-                }
+                result0 = [result0, result1, result2, result3];
               } else {
                 result0 = null;
                 pos = pos1;
@@ -18849,43 +18686,32 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, head, middle, ellipsis, tail, semicolon) {
+          result0 = (function(offset, head, middle, ellipsis, tail) {
                 var result = [head];
                 for (var i=0; i<middle.length; i++) {
-                    if (middle[i][1])
-                       result.push({ type: "PunctuationMark", value: middle[i][1] });
-                    result.push(middle[i][3]);
+                    result.push(middle[i][1]);
                 }
                 if (ellipsis) {
-                   var last = result.pop();
-                   var mark = ellipsis[1];
-                   var elements = last;
-                   if (!mark && last.type === "LiteralKeyword") {
-                      var secondLast = result.pop();
-                      if (secondLast.type === "RepBlock") {
-                          mark = last.name;
-        //                 elements = secondLast.elements;
-                          elements = secondLast;
-                      } else {
-                         result.push(secondLast);
-                      }
-                   } else if (last.type === "RepBlock")
-        //             elements = last.elements;
-                       ;
-                   result.push({ type: "Repetition",
-                                 elements: elements,
-                                 punctuationMark: mark });
-                   result.push({ type: "Ellipsis" });
+                    var elements, mark=[];
+                    for (var i=result.length-1; i>=0; i--) {
+                        if (result[i].type === 'PunctuationMark') {
+                            mark.push(result.pop().value);
+                        } else {
+                            elements = result.pop();
+                            break;
+                        }
+                    }
+                    if (!elements) throw new Error("Bad ellipsis usage in macro definition.");
+                    result.push({ type: "Repetition",
+                                  elements: elements,
+                                  punctuationMark: mark });
+                    result.push({ type: "Ellipsis" });
                 }
                 for (var i=0; i<tail.length; i++) {
-                    if (tail[i][1])
-                       result.push({ type: "PunctuationMark", value: tail[i][1] });
-                    result.push(tail[i][3]);
+                    result.push(tail[i][1]);
                 }
-                if (semicolon)
-                   result.push({ type: "PunctuationMark", value: ";" });
                 return result;
-             })(pos0, result0[0], result0[1], result0[2], result0[3], result0[5]);
+            })(pos0, result0[0], result0[1], result0[2], result0[3]);
         }
         if (result0 === null) {
           pos = pos0;
@@ -19085,38 +18911,32 @@ module.exports = (function(){
             result0 = parse_Literal();
             if (result0 === null) {
               pos0 = pos;
-              pos1 = pos;
               result0 = parse_IdentifierName();
               if (result0 !== null) {
-                result1 = (function(offset, name) { if (metaVariables.identifier.indexOf(name) >= 0) {
-                           return identifierType = 'IdentifierVariable';
-                       } else if (metaVariables.expression.indexOf(name) >= 0) {
-                           return identifierType = 'ExpressionVariable';
-                       } else if (metaVariables.statement.indexOf(name) >= 0) {
-                           return identifierType = 'StatementVariable';
-                       } else if (metaVariables.symbol.indexOf(name) >= 0) {
-                           return identifierType = 'SymbolVariable';
-                       } else if (metaVariables.literal.indexOf(name) >= 0) {
-                           return identifierType = 'LiteralKeyword';
-                       }
-                    })(pos, result0) ? "" : null;
-                if (result1 !== null) {
-                  result0 = [result0, result1];
-                } else {
-                  result0 = null;
-                  pos = pos1;
-                }
-              } else {
-                result0 = null;
-                pos = pos1;
-              }
-              if (result0 !== null) {
                 result0 = (function(offset, name) {
-                    return {
-                        type: identifierType,
-                        name: name
-                    };                 
-                  })(pos0, result0[0]);
+                      var type;
+                      if (metaVariables.identifier.indexOf(name) >= 0)
+                         type = 'IdentifierVariable';
+                      else if (metaVariables.expression.indexOf(name) >= 0)
+                         type = 'ExpressionVariable';
+                      else if (metaVariables.statement.indexOf(name) >= 0)
+                         type = 'StatementVariable';
+                      else if (metaVariables.symbol.indexOf(name) >= 0)
+                         type = 'SymbolVariable';
+                      else if (metaVariables.literal.indexOf(name) >= 0)
+                         type = 'LiteralKeyword';
+                      
+                      if (type)
+                         return {
+                             type: type,
+                             name: name
+                         };
+                      else
+                         return {
+                             type: "PunctuationMark",
+                             value: name
+                         };
+                  })(pos0, result0);
               }
               if (result0 === null) {
                 pos = pos0;
@@ -19124,82 +18944,46 @@ module.exports = (function(){
               if (result0 === null) {
                 pos0 = pos;
                 result0 = parse_Punctuator();
+                if (result0 === null) {
+                  if (input.charCodeAt(pos) === 44) {
+                    result0 = ",";
+                    pos++;
+                  } else {
+                    result0 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\",\"");
+                    }
+                  }
+                  if (result0 === null) {
+                    if (input.charCodeAt(pos) === 59) {
+                      result0 = ";";
+                      pos++;
+                    } else {
+                      result0 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\";\"");
+                      }
+                    }
+                  }
+                }
                 if (result0 !== null) {
                   result0 = (function(offset, punc) {
-                        return {
-                           type: "Punctuator",
-                           value: punc
-                        };
+                        if (metaVariables.literal.indexOf(punc) >= 0)
+                           return {
+                               type: "LiteralKeyword",
+                               name: punc
+                           };
+                        else
+                           return {
+                               type: "PunctuationMark",
+                               value: punc
+                           };
                     })(pos0, result0);
                 }
                 if (result0 === null) {
                   pos = pos0;
                 }
               }
-            }
-          }
-        }
-        
-        cache[cacheKey] = {
-          nextPos: pos,
-          result:  result0
-        };
-        return result0;
-      }
-      
-      function parse_PunctuationMark() {
-        var cacheKey = "PunctuationMark@" + pos;
-        var cachedResult = cache[cacheKey];
-        if (cachedResult) {
-          pos = cachedResult.nextPos;
-          return cachedResult.result;
-        }
-        
-        var result0, result1;
-        var pos0, pos1;
-        
-        if (input.charCodeAt(pos) === 59) {
-          result0 = ";";
-          pos++;
-        } else {
-          result0 = null;
-          if (reportFailures === 0) {
-            matchFailed("\";\"");
-          }
-        }
-        if (result0 === null) {
-          if (input.charCodeAt(pos) === 44) {
-            result0 = ",";
-            pos++;
-          } else {
-            result0 = null;
-            if (reportFailures === 0) {
-              matchFailed("\",\"");
-            }
-          }
-          if (result0 === null) {
-            pos0 = pos;
-            pos1 = pos;
-            result0 = parse_LiteralKeyword();
-            if (result0 !== null) {
-              result1 = (function(offset, name) {
-                    return metaVariables.literal.indexOf(name) >= 0;
-                  })(pos, result0) ? "" : null;
-              if (result1 !== null) {
-                result0 = [result0, result1];
-              } else {
-                result0 = null;
-                pos = pos1;
-              }
-            } else {
-              result0 = null;
-              pos = pos1;
-            }
-            if (result0 !== null) {
-              result0 = (function(offset, name) { return name; })(pos0, result0[0]);
-            }
-            if (result0 === null) {
-              pos = pos0;
             }
           }
         }
@@ -19888,7 +19672,6 @@ module.exports = (function(){
                               statement: [],
                               symbol: [],
                               literal: [] };  // メタ変数のリストを保持するオブジェクト
-        var identifierType = "";              // パターン中の識別子の種類を表す変数
       
         // ...が出現する要素の並びからリストを作る関数
         var makeElementsList = function (head, ellipsis, tail, elementIndex, ellipsisIndex) {

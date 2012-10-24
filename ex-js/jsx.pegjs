@@ -10,7 +10,6 @@
                         statement: [],
                         symbol: [],
                         literal: [] };  // メタ変数のリストを保持するオブジェクト
-  var identifierType = "";              // パターン中の識別子の種類を表す変数
 
   // ...が出現する要素の並びからリストを作る関数
   var makeElementsList = function (head, ellipsis, tail, elementIndex, ellipsisIndex) {
@@ -1842,45 +1841,32 @@ Pattern
   = ("_" / !"=>" Identifier) __ patterns:SubPatternList? { return patterns || []; }
 
 SubPatternList
-  = head:SubPattern middle:(__ (","/";")? __ SubPattern)*
-    ellipsis:(__ PunctuationMark? __ "...")? tail:(__ (","/";")? __ SubPattern)* __
-    semicolon: ";"? {
+  = head:SubPattern middle:(__ SubPattern)* ellipsis:(__ "...")? tail:(__ SubPattern)* {
         var result = [head];
         for (var i=0; i<middle.length; i++) {
-            if (middle[i][1])
-               result.push({ type: "PunctuationMark", value: middle[i][1] });
-            result.push(middle[i][3]);
+            result.push(middle[i][1]);
         }
         if (ellipsis) {
-           var last = result.pop();
-           var mark = ellipsis[1];
-           var elements = last;
-           if (!mark && last.type === "LiteralKeyword") {
-              var secondLast = result.pop();
-              if (secondLast.type === "RepBlock") {
-                  mark = last.name;
-//                 elements = secondLast.elements;
-                  elements = secondLast;
-              } else {
-                 result.push(secondLast);
-              }
-           } else if (last.type === "RepBlock")
-//             elements = last.elements;
-               ;
-           result.push({ type: "Repetition",
-                         elements: elements,
-                         punctuationMark: mark });
-           result.push({ type: "Ellipsis" });
+            var elements, mark=[];
+            for (var i=result.length-1; i>=0; i--) {
+                if (result[i].type === 'PunctuationMark') {
+                    mark.push(result.pop().value);
+                } else {
+                    elements = result.pop();
+                    break;
+                }
+            }
+            if (!elements) throw new Error("Bad ellipsis usage in macro definition.");
+            result.push({ type: "Repetition",
+                          elements: elements,
+                          punctuationMark: mark });
+            result.push({ type: "Ellipsis" });
         }
         for (var i=0; i<tail.length; i++) {
-            if (tail[i][1])
-               result.push({ type: "PunctuationMark", value: tail[i][1] });
-            result.push(tail[i][3]);
+            result.push(tail[i][1]);
         }
-        if (semicolon)
-           result.push({ type: "PunctuationMark", value: ";" });
         return result;
-     }
+    }
 
 SubPattern
   = "[#" __ patterns: SubPatternList __ "#]" {
@@ -1897,37 +1883,42 @@ SubPattern
        };
     }
   / Literal
-  / name:IdentifierName
-    &{ if (metaVariables.identifier.indexOf(name) >= 0) {
-           return identifierType = 'IdentifierVariable';
-       } else if (metaVariables.expression.indexOf(name) >= 0) {
-           return identifierType = 'ExpressionVariable';
-       } else if (metaVariables.statement.indexOf(name) >= 0) {
-           return identifierType = 'StatementVariable';
-       } else if (metaVariables.symbol.indexOf(name) >= 0) {
-           return identifierType = 'SymbolVariable';
-       } else if (metaVariables.literal.indexOf(name) >= 0) {
-           return identifierType = 'LiteralKeyword';
-       }
-    } {
-      return {
-          type: identifierType,
-          name: name
-      };                 
+  / name:IdentifierName {
+        var type;
+        if (metaVariables.identifier.indexOf(name) >= 0)
+           type = 'IdentifierVariable';
+        else if (metaVariables.expression.indexOf(name) >= 0)
+           type = 'ExpressionVariable';
+        else if (metaVariables.statement.indexOf(name) >= 0)
+           type = 'StatementVariable';
+        else if (metaVariables.symbol.indexOf(name) >= 0)
+           type = 'SymbolVariable';
+        else if (metaVariables.literal.indexOf(name) >= 0)
+           type = 'LiteralKeyword';
+        
+        if (type)
+           return {
+               type: type,
+               name: name
+           };
+        else
+           return {
+               type: "PunctuationMark",
+               value: name
+           };
     }
-  / punc:Punctuator {
-        return {
-           type: "Punctuator",
-           value: punc
-        };
+  / punc:(Punctuator / "," / ";") {
+        if (metaVariables.literal.indexOf(punc) >= 0)
+           return {
+               type: "LiteralKeyword",
+               name: punc
+           };
+        else
+           return {
+               type: "PunctuationMark",
+               value: punc
+           };
     }
-
-PunctuationMark
-  = ";"
-  / ","
-  / name:LiteralKeyword &{
-      return metaVariables.literal.indexOf(name) >= 0;
-    }{ return name; }
 
 Punctuator
   =  puncs:PunctuatorSymbol+ !{ return puncs.join("") === "=>"; } { return puncs.join(""); }
