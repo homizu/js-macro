@@ -1,4 +1,37 @@
-// let マクロの定義
+/*
+// 一引数のLetマクロ
+expression Let {
+    identifier: id;
+    expression: e, body;
+    literal: =;
+
+    { Let (id = e) { body } =>
+    
+      (function (id) { return body; })(e)
+    }
+}
+
+var a = Let (x = 3) { x * x };
+*/
+
+// 複数引数のLetマクロ
+expression Let {
+    identifier: id;
+    expression: e, body;
+    literal: =;
+    
+    { Let ([# id = e #], ...) { body } =>
+      
+      (function (id, ...) { return body; })(e, ...)
+    }
+}
+
+var a = Let (x = 3, y = 4) { x * y };
+
+//console.log(Let id1 = 1/3, id2 = 100E10
+//	    In id1+id2);
+
+/*// let マクロの定義
 expression let {
     statement: stmt;
     literal: var;
@@ -12,6 +45,7 @@ expression let {
         stmt ...
      })(expr, ...))}
 }
+*/
 /*
 var x = 100;
 
@@ -32,10 +66,11 @@ console.log(x);
 console.log(x);
 };
 */
+/*
 // let マクロの使用
 let (var id1=1/2 and id2=100E10) {
-    var result = id1 + id2;
     result = result * 2;
+    var result = id1 + id2;
     return result;
 }
 

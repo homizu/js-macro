@@ -3,11 +3,11 @@ expression let {
     identifier: id;
     expression: expr;
     statement: stmt;
-    literal: var, and;
+    literal: var;
 
     {let (var [#id=expr#] and ...) {
         stmt ...
-     } => ((function (id, ...) {
+    } => ((function (id, ...) {
         stmt ...
      })(expr, ...))}
     
@@ -21,6 +21,7 @@ expression or {
     {or() => false}
     {or(exp1) => exp1}
     {or(exp1, exp2, ...) => let (var temp = exp1) { return temp? temp : or(exp2, ...); }}
+    
 
 }
 

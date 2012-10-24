@@ -6,7 +6,8 @@ expression newobj {
     {newobj(proto, specs) =>
      ((function () {
          var new_obj = { __proto__ : proto };
-         for (var id in specs) new_obj[id] = specs[id];
+         var id;
+         for (id in specs) new_obj[id] = specs[id];
          return new_obj;
      })())}
 }
