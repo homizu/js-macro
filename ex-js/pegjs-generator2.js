@@ -21,13 +21,14 @@ module.exports = (function () {
                 mark: mark,
                 toCode: function (context) {
                     var template = context === 'template';
-                    var m = mark? '__ "' + mark + '" ' : '';
+                    var len = mark.length;
+                    var m = len>0 ? '__ "' + mark.join('" __ "') + '" ' : '';
                     return '(head:' + this.elements.toCode(context)
                         + '\n tail:(' + m + '__ ' + this.elements.toCode(context) + ')*\n'
                         + (template? 'ellipsis:(' + m + '__ "...")?\n' : '')
                         + '{ var elements = [head];\n'
                         + '  for (var i=0; i<tail.length; i++) {\n'
-                        + '    elements.push(tail[i][' + (m? 3 : 1) + ']);\n'
+                        + '    elements.push(tail[i][' + (len*2+1) +']);\n'
                         + '  }\n'
                         + (template? '  if (ellipsis) elements.push({ type: "Ellipsis" });\n' : '')
                         + '  return { type: "Repeat", elements: elements };\n'
@@ -108,14 +109,14 @@ module.exports = (function () {
             };
         }, 
 
-        // Punct (Punctuator, PunctuationMark)
-        punct: function(type, value) {
+        // PunctuationMark
+        punct: function(value) {
             return {
-                type: type,
+                type: 'PunctuationMark',
                 value: value,
                 toCode: function (context) {
                     return '("' + value + '"\n\
-{ return { type: "' + type + '", value: "' + value + '" }; })';
+{ return { type: "PunctuationMark", value: "' + value + '" }; })';
                 }
             };
         },
@@ -316,19 +317,11 @@ module.exports = (function () {
           }
         },
 
-        // Punctuator
-        { type: 'Punctuator',
-          isType: function(t) { return t === this.type; },
-          toPegObj: function(obj) {
-              return pegObj.punct(this.type, obj.value);
-          }
-        },
-
         // PunctuationMark
         { type: 'PunctuationMark',
           isType: function(t) { return t === this.type; },
           toPegObj: function(obj) {
-              return pegObj.punct(this.type, obj.value);
+              return pegObj.punct(obj.value);
           }
         },
 
@@ -439,9 +432,7 @@ module.exports = (function () {
                     return 'all';
                 return true;
             } else if (elements[i]) { // elements[i] は RepBlock, Brace, Paren, Bracket, Repetition のいずれか   
-//                console.log('delete recursive');
                 if (elements[i].type === 'Repetition') {
-//                    console.log('rep');
                     return delete1Node([elements[i].elements], 0);
                 }
                 else {
@@ -452,7 +443,6 @@ module.exports = (function () {
                 }
             }
         }
-//        console.log('delete false');
         return false;
     };
     
@@ -485,9 +475,7 @@ module.exports = (function () {
                     patterns.push(macro);
                     macros.push(macro.toCode('program'));
                 }
-/*                p = patterns[0];
-                console.log(p.toCode().length);
-*/
+
                 for (var j=0; j<patterns.length; j++) {
                     code = patterns[j].toCode('template');
                     if (macros.indexOf(code) < 0)
@@ -495,8 +483,9 @@ module.exports = (function () {
 
                     while (patterns[j].makeSuffix()) {
                         code = patterns[j].toCode('template');
-                        if (macros.indexOf(code) < 0)
-                            macros.push('(&{ return macroType; } ' + code + ')');
+                        if (macros.indexOf(code) < 0
+                            && macros.indexOf(code = '(&{ return macroType; } ' + code + ')') < 0 )
+                            macros.push(code);
                     }
                 }
                 
