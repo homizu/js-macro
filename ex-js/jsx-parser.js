@@ -17948,13 +17948,13 @@ module.exports = (function(){
         if (result0 === null) {
           pos0 = pos;
           pos1 = pos;
-          if (input.substr(pos, 7) === "literal") {
-            result0 = "literal";
+          if (input.substr(pos, 7) === "keyword") {
+            result0 = "keyword";
             pos += 7;
           } else {
             result0 = null;
             if (reportFailures === 0) {
-              matchFailed("\"literal\"");
+              matchFailed("\"keyword\"");
             }
           }
           if (result0 !== null) {

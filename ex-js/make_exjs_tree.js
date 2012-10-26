@@ -23,7 +23,7 @@
     var debug = true;
     var resultDir = 'converted/';
     var parserDir = './parsers/';
-    var jsxRevision = 2;
+    var jsxRevision = 3;
 
     var start, end; // 時間計測用変数
 
@@ -36,6 +36,14 @@
     var hash = function(peg_code, jsx_revision) {
         return crypto.createHash('sha1').update(peg_code).digest("hex") + jsx_revision;
     };
+    
+    var printErrorMessage = function (e) {
+        var m = "";
+        if (e instanceof SyntaxError)
+            m += "Line " + e.line + ", column " + e.column + ": ";
+        m += e.message + "\n";
+        console.log(m);
+    }
 
     if (argv.length === 3) {
         jsFile = argv[2];
@@ -64,7 +72,8 @@
                     end = new Date();
                     if (debug) console.log('Done.\nTime: %ds.', (end.getTime() - start.getTime()) / 1000);
                 } catch (e) {
-                    console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
+//                    console.log((e instanceof SyntaxError ? "Line " + e.line + ", column " + e.column + ": " : "") + e.message + "\n");
+                    printErrorMessage(e);
                     process.exit(1);
                 }
             }
@@ -80,7 +89,8 @@
                     end = new Date();
                     if (debug) console.log('Done.\nTime: %ds.\n%s', (end.getTime() - start.getTime()) / 1000, JSON.stringify(midtree, null, 2));
                 } catch(e) {
-                    console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
+//                    console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
+                    printErrorMessage(e);
                     process.exit(1);
                 }
 
@@ -121,7 +131,8 @@
                                                  if (debug) console.log('Done.');
                                              });
                             } catch (e) {
-                                console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
+//                                console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
+                                printErrorMessage(e);
                                 process.exit(1);
                             }
                         }
@@ -134,7 +145,8 @@
                             end = new Date();
                             if (debug) console.log('Done.\nTime: %ds.\n%s', (end.getTime() - start.getTime()) / 1000, JSON.stringify(tree, null, 2));
                         } catch(e) {
-                            console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
+//                            console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
+                            printErrorMessage(e);
                             process.exit(1);
                         }
                         

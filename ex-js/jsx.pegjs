@@ -1793,7 +1793,7 @@ MetaVariableDecralation
   = type:("identifier" / "expression" / "statement" / "symbol") __ ":" __ list:VariableList __ ";" { 
         metaVariables[type] = metaVariables[type].concat(list);
     }
-  / "literal" __ ":" __ list:LiteralKeywordList __ ";" {
+  / "keyword" __ ":" __ list:LiteralKeywordList __ ";" {
         metaVariables.literal = metaVariables.literal.concat(list);
     }
 
