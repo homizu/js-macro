@@ -16648,7 +16648,7 @@ module.exports = (function(){
                     if (!elements) throw new Error("Bad ellipsis usage in macro definition.");
                     result.push({ type: "Repetition",
                                   elements: elements,
-                                  punctuationMark: mark });
+                                  punctuationMark: mark.reverse() });
                     result.push({ type: "Ellipsis" });
                 }
                 for (var i=0; i<tail.length; i++) {
