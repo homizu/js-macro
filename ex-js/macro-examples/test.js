@@ -1,4 +1,4 @@
-statement some_macro {
+/*statement some_macro {
     identifier: x;
     { _ (x) => {
                  console.log(x);
@@ -22,16 +22,15 @@ var x = 200;
 some_macro(x)
 console.log(x);
 my_display;
-
-/*expression test {
+*/
+expression test {
     expression: e;
-    literal: and;
-    { test [# e #] and ... => console.log(e, ...) }
-    { test [# e #] => console.log(e) }
+    { test [e, ...] => console.log(e, ...) }
+    { test [a ...] => console.log() }
 }
 
-(test 1+1 and 2);
-*/
+(test [1+1, 2]);
+
 
 
 /*

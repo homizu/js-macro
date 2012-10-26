@@ -3,7 +3,7 @@ expression let {
     identifier: id;
     expression: expr;
     statement: stmt;
-    literal: var, and;
+    keyword: var, and;
 
     {let (var [#id = expr#] and ...) {
         stmt ...

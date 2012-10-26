@@ -1,6 +1,6 @@
 expression Append {
     expression: obj, c1, c2;
-    literal: to;
+    keyword: to;
     { _ to obj => obj }
     { _ c1, c2, ... to obj => Append c2 , ... to obj.append(c1) }
 }

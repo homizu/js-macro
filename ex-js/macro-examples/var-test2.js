@@ -22,3 +22,10 @@ S式への変換例
     var a_60_124 = 100;
     console.log(a_60_124); // 100
 })(1);
+
+if (condition) {
+  var x = 1;
+  do_something;
+} else {
+  do_something;
+}

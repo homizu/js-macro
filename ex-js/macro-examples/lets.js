@@ -1,6 +1,6 @@
 expression Let {
     identifier: id;
-    literal: In;
+    keyword: In;
     expression: e, M;
 
     { Let [# id = e #] and ... In M =>
@@ -10,7 +10,7 @@ expression Let {
 
 expression Lets {
     identifier: id1, id2;
-    literal: In;
+    keyword: In;
     expression: e1, e2, M;
     
     { Lets [# id1 = e1 #] and [# id2 = e2 #] and ... In M =>

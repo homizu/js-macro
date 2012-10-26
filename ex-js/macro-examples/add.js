@@ -1,6 +1,6 @@
 expression Append {
     expression: obj, c1, c2;
-    literal: to;
+    keyword: to;
     { _ [] to obj => obj }
     { _ [c1, c2, ...] to obj => Append [c2, ...] to obj.append(c1) }
 }
@@ -9,11 +9,12 @@ var $body = Append [$title, $menu, $main] to $('body');
 
 expression Add {
     expression: obj, c1, c2;
-    { _ obj <- [] => obj }
-    { _ obj <- [c1, c2, ...] => Add obj.append(c1) <- [c2, ...] }
+    keyword: to;
+    { _ obj to [] => obj }
+    { _ obj to [c1, c2, ...] => Add obj.append(c1) to [c2, ...] }
 }
 
-var $body2 = Add $('body') <- [$title, $menu, $main];
+var $body2 = Add $('body') to [$title, $menu, $main];
 
 /*
 expression add {

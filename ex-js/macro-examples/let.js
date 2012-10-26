@@ -3,7 +3,7 @@
 expression Let {
     identifier: id;
     expression: e, body;
-    literal: =;
+    keyword: =;
 
     { Let (id = e) { body } =>
     
@@ -18,7 +18,7 @@ var a = Let (x = 3) { x * x };
 expression Let {
     identifier: id;
     expression: e, body;
-    literal: =;
+    keyword: =;
     
     { Let ([# id = e #], ...) { body } =>
       
@@ -36,7 +36,7 @@ expression let {
     statement: stmt;
     literal: var;
     identifier: id;
-    literal: and;
+    keyword: and;
     expression: expr;
 
     {let (var [#id = expr#] and ...) {
@@ -84,7 +84,7 @@ expression let2 {
     identifier: id;
     expression: expr;
     statement: stmt;
-    literal: var, and;
+    keyword: var, and;
 
     {let2 [#id = expr#] and ...{
         stmt ...

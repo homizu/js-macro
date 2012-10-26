@@ -3,7 +3,7 @@ statement block {
     identifier: id;
     expression: expr;
     statement: stmt;
-    literal: var;
+    keyword: var;
     
     {block {
        [#var [# id = expr ; #] ...#]
