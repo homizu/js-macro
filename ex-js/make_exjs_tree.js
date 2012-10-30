@@ -39,7 +39,7 @@
     
     var printErrorMessage = function (e) {
         var m = "";
-        if (e instanceof SyntaxError)
+        if (e instanceof parser.SyntaxError)
             m += "Line " + e.line + ", column " + e.column + ": ";
         m += e.message + "\n";
         console.log(m);
