@@ -121,15 +121,6 @@
                                 parser = PEG.buildParser(grammar, { cache: true });
                                 end = new Date();
                                 if (debug) console.log('Done.\nTime: %ds.\n', (end.getTime() - start.getTime()) / 1000);
-
-                                // write a parser code
-                                if (debug) console.log('Writing a parser file ...');
-                                fs.writeFile(parserFile,
-                                             'module.exports = ' + parser.toSource() + ';',
-                                             function(err) {
-                                                 if (err) throw err;
-                                                 if (debug) console.log('Done.');
-                                             });
                             } catch (e) {
 //                                console.log("Line " + e.line + ", column " + e.column + ": " + e.message + "\n");
                                 printErrorMessage(e);
@@ -167,18 +158,27 @@
                                          if (err) throw err;
                                          if (debug) console.log('Done.');
                                      });
-
-                        
-                        
                         
                         // write a tree
                         if (debug) console.log('Writing a tree file ...');
                         fs.writeFile(treeFile,
                                      JSON.stringify(tree, null, 2),
                                      function(err) {
-                                 if (err) throw err;
+                                         if (err) throw err;
                                          if (debug) console.log('Done.');
                                      });
+
+                        // write a parser code
+                        if (!file) {
+                            if (debug) console.log('Writing a parser file ...');
+                            fs.writeFile(parserFile,
+                                         'module.exports = ' + parser.toSource() + ';',
+                                         function(err) {
+                                             if (err) throw err;
+                                             if (debug) console.log('Done.');
+                                         });
+                        }
+                        
                     });
                 });
                         
