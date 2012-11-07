@@ -16908,6 +16908,17 @@ module.exports = (function(){
                         matchFailed("\";\"");
                       }
                     }
+                    if (result0 === null) {
+                      if (input.charCodeAt(pos) === 124) {
+                        result0 = "|";
+                        pos++;
+                      } else {
+                        result0 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\"|\"");
+                        }
+                      }
+                    }
                   }
                 }
                 if (result0 !== null) {
@@ -17088,13 +17099,13 @@ module.exports = (function(){
                           }
                         }
                         if (result0 === null) {
-                          if (input.charCodeAt(pos) === 124) {
-                            result0 = "|";
+                          if (input.charCodeAt(pos) === 47) {
+                            result0 = "/";
                             pos++;
                           } else {
                             result0 = null;
                             if (reportFailures === 0) {
-                              matchFailed("\"|\"");
+                              matchFailed("\"/\"");
                             }
                           }
                           if (result0 === null) {

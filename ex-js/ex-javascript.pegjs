@@ -1692,7 +1692,7 @@ SubPattern
                value: name
            };
     }
-  / punc:(Punctuator / "," / ";") {
+  / punc:(Punctuator / "," / ";" / "|") {
         if (metaVariables.literal.indexOf(punc) >= 0)
            return {
                type: "LiteralKeyword",
@@ -1710,7 +1710,7 @@ Punctuator
 
 PunctuatorSymbol
   = "<" / ">" / "=" / "!" / "+"
-  / "-" / "*" / "%" / "&" / "|"
+  / "-" / "*" / "%" / "&" / "/"
   / "^" / "!" / "~" / "?" / ":"
 
 // テンプレート(パーザー拡張前)
