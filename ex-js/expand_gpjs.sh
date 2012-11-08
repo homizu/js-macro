@@ -13,7 +13,7 @@ converted_dir=$dir/converted
 base=`basename -s .js $input_js`
 treefile=$converted_dir/$base.tree
 sformfile=$converted_dir/$base-sform.scm
-expandedfile=$converted_dir/$base-expanded.js
+expandedfile=$converted_dir/$base-expanded.*
 
 time ./make_exjs_tree.js $input_js &&
 time ./convert-json-simple.scm $treefile &&
