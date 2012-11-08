@@ -202,36 +202,27 @@ FutureReservedWord
  * This rule contains an error in the specification: |RegularExpressionLiteral|
  * is missing.
  */
-Literal
+Literal // changed
   = NullLiteral
   / BooleanLiteral
-  / value:NumericLiteral {
-      return {
-        type:  "NumericLiteral",
-        value: value
-      };
-    }
-  / value:StringLiteral {
-      return {
-        type:  "StringLiteral",
-        value: value
-      };
-    }
+  / NumericLiteral
+  / StringLiteral
   / RegularExpressionLiteral
 
 NullLiteral
   = NullToken { return { type: "NullLiteral" }; }
 
-BooleanLiteral
+BooleanLiteral // changed
   = TrueToken  { return { type: "BooleanLiteral", value: "true"  }; }
   / FalseToken { return { type: "BooleanLiteral", value: "false" }; }
 
-NumericLiteral "number"
+NumericLiteral "number" // changed
   = literal:(HexIntegerLiteral / DecimalLiteral) !IdentifierStart {
-      return literal;
+      return { type: "NumericLiteral",
+               value: literal };
     }
 
-DecimalLiteral
+DecimalLiteral // changed
   = before:DecimalIntegerLiteral
     "."
     after:DecimalDigits?
@@ -268,7 +259,7 @@ ExponentIndicator
 SignedInteger
   = sign:[-+]? digits:DecimalDigits { return sign + digits; }
 
-HexIntegerLiteral
+HexIntegerLiteral // changed
   = "0" [xX] digits:HexDigit+ { 
       return "0x" + digits.join("");
     }
@@ -276,9 +267,10 @@ HexIntegerLiteral
 HexDigit
   = [0-9a-fA-F]
 
-StringLiteral "string"
+StringLiteral "string" // changed
   = parts:('"' DoubleStringCharacters? '"' / "'" SingleStringCharacters? "'") {
-      return parts[1];
+      return { type: "StringLiteral",
+               value: parts[1] };
     }
 
 DoubleStringCharacters
@@ -584,8 +576,8 @@ PropertyAssignment
       };
     }
 
-PropertyName
-  = IdentifierName
+PropertyName // changed
+  = name:IdentifierName { return { type: "Variable", name: name }; }
   / StringLiteral
   / NumericLiteral
 
@@ -1692,7 +1684,7 @@ SubPattern
                value: name
            };
     }
-  / punc:(Punctuator / "," / ";") {
+  / punc:(Punctuator / "," / ";" / "|") {
         if (metaVariables.literal.indexOf(punc) >= 0)
            return {
                type: "LiteralKeyword",
@@ -1710,7 +1702,7 @@ Punctuator
 
 PunctuatorSymbol
   = "<" / ">" / "=" / "!" / "+"
-  / "-" / "*" / "%" / "&" / "|"
+  / "-" / "*" / "%" / "&" / "/"
   / "^" / "!" / "~" / "?" / ":"
 
 // テンプレート(パーザー拡張前)

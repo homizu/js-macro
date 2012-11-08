@@ -1606,11 +1606,24 @@ Keyword
     )
     !IdentifierPart
 
-BooleanLiteral //changed
+Literal // changed
+  = NullLiteral
+  / BooleanLiteral
+  / NumericLiteral
+  / StringLiteral
+  / RegularExpressionLiteral
+
+BooleanLiteral // changed
   = TrueToken  { return { type: "BooleanLiteral", value: "true"  }; }
   / FalseToken { return { type: "BooleanLiteral", value: "false" }; }
 
-DecimalLiteral //changed
+NumericLiteral "number" // changed
+  = literal:(HexIntegerLiteral / DecimalLiteral) !IdentifierStart {
+      return { type: "NumericLiteral",
+               value: literal };
+    }
+
+DecimalLiteral // changed
   = before:DecimalIntegerLiteral
     "."
     after:DecimalDigits?
@@ -1627,6 +1640,12 @@ DecimalLiteral //changed
 HexIntegerLiteral //changed
   = "0" [xX] digits:HexDigit+ { 
       return "0x" + digits.join("");
+    }
+
+StringLiteral "string" // changed
+  = parts:('"' DoubleStringCharacters? '"' / "'" SingleStringCharacters? "'") {
+      return { type: "StringLiteral",
+               value: parts[1] };
     }
 
 RegularExpressionLiteral "regular expression" //changed
@@ -1649,6 +1668,11 @@ PropertyNameAndValueList // changed
     tail:(__ "," __ PropertyAssignment CommaEllipsis?)* {
         return makeElementsList(head, ellipsis, tail, 3, 4);
     }
+
+PropertyName // changed
+  = name:IdentifierName { return { type: "Variable", name: name }; }
+  / StringLiteral
+  / NumericLiteral
 
 ArgumentList // changed
   = head:AssignmentExpression ellipsis:CommaEllipsis?
@@ -1907,7 +1931,7 @@ SubPattern
                value: name
            };
     }
-  / punc:(Punctuator / "," / ";") {
+  / punc:(Punctuator / "," / ";" / "|") {
         if (metaVariables.literal.indexOf(punc) >= 0)
            return {
                type: "LiteralKeyword",
@@ -1925,7 +1949,7 @@ Punctuator
 
 PunctuatorSymbol
   = "<" / ">" / "=" / "!" / "+"
-  / "-" / "*" / "%" / "&" / "|"
+  / "-" / "*" / "%" / "&" / "/"
   / "^" / "!" / "~" / "?" / ":"
 
 // テンプレート(パーザー拡張前)

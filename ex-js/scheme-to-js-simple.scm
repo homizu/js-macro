@@ -87,17 +87,22 @@
   #t)
 
 (define (do-propAssign e)
-  (bformat "~a: " (car e))
+  (s2j (car e))
+  (bformat ": ")
   (s2j (cadr e))
   #t)
 
 (define (do-getter e)
-  (bformat "get ~a() " (car e))
+  (bformat "get ")
+  (s2j (car e))
+  (bformat "() ")
   (do-block (cdr e))
   #t)
 
 (define (do-setter e)
-  (bformat "set ~a(~a) " (car e) (cadr e))
+  (bformat "set ")
+  (s2j (car e))
+  (bformat "(~a) " (cadr e))
   (do-block (cddr e))
   #t)
 
