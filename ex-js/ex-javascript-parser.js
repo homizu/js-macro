@@ -1692,39 +1692,14 @@ module.exports = (function(){
         }
         
         var result0;
-        var pos0;
         
         result0 = parse_NullLiteral();
         if (result0 === null) {
           result0 = parse_BooleanLiteral();
           if (result0 === null) {
-            pos0 = pos;
             result0 = parse_NumericLiteral();
-            if (result0 !== null) {
-              result0 = (function(offset, value) {
-                  return {
-                    type:  "NumericLiteral",
-                    value: value
-                  };
-                })(pos0, result0);
-            }
             if (result0 === null) {
-              pos = pos0;
-            }
-            if (result0 === null) {
-              pos0 = pos;
               result0 = parse_StringLiteral();
-              if (result0 !== null) {
-                result0 = (function(offset, value) {
-                    return {
-                      type:  "StringLiteral",
-                      value: value
-                    };
-                  })(pos0, result0);
-              }
-              if (result0 === null) {
-                pos = pos0;
-              }
               if (result0 === null) {
                 result0 = parse_RegularExpressionLiteral();
               }
@@ -1844,7 +1819,8 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, literal) {
-              return literal;
+              return { type: "NumericLiteral",
+                       value: literal };
             })(pos0, result0[0]);
         }
         if (result0 === null) {
@@ -2443,7 +2419,8 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, parts) {
-              return parts[1];
+              return { type: "StringLiteral",
+                       value: parts[1] };
             })(pos0, result0);
         }
         if (result0 === null) {
@@ -7229,8 +7206,16 @@ module.exports = (function(){
         }
         
         var result0;
+        var pos0;
         
+        pos0 = pos;
         result0 = parse_IdentifierName();
+        if (result0 !== null) {
+          result0 = (function(offset, name) { return { type: "Variable", name: name }; })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
         if (result0 === null) {
           result0 = parse_StringLiteral();
           if (result0 === null) {

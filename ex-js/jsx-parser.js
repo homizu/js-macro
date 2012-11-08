@@ -235,12 +235,16 @@ module.exports = (function(){
         "Kanji": parse_Kanji,
         "UnicodeLetter": parse_UnicodeLetter,
         "Keyword": parse_Keyword,
+        "Literal": parse_Literal,
         "BooleanLiteral": parse_BooleanLiteral,
+        "NumericLiteral": parse_NumericLiteral,
         "DecimalLiteral": parse_DecimalLiteral,
         "HexIntegerLiteral": parse_HexIntegerLiteral,
+        "StringLiteral": parse_StringLiteral,
         "RegularExpressionLiteral": parse_RegularExpressionLiteral,
         "ElementList": parse_ElementList,
         "PropertyNameAndValueList": parse_PropertyNameAndValueList,
+        "PropertyName": parse_PropertyName,
         "ArgumentList": parse_ArgumentList,
         "AssignmentExpression": parse_AssignmentExpression,
         "Expression": parse_Expression,
@@ -15494,6 +15498,37 @@ module.exports = (function(){
         return result0;
       }
       
+      function parse_Literal() {
+        var cacheKey = "Literal@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0;
+        
+        result0 = parse_NullLiteral();
+        if (result0 === null) {
+          result0 = parse_BooleanLiteral();
+          if (result0 === null) {
+            result0 = parse_NumericLiteral();
+            if (result0 === null) {
+              result0 = parse_StringLiteral();
+              if (result0 === null) {
+                result0 = parse_RegularExpressionLiteral();
+              }
+            }
+          }
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
       function parse_BooleanLiteral() {
         var cacheKey = "BooleanLiteral@" + pos;
         var cachedResult = cache[cacheKey];
@@ -15522,6 +15557,66 @@ module.exports = (function(){
           if (result0 === null) {
             pos = pos0;
           }
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_NumericLiteral() {
+        var cacheKey = "NumericLiteral@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0, result1;
+        var pos0, pos1, pos2;
+        
+        reportFailures++;
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_HexIntegerLiteral();
+        if (result0 === null) {
+          result0 = parse_DecimalLiteral();
+        }
+        if (result0 !== null) {
+          pos2 = pos;
+          reportFailures++;
+          result1 = parse_IdentifierStart();
+          reportFailures--;
+          if (result1 === null) {
+            result1 = "";
+          } else {
+            result1 = null;
+            pos = pos2;
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, literal) {
+              return { type: "NumericLiteral",
+                       value: literal };
+            })(pos0, result0[0]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("number");
         }
         
         cache[cacheKey] = {
@@ -15725,6 +15820,116 @@ module.exports = (function(){
         }
         if (result0 === null) {
           pos = pos0;
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_StringLiteral() {
+        var cacheKey = "StringLiteral@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2;
+        var pos0, pos1;
+        
+        reportFailures++;
+        pos0 = pos;
+        pos1 = pos;
+        if (input.charCodeAt(pos) === 34) {
+          result0 = "\"";
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"\\\"\"");
+          }
+        }
+        if (result0 !== null) {
+          result1 = parse_DoubleStringCharacters();
+          result1 = result1 !== null ? result1 : "";
+          if (result1 !== null) {
+            if (input.charCodeAt(pos) === 34) {
+              result2 = "\"";
+              pos++;
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"\\\"\"");
+              }
+            }
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 === null) {
+          pos1 = pos;
+          if (input.charCodeAt(pos) === 39) {
+            result0 = "'";
+            pos++;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"'\"");
+            }
+          }
+          if (result0 !== null) {
+            result1 = parse_SingleStringCharacters();
+            result1 = result1 !== null ? result1 : "";
+            if (result1 !== null) {
+              if (input.charCodeAt(pos) === 39) {
+                result2 = "'";
+                pos++;
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"'\"");
+                }
+              }
+              if (result2 !== null) {
+                result0 = [result0, result1, result2];
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, parts) {
+              return { type: "StringLiteral",
+                       value: parts[1] };
+            })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("string");
         }
         
         cache[cacheKey] = {
@@ -16117,6 +16322,39 @@ module.exports = (function(){
         }
         if (result0 === null) {
           pos = pos0;
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_PropertyName() {
+        var cacheKey = "PropertyName@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_IdentifierName();
+        if (result0 !== null) {
+          result0 = (function(offset, name) { return { type: "Variable", name: name }; })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          result0 = parse_StringLiteral();
+          if (result0 === null) {
+            result0 = parse_NumericLiteral();
+          }
         }
         
         cache[cacheKey] = {
