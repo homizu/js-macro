@@ -23,13 +23,15 @@ some_macro(x)
 console.log(x);
 my_display;
 */
-expression test {
+
+$(function () {
+expression test{
     expression: e;
-    { test [e, ...] => console.log(e, ...) }
-    { test [a ...] => console.log() }
+    { test[e,...] => console.log(e, ...) }
 }
 
 (test [1+1, 2]);
+});
 
 
 

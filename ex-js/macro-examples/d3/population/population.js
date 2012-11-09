@@ -130,6 +130,5 @@ $(function () {
 
         redraw();
 
-        
     });
 });

@@ -8,7 +8,7 @@
 #lang racket/load
 (require (planet dherman/json:4:=0))
 (require racket/pretty)
-(load "common.scm")
+(load "/Users/homizu8/Dropbox/m-research/macro/pegjs/ex-js/common.scm")
 
 (define debug #t) ;; 結果を表示するかどうか
 (define (open-output-port output)
