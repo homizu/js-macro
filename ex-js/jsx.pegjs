@@ -1727,7 +1727,7 @@ ExpressionNoIn // changed  // for in で使う
       return result;
     }
 
-Statement  
+Statement // changed
   = MacroStatement       // added
   / Block
   / VariableStatement
@@ -1738,7 +1738,6 @@ Statement
   / ContinueStatement
   / BreakStatement
   / ReturnStatement
-  / WithStatement
   / LabelledStatement
   / SwitchStatement
   / ThrowStatement
@@ -1765,6 +1764,43 @@ VariableDeclarationListNoIn // changed
   = head:VariableDeclarationNoIn ellipsis:CommaEllipsis?
     tail:(__ "," __ VariableDeclarationNoIn CommaEllipsis?)* {
       return makeElementsList(head, ellipsis, tail, 3, 4);
+    }
+
+ForStatement
+  = ForToken __
+    "(" __
+    initializer:ExpressionNoIn? __
+    ";" __
+    test:Expression? __
+    ";" __
+    counter:Expression? __
+    ")" __
+    statement:Statement
+    {
+      return {
+        type:        "ForStatement",
+        initializer: initializer !== "" ? initializer : null,
+        test:        test !== "" ? test : null,
+        counter:     counter !== "" ? counter : null,
+        statement:   statement
+      };
+    }
+
+ForInStatement
+  = ForToken __
+    "(" __
+    iterator:LeftHandSideExpression __
+    InToken __
+    collection:Expression __
+    ")" __
+    statement:Statement
+    {
+      return {
+        type:       "ForInStatement",
+        iterator:   iterator,
+        collection: collection,
+        statement:  statement
+      };
     }
 
 FunctionDeclaration // changed
