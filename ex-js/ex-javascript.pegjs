@@ -1148,7 +1148,6 @@ Statement
   / ContinueStatement
   / BreakStatement
   / ReturnStatement
-  / WithStatement
   / LabelledStatement
   / SwitchStatement
   / ThrowStatement
@@ -1265,15 +1264,7 @@ WhileStatement
 ForStatement
   = ForToken __
     "(" __
-    initializer:(
-        VarToken __ declarations:VariableDeclarationListNoIn {
-          return {
-            type:         "VariableStatement",
-            declarations: declarations
-          };
-        }
-      / ExpressionNoIn?
-    ) __
+    initializer:ExpressionNoIn? __
     ";" __
     test:Expression? __
     ";" __
@@ -1293,10 +1284,7 @@ ForStatement
 ForInStatement
   = ForToken __
     "(" __
-    iterator:(
-        VarToken __ declaration:VariableDeclarationNoIn { return declaration; }
-      / LeftHandSideExpression
-    ) __
+    iterator:LeftHandSideExpression __
     InToken __
     collection:Expression __
     ")" __
@@ -1343,15 +1331,6 @@ ReturnStatement
       return {
         type:  "ReturnStatement",
         value: value !== "" ? value : null
-      };
-    }
-
-WithStatement
-  = WithToken __ "(" __ environment:Expression __ ")" __ statement:Statement {
-      return {
-        type:        "WithStatement",
-        environment: environment,
-        statement:   statement
       };
     }
 

@@ -20,11 +20,11 @@ expression or {
     
     {or() => false}
     {or(exp1) => exp1}
-    {or(exp1 and more exp2 and more ...) => let (var temp = exp1) { return temp? temp : or(exp2 and more ...); }}
+    {or(exp1 & exp2 & ...) => let (var temp = exp1) { return temp? temp : or(exp2 & ...); }}
     
 
 }
 
 let (var or = false and temp = 'okay') {
-    return or(or and more temp and more 1);
+    return or(or & temp & 1);
 }

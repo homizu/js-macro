@@ -8,6 +8,15 @@ expression Let {
     }
 }
 
+expression Lets {
+    identifier: id1, id2;
+    literal: and, In;
+    expression: e1, e2, M;
+    
+    { Lets id1 = e1 and [# id2 = e2 #] and ... In M =>
+      (function (id1) { return (Lets id2 = e2 and ... In M); })(e2) }
+}
+
 var $div = $('#demo-area');
 var small = Number.MIN_VALUE;
 

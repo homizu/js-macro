@@ -7,8 +7,8 @@
 
 (import (pregexp))
 (import (time))
-(load "./common.scm")
-(load "./scheme-to-js-simple.scm")
+(load "common.scm")
+(load "scheme-to-js-simple.scm")
 
 (define debug #t) ;; 結果を表示するかどうか
 (define regexp-replace pregexp-replace) ;; racketとの互換性をもたせる

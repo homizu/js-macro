@@ -219,7 +219,6 @@ module.exports = (function(){
         "ContinueStatement": parse_ContinueStatement,
         "BreakStatement": parse_BreakStatement,
         "ReturnStatement": parse_ReturnStatement,
-        "WithStatement": parse_WithStatement,
         "SwitchStatement": parse_SwitchStatement,
         "CaseBlock": parse_CaseBlock,
         "CaseClauses": parse_CaseClauses,
@@ -12023,26 +12022,23 @@ module.exports = (function(){
                         if (result0 === null) {
                           result0 = parse_ReturnStatement();
                           if (result0 === null) {
-                            result0 = parse_WithStatement();
+                            result0 = parse_LabelledStatement();
                             if (result0 === null) {
-                              result0 = parse_LabelledStatement();
+                              result0 = parse_SwitchStatement();
                               if (result0 === null) {
-                                result0 = parse_SwitchStatement();
+                                result0 = parse_ThrowStatement();
                                 if (result0 === null) {
-                                  result0 = parse_ThrowStatement();
+                                  result0 = parse_TryStatement();
                                   if (result0 === null) {
-                                    result0 = parse_TryStatement();
+                                    result0 = parse_DebuggerStatement();
                                     if (result0 === null) {
-                                      result0 = parse_DebuggerStatement();
+                                      result0 = parse_MacroDefinition();
                                       if (result0 === null) {
-                                        result0 = parse_MacroDefinition();
+                                        result0 = parse_FunctionDeclaration();
                                         if (result0 === null) {
-                                          result0 = parse_FunctionDeclaration();
+                                          result0 = parse_FunctionExpression();
                                           if (result0 === null) {
-                                            result0 = parse_FunctionExpression();
-                                            if (result0 === null) {
-                                              result0 = parse_CharacterStatement();
-                                            }
+                                            result0 = parse_CharacterStatement();
                                           }
                                         }
                                       }
@@ -13336,7 +13332,7 @@ module.exports = (function(){
         }
         
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14, result15, result16;
-        var pos0, pos1, pos2, pos3;
+        var pos0, pos1;
         
         pos0 = pos;
         pos1 = pos;
@@ -13356,42 +13352,8 @@ module.exports = (function(){
             if (result2 !== null) {
               result3 = parse___();
               if (result3 !== null) {
-                pos2 = pos;
-                pos3 = pos;
-                result4 = parse_VarToken();
-                if (result4 !== null) {
-                  result5 = parse___();
-                  if (result5 !== null) {
-                    result6 = parse_VariableDeclarationListNoIn();
-                    if (result6 !== null) {
-                      result4 = [result4, result5, result6];
-                    } else {
-                      result4 = null;
-                      pos = pos3;
-                    }
-                  } else {
-                    result4 = null;
-                    pos = pos3;
-                  }
-                } else {
-                  result4 = null;
-                  pos = pos3;
-                }
-                if (result4 !== null) {
-                  result4 = (function(offset, declarations) {
-                          return {
-                            type:         "VariableStatement",
-                            declarations: declarations
-                          };
-                        })(pos2, result4[2]);
-                }
-                if (result4 === null) {
-                  pos = pos2;
-                }
-                if (result4 === null) {
-                  result4 = parse_ExpressionNoIn();
-                  result4 = result4 !== null ? result4 : "";
-                }
+                result4 = parse_ExpressionNoIn();
+                result4 = result4 !== null ? result4 : "";
                 if (result4 !== null) {
                   result5 = parse___();
                   if (result5 !== null) {
@@ -13543,7 +13505,7 @@ module.exports = (function(){
         }
         
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12;
-        var pos0, pos1, pos2, pos3;
+        var pos0, pos1;
         
         pos0 = pos;
         pos1 = pos;
@@ -13563,36 +13525,7 @@ module.exports = (function(){
             if (result2 !== null) {
               result3 = parse___();
               if (result3 !== null) {
-                pos2 = pos;
-                pos3 = pos;
-                result4 = parse_VarToken();
-                if (result4 !== null) {
-                  result5 = parse___();
-                  if (result5 !== null) {
-                    result6 = parse_VariableDeclarationNoIn();
-                    if (result6 !== null) {
-                      result4 = [result4, result5, result6];
-                    } else {
-                      result4 = null;
-                      pos = pos3;
-                    }
-                  } else {
-                    result4 = null;
-                    pos = pos3;
-                  }
-                } else {
-                  result4 = null;
-                  pos = pos3;
-                }
-                if (result4 !== null) {
-                  result4 = (function(offset, declaration) { return declaration; })(pos2, result4[2]);
-                }
-                if (result4 === null) {
-                  pos = pos2;
-                }
-                if (result4 === null) {
-                  result4 = parse_LeftHandSideExpression();
-                }
+                result4 = parse_LeftHandSideExpression();
                 if (result4 !== null) {
                   result5 = parse___();
                   if (result5 !== null) {
@@ -13923,110 +13856,6 @@ module.exports = (function(){
                 value: value !== "" ? value : null
               };
             })(pos0, result0[2]);
-        }
-        if (result0 === null) {
-          pos = pos0;
-        }
-        
-        cache[cacheKey] = {
-          nextPos: pos,
-          result:  result0
-        };
-        return result0;
-      }
-      
-      function parse_WithStatement() {
-        var cacheKey = "WithStatement@" + pos;
-        var cachedResult = cache[cacheKey];
-        if (cachedResult) {
-          pos = cachedResult.nextPos;
-          return cachedResult.result;
-        }
-        
-        var result0, result1, result2, result3, result4, result5, result6, result7, result8;
-        var pos0, pos1;
-        
-        pos0 = pos;
-        pos1 = pos;
-        result0 = parse_WithToken();
-        if (result0 !== null) {
-          result1 = parse___();
-          if (result1 !== null) {
-            if (input.charCodeAt(pos) === 40) {
-              result2 = "(";
-              pos++;
-            } else {
-              result2 = null;
-              if (reportFailures === 0) {
-                matchFailed("\"(\"");
-              }
-            }
-            if (result2 !== null) {
-              result3 = parse___();
-              if (result3 !== null) {
-                result4 = parse_Expression();
-                if (result4 !== null) {
-                  result5 = parse___();
-                  if (result5 !== null) {
-                    if (input.charCodeAt(pos) === 41) {
-                      result6 = ")";
-                      pos++;
-                    } else {
-                      result6 = null;
-                      if (reportFailures === 0) {
-                        matchFailed("\")\"");
-                      }
-                    }
-                    if (result6 !== null) {
-                      result7 = parse___();
-                      if (result7 !== null) {
-                        result8 = parse_Statement();
-                        if (result8 !== null) {
-                          result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8];
-                        } else {
-                          result0 = null;
-                          pos = pos1;
-                        }
-                      } else {
-                        result0 = null;
-                        pos = pos1;
-                      }
-                    } else {
-                      result0 = null;
-                      pos = pos1;
-                    }
-                  } else {
-                    result0 = null;
-                    pos = pos1;
-                  }
-                } else {
-                  result0 = null;
-                  pos = pos1;
-                }
-              } else {
-                result0 = null;
-                pos = pos1;
-              }
-            } else {
-              result0 = null;
-              pos = pos1;
-            }
-          } else {
-            result0 = null;
-            pos = pos1;
-          }
-        } else {
-          result0 = null;
-          pos = pos1;
-        }
-        if (result0 !== null) {
-          result0 = (function(offset, environment, statement) {
-              return {
-                type:        "WithStatement",
-                environment: environment,
-                statement:   statement
-              };
-            })(pos0, result0[4], result0[8]);
         }
         if (result0 === null) {
           pos = pos0;

@@ -1,9 +1,9 @@
 expression Append {
-    expression: obj, c1, c2;
+    expression: dom, c1, c2;
     keyword: to;
-    { _ to obj => obj }
-    { _ c1, c2, ... to obj => Append c2 , ... to obj.append(c1) }
+    { _ to dom => dom }
+    { _ c1, c2, ... to dom => Append c2 , ... to dom.append(c1) }
 }
 
-var $body = Append $title, $menu, $main to $('body');
+var pageBody = Append title, menu, main to jQuery('body');
 

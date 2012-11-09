@@ -21,8 +21,8 @@ expression Let {
     keyword: =;
     
     { Let ([# id = e #], ...) { body } =>
-      
-      (function (id, ...) { return body; })(e, ...)
+        [[id, e], ...]
+//      (function (id, ...) { return body; })(e, ...)
     }
 }
 
