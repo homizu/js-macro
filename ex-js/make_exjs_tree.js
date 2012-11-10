@@ -14,15 +14,15 @@
     var crypto = require('crypto');
     var path = require('path');
     var PEG = require('pegjs');
-    var generator = require('./pegjs-generator2');
-    var parser = require('./ex-javascript-parser');
-    //var parser = require('./jsx-parser');
+    var generator = require('pegjs-generator2');
+    var parser = require('ex-javascript-parser');
+    //var parser = require('jsx-parser');
 
-    var grammarFile = './ex-javascript.pegjs';
-    //var grammarFile = './jsx.pegjs';
+    var grammarFile = process.env.JSX + '/ex-javascript.pegjs';
+    //var grammarFile = 'jsx.pegjs';
     var debug = true;
     var resultDir = 'converted/';
-    var parserDir = './parsers/';
+    var parserDir = process.env.JSX + '/parsers/';
     var jsxRevision = 5;
 
     var start, end; // 時間計測用変数

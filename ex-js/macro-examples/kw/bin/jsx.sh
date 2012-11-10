@@ -1,16 +1,26 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-PATH=$HOME/Software/bin:$PATH
-cwd=`pwd`
-root=$cwd
-module=`basename $root`
-while [ `basename $root` != "ex-js" ]; do root=`dirname $root`; done
+# JSX environment varialbe should point to the path of the "ex-js" directory
+# export JSX=$HOME/research/projects/jsx-homizu/ex-js
+export NODE_PATH=/usr/local/lib/node_modules:$JSX
 
-cd $root
+if [ ! $# -eq 1 ]
+then
+    echo "Expected 1 argument, but got $# arguments"
+    exit 1
+fi
 
-./expand_gpjs.sh $cwd/$module.js &&
-    chmod 644 $cwd/converted/$module-expanded.js
-mv $cwd/converted/$module-expanded.js $cwd/converted/$module.js
+input_js=$1
 
-#./expand_gpjs.sh macro-examples/kw/$module/$module.js && \
-#    chmod 644 macro-examples/kw/$module/converted/$module-expanded.js
+dir=`dirname $input_js`
+converted_dir=$dir/converted
+base=`basename -s .js $input_js`
+treefile=$converted_dir/$base.tree
+sformfile=$converted_dir/$base-sform.scm
+expandedfile=$converted_dir/$base-expanded.*
+
+time $JSX/make_exjs_tree.js $input_js &&
+time $JSX/convert-json-simple.scm $treefile &&
+time $JSX/expand-scm-simple.scm $sformfile &&
+chmod 644 $expandedfile
+
