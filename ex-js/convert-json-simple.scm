@@ -8,6 +8,17 @@
 #lang racket/load
 (require (planet dherman/json:4:=0))
 (require racket/pretty)
+#|
+(require srfi/98)
+
+;; for JSX environment varialbe
+(define JSX (get-environment-variable "JSX"))
+(load (format "~a/common.scm" JSX))
+
+;; for EXJS environment variable
+(define EXJS (get-environment-variable "EXJS"))
+(load (format "~a/common.scm" EXJS))
+|#
 (load (call-with-values 
           (lambda () (split-path (find-system-path 'run-file)))
         (lambda (base name dir?) (string-append (path->string base) "common.scm"))))

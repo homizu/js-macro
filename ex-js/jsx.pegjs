@@ -1730,7 +1730,6 @@ ExpressionNoIn // changed  // for in で使う
 Statement // changed
   = MacroStatement       // added
   / Block
-  / VariableStatement
   / EmptyStatement
   / ExpressionStatement
   / IfStatement
@@ -1743,8 +1742,6 @@ Statement // changed
   / ThrowStatement
   / TryStatement
   / DebuggerStatement
-  / MacroDefinition      // added
-  / FunctionDeclaration
   / FunctionExpression
   / CharacterStatement   // added
 
@@ -1820,6 +1817,30 @@ FormalParameterList // changed
     tail:(__ "," __ Identifier CommaEllipsis?)* {
       return makeElementsList(head, ellipsis, tail, 3, 4);
     }
+
+FunctionBody // changed
+  = SourceElements
+
+Program //changed
+  = elements:SourceElements {
+      return {
+        type:     "Program",
+        elements: elements
+      };
+    }
+
+SourceElements // changed
+  = declarations:(DeclarationStatement __)* statements:(Statement __)* {
+      var result = [];
+      for (var i = 0; i < declarations.length; i++) {
+        result.push(declarations[i][0]);
+      }
+      for (i = 0; i < statements.length; i++) {
+        result.push(statements[i][0]);
+      }
+      return result;
+    }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* Additional rules for jsx. */
@@ -1832,6 +1853,11 @@ Ellipsis // added
 
 CommaEllipsis // added
   = &{ return macroType; } __ "," __ "..."
+
+DeclarationStatement // added
+  = MacroDefinition
+  / VariableStatement
+  / FunctionDeclaration
 
 MacroDefinition
   = (type:(ExpressionToken / StatementToken) { macroType = type; }) __

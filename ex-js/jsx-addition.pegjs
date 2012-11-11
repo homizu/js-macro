@@ -9,6 +9,11 @@ Ellipsis // added
 CommaEllipsis // added
   = &{ return macroType; } __ "," __ "..."
 
+DeclarationStatement // added
+  = MacroDefinition
+  / VariableStatement
+  / FunctionDeclaration
+
 MacroDefinition
   = (type:(ExpressionToken / StatementToken) { macroType = type; }) __
     macroName:Identifier __ "{" __
