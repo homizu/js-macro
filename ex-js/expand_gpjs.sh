@@ -2,7 +2,7 @@
 
 # EXJS environment varialbe should point to the path of the "ex-js" directory
 # export EXJS=$HOME/Dropbox/m-research/macro/pegjs/ex-js
-export NODE_PATH=$NODE_PATH:$EXJS
+export NODE_PATH=$NODE_PATH:/opt/local/lib/node_modules:$EXJS
 export YPSILON_LOADPATH=$YPSILON_LOADPATH:$EXJS
 
 
