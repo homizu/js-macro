@@ -8,13 +8,12 @@
   ex-js/macro-examples/
 
 ・起動の前に
-　・ex-js/expand_gpjs.sh の3行目 path に ex-js の絶対パスを設定
-　・make_exjs_tree.js の21行目 execDir に ex-js の絶対パスを設定
-　・convert-json-simple.scm の11行目 load の引数に ex-js/common.scm の絶対パスを設定
+　・環境変数 EXJS に ex-js の絶対パスを設定．
+　・環境変数 PATH に ex-js の絶対パスを追加．
 　
 ・起動方法 (macの場合)
   任意のディレクトリで以下のコマンドを実行する．（jsファイルは Good Parts で書かれていること）
-  ./expand_gpjs.sh jsファイル
+  expand_gpjs.sh jsファイル
 
 ・生成するスクリプト群
   引数で与えられた jsファイル（XXX.js）が存在するフォルダに converted というフォルダを作成し，その中に以下のファイルを生成する．

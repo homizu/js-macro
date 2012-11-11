@@ -8,7 +8,9 @@
 #lang racket/load
 (require (planet dherman/json:4:=0))
 (require racket/pretty)
-(load "/Users/homizu8/Dropbox/m-research/macro/pegjs/ex-js/common.scm")
+(load (call-with-values 
+          (lambda () (split-path (find-system-path 'run-file)))
+        (lambda (base name dir?) (string-append (path->string base) "common.scm"))))
 
 (define debug #t) ;; 結果を表示するかどうか
 (define (open-output-port output)

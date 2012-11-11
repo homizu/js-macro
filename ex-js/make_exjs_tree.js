@@ -16,20 +16,19 @@
     var PEG = require('pegjs');
     var generator = require('pegjs-generator2');
     var parser = require('ex-javascript-parser');
-//    var parser = require('jsx-parser');
+    //var parser = require('jsx-parser');
 
-    var execDir = '/Users/homizu8/Dropbox/m-research/macro/pegjs/ex-js';
-    var grammarFile = execDir + '/ex-javascript.pegjs';
-//    var grammarFile = path + 'jsx.pegjs';
+    var exjsDir = path.dirname(process.argv[1]);
+    var grammarFile = path.join(exjsDir, 'ex-javascript.pegjs');
+    //var grammarFile = path.join(exjsDir, 'jsx.pegjs');
     var debug = true;
     var resultDir = 'converted/';
-    var parserDir = execDir + '/parsers/';
-    var jsxRevision = 7;
+    var parserDir = path.join(exjsDir, 'parsers/');
+    var jsxRevision = 5;
 
     var start, end; // 時間計測用変数
 
     var jsFile, midtreeFile, treeFile, pegjsFile, parserFile;
-    var divPos;
     var fileDir, fileName;
 
     var argv = process.argv;
@@ -48,12 +47,11 @@
 
     if (argv.length === 3) {
         jsFile = argv[2];
-        divPos = jsFile.lastIndexOf('/');
-        fileDir = jsFile.substr(0, divPos+1) + resultDir;
-        fileName = jsFile.substr(divPos+1).split('.js')[0];
-        midtreeFile = fileDir + fileName + '.midtree';
-        treeFile = fileDir + fileName + '.tree';
-        pegjsFile = fileDir + fileName + '.pegjs';
+        fileDir = path.join(path.dirname(jsFile), resultDir);
+        fileName = path.basename(jsFile, '.js');
+        midtreeFile = path.join(fileDir, fileName + '.midtree');
+        treeFile = path.join(fileDir, fileName + '.tree');
+        pegjsFile = path.join(fileDir, fileName + '.pegjs');
 
         fs.mkdir(fileDir, function(err) {});
 
