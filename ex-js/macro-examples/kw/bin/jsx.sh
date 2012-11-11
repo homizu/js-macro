@@ -3,7 +3,6 @@
 # JSX environment varialbe should point to the path of the "ex-js" directory
 # export JSX=$HOME/research/projects/jsx-homizu/ex-js
 export NODE_PATH=/usr/local/lib/node_modules:$JSX
-export YPSILON_LOADPATH=$YPSILON_LOADPATH:$JSX
 
 if [ ! $# -eq 1 ]
 then
