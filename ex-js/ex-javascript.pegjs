@@ -1137,10 +1137,14 @@ ExpressionNoIn // changed  // for in で使う
  * |FunctionExpression| as statements, but JavaScript implementations do and so
  * are we. This syntax is actually used in the wild (e.g. by jQuery).
  */
+DeclarationStatement // added
+  = MacroDefinition
+  / VariableStatement
+  / FunctionDeclaration
+
 Statement  
   = MacroStatement       // added
   / Block
-  / VariableStatement
   / EmptyStatement
   / ExpressionStatement
   / IfStatement
@@ -1153,8 +1157,6 @@ Statement
   / ThrowStatement
   / TryStatement
   / DebuggerStatement
-  / MacroDefinition      // added
-  / FunctionDeclaration
   / FunctionExpression
   / CharacterStatement   // added
 
@@ -1483,22 +1485,25 @@ FormalParameterList // changed
       return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
-FunctionBody
-  = elements:SourceElements? { return elements !== "" ? elements : []; }
+FunctionBody // changed
+  = SourceElements
 
-Program
-  = elements:SourceElements? {
+Program //changed
+  = elements:SourceElements {
       return {
         type:     "Program",
-        elements: elements !== "" ? elements : []
+        elements: elements
       };
     }
 
-SourceElements
-  = head:SourceElement tail:(__ SourceElement)* {
-      var result = [head];
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][1]);
+SourceElements // changed
+  = declarations:(DeclarationStatement __)* statements:(Statement __)* {
+      var result = [];
+      for (var i = 0; i < declarations.length; i++) {
+        result.push(declarations[i][0]);
+      }
+      for (i = 0; i < statements.length; i++) {
+        result.push(statements[i][0]);
       }
       return result;
     }
@@ -1508,8 +1513,6 @@ SourceElements
  * implicitly, because we consider |FunctionDeclaration| and
  * |FunctionExpression| as statements. See the comment at the |Statement| rule.
  */
-SourceElement
-  = Statement
 
 /* ===== A.6 Universal Resource Identifier Character Classes ===== */
 
