@@ -23,6 +23,21 @@
       }
       return elements;
   }
+
+  // シンタックスエラーを表すオブジェクト
+  function JSMacroSyntaxError(line, column, message) {
+      this.line = line;
+      this.column = column;
+      this.message = message;
+  }
+
+  // misplacedエラーのメッセージを作成する関数
+  var buildMisplacedMessage = function (name) {
+      return "Misplaced " + name + ". The " + name + " must be at the top of the function body or in the body of the top-level program.";
+  } 
+
+  // line, column がないときのための予備
+  var line = undefined, column = undefined;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1730,6 +1745,9 @@ ExpressionNoIn // changed  // for in で使う
 Statement // changed
   = MacroStatement       // added
   / Block
+  / VariableStatement {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+    }
   / EmptyStatement
   / ExpressionStatement
   / IfStatement
@@ -1737,11 +1755,20 @@ Statement // changed
   / ContinueStatement
   / BreakStatement
   / ReturnStatement
+  / WithStatement {
+      throw new JSMacroSyntaxError(line, column, "Invalid with statement. The with statement must not be used.");
+    }
   / LabelledStatement
   / SwitchStatement
   / ThrowStatement
   / TryStatement
   / DebuggerStatement
+  / MacroDefinition {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("macro definition"));
+    }
+  / FunctionDeclaration {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("function declaration"));
+    }
   / FunctionExpression
   / CharacterStatement   // added
 
@@ -1763,10 +1790,15 @@ VariableDeclarationListNoIn // changed
       return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
-ForStatement
+ForStatement // changed
   = ForToken __
     "(" __
-    initializer:ExpressionNoIn? __
+    initializer:(
+        VarToken __ VariableDeclarationListNoIn {
+          throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+        }
+      / ExpressionNoIn?
+    ) __
     ";" __
     test:Expression? __
     ";" __
@@ -1783,10 +1815,15 @@ ForStatement
       };
     }
 
-ForInStatement
+ForInStatement // changed
   = ForToken __
     "(" __
-    iterator:LeftHandSideExpression __
+    iterator:(
+        VarToken __ VariableDeclarationNoIn {
+          throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+        }
+      / LeftHandSideExpression
+    ) __
     InToken __
     collection:Expression __
     ")" __
@@ -1819,24 +1856,22 @@ FormalParameterList // changed
     }
 
 FunctionBody // changed
-  = SourceElements
-
-Program //changed
-  = elements:SourceElements {
-      return {
-        type:     "Program",
-        elements: elements
-      };
-    }
-
-SourceElements // changed
   = declarations:(DeclarationStatement __)* statements:(Statement __)* {
-      var result = [];
+      var elements = [];
       for (var i = 0; i < declarations.length; i++) {
-        result.push(declarations[i][0]);
+          elements.push(declarations[i][0]);
       }
       for (i = 0; i < statements.length; i++) {
-        result.push(statements[i][0]);
+          elements.push(statements[i][0]);
+      }
+      return elements;
+    }
+
+SourceElements // changed (The SourceElement is not used in the parser because of optimization.)
+    = head:(DeclarationStatement / Statement) tail:(__ (DeclarationStatement / Statement))* {
+      var result=[head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][1]);
       }
       return result;
     }
@@ -1927,7 +1962,8 @@ Pattern
   = ("_" / !"=>" Identifier) __ patterns:SubPatternList? { return patterns || []; }
 
 SubPatternList
-  = head:SubPattern middle:(__ SubPattern)* ellipsis:(__ "...")? tail:(__ SubPattern)* {
+  = head:SubPattern middle:(__ SubPattern)* ellipsis:(__ "..." { return { line: line, column: column }; })?
+    tail:(__ SubPattern)* {
         var result = [head];
         for (var i=0; i<middle.length; i++) {
             result.push(middle[i][1]);
@@ -1942,7 +1978,8 @@ SubPatternList
                     break;
                 }
             }
-            if (!elements) throw new Error("Bad ellipsis usage in macro definition.");
+            if (!elements)
+                throw new JSMacroSyntaxError(ellipsis.line, ellipsis.column, "Bad ellipsis usage. Something except punctuation marks must be before ellipsis.");
             result.push({ type: "Repetition",
                           elements: elements,
                           punctuationMark: mark.reverse() });

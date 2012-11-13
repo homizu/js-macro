@@ -23,6 +23,21 @@
       }
       return elements;
   }
+
+  // シンタックスエラーを表すオブジェクト
+  function JSMacroSyntaxError(line, column, message) {
+      this.line = line;
+      this.column = column;
+      this.message = message;
+  }
+
+  // misplacedエラーのメッセージを作成する関数
+  var buildMisplacedMessage = function (name) {
+      return "Misplaced " + name + ". The " + name + " must be at the top of the function body or in the body of the top-level program.";
+  } 
+
+  // line, column がないときのための予備
+  var line = undefined, column = undefined;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
