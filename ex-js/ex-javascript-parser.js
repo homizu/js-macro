@@ -235,8 +235,10 @@ module.exports = (function(){
         "FunctionDeclaration": parse_FunctionDeclaration,
         "FunctionExpression": parse_FunctionExpression,
         "FormalParameterList": parse_FormalParameterList,
+        "FunctionBody": parse_FunctionBody,
         "Program": parse_Program,
         "SourceElements": parse_SourceElements,
+        "SourceElement": parse_SourceElement,
         "MacroDefinition": parse_MacroDefinition,
         "MetaVariableDecralation": parse_MetaVariableDecralation,
         "VariableList": parse_VariableList,
@@ -6999,7 +7001,7 @@ module.exports = (function(){
                           if (result8 !== null) {
                             result9 = parse___();
                             if (result9 !== null) {
-                              result10 = parse_SourceElements();
+                              result10 = parse_FunctionBody();
                               if (result10 !== null) {
                                 result11 = parse___();
                                 if (result11 !== null) {
@@ -7129,7 +7131,7 @@ module.exports = (function(){
                                 if (result10 !== null) {
                                   result11 = parse___();
                                   if (result11 !== null) {
-                                    result12 = parse_SourceElements();
+                                    result12 = parse_FunctionBody();
                                     if (result12 !== null) {
                                       result13 = parse___();
                                       if (result13 !== null) {
@@ -15162,7 +15164,7 @@ module.exports = (function(){
                             if (result10 !== null) {
                               result11 = parse___();
                               if (result11 !== null) {
-                                result12 = parse_SourceElements();
+                                result12 = parse_FunctionBody();
                                 if (result12 !== null) {
                                   result13 = parse___();
                                   if (result13 !== null) {
@@ -15321,7 +15323,7 @@ module.exports = (function(){
                             if (result10 !== null) {
                               result11 = parse___();
                               if (result11 !== null) {
-                                result12 = parse_SourceElements();
+                                result12 = parse_FunctionBody();
                                 if (result12 !== null) {
                                   result13 = parse___();
                                   if (result13 !== null) {
@@ -15551,40 +15553,8 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_Program() {
-        var cacheKey = "Program@" + pos.offset;
-        var cachedResult = cache[cacheKey];
-        if (cachedResult) {
-          pos = clone(cachedResult.nextPos);
-          return cachedResult.result;
-        }
-        
-        var result0;
-        var pos0;
-        
-        pos0 = clone(pos);
-        result0 = parse_SourceElements();
-        if (result0 !== null) {
-          result0 = (function(offset, line, column, elements) {
-              return {
-                type:     "Program",
-                elements: elements
-              };
-            })(pos0.offset, pos0.line, pos0.column, result0);
-        }
-        if (result0 === null) {
-          pos = clone(pos0);
-        }
-        
-        cache[cacheKey] = {
-          nextPos: clone(pos),
-          result:  result0
-        };
-        return result0;
-      }
-      
-      function parse_SourceElements() {
-        var cacheKey = "SourceElements@" + pos.offset;
+      function parse_FunctionBody() {
+        var cacheKey = "FunctionBody@" + pos.offset;
         var cachedResult = cache[cacheKey];
         if (cachedResult) {
           pos = clone(cachedResult.nextPos);
@@ -15673,18 +15643,150 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, line, column, declarations, statements) {
-              var result = [];
+              var elements = [];
               for (var i = 0; i < declarations.length; i++) {
-                result.push(declarations[i][0]);
+                  elements.push(declarations[i][0]);
               }
               for (i = 0; i < statements.length; i++) {
-                result.push(statements[i][0]);
+                  elements.push(statements[i][0]);
+              }
+              return elements;
+            })(pos0.offset, pos0.line, pos0.column, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_Program() {
+        var cacheKey = "Program@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0;
+        var pos0;
+        
+        pos0 = clone(pos);
+        result0 = parse_SourceElements();
+        result0 = result0 !== null ? result0 : "";
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, elements) {
+              return {
+                type:     "Program",
+                elements: elements !== "" ? elements : []
+              };
+            })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_SourceElements() {
+        var cacheKey = "SourceElements@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2, result3;
+        var pos0, pos1, pos2;
+        
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_SourceElement();
+        if (result0 !== null) {
+          result1 = [];
+          pos2 = clone(pos);
+          result2 = parse___();
+          if (result2 !== null) {
+            result3 = parse_SourceElement();
+            if (result3 !== null) {
+              result2 = [result2, result3];
+            } else {
+              result2 = null;
+              pos = clone(pos2);
+            }
+          } else {
+            result2 = null;
+            pos = clone(pos2);
+          }
+          while (result2 !== null) {
+            result1.push(result2);
+            pos2 = clone(pos);
+            result2 = parse___();
+            if (result2 !== null) {
+              result3 = parse_SourceElement();
+              if (result3 !== null) {
+                result2 = [result2, result3];
+              } else {
+                result2 = null;
+                pos = clone(pos2);
+              }
+            } else {
+              result2 = null;
+              pos = clone(pos2);
+            }
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, head, tail) {
+              var result=[head];
+              for (var i = 0; i < tail.length; i++) {
+                result.push(tail[i][1]);
               }
               return result;
             })(pos0.offset, pos0.line, pos0.column, result0[0], result0[1]);
         }
         if (result0 === null) {
           pos = clone(pos0);
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_SourceElement() {
+        var cacheKey = "SourceElement@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0;
+        
+        result0 = parse_DeclarationStatement();
+        if (result0 === null) {
+          result0 = parse_Statement();
         }
         
         cache[cacheKey] = {

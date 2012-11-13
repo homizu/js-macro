@@ -1532,24 +1532,30 @@ FormalParameterList // changed
     }
 
 FunctionBody // changed
-  = SourceElements
+  = declarations:(DeclarationStatement __)* statements:(Statement __)* {
+      var elements = [];
+      for (var i = 0; i < declarations.length; i++) {
+          elements.push(declarations[i][0]);
+      }
+      for (i = 0; i < statements.length; i++) {
+          elements.push(statements[i][0]);
+      }
+      return elements;
+    }
 
-Program //changed
-  = elements:SourceElements {
+Program
+  = elements:SourceElements? {
       return {
         type:     "Program",
-        elements: elements
+        elements: elements !== "" ? elements : []
       };
     }
 
-SourceElements // changed
-  = declarations:(DeclarationStatement __)* statements:(Statement __)* {
-      var result = [];
-      for (var i = 0; i < declarations.length; i++) {
-        result.push(declarations[i][0]);
-      }
-      for (i = 0; i < statements.length; i++) {
-        result.push(statements[i][0]);
+SourceElements
+  = head:SourceElement tail:(__ SourceElement)* {
+      var result=[head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][1]);
       }
       return result;
     }
@@ -1559,6 +1565,9 @@ SourceElements // changed
  * implicitly, because we consider |FunctionDeclaration| and
  * |FunctionExpression| as statements. See the comment at the |Statement| rule.
  */
+SourceElement
+  = DeclarationStatement
+  / Statement
 
 /* ===== A.6 Universal Resource Identifier Character Classes ===== */
 
