@@ -1670,7 +1670,7 @@ PropertyNameAndValueList // changed
     }
 
 PropertyName // changed
-  = name:IdentifierName { return { type: "Variable", name: name }; }
+  = name:IdentifierName { return { type: "PropertyIdentifier", name: name }; }
   / StringLiteral
   / NumericLiteral
 

@@ -68,9 +68,7 @@
      (racket-variable->symbol hash 'name "" "-Macro"))
     ((MacroForm) ;; MacroForm
      (racket-hash-value->sexp hash 'inputForm))
-    ((Variable IdentifierVariable ExpressionVariable StatementVariable SymbolVariable) ;; Variable, IdentifierVariable, ExpressionVariable, StatementVariable
-     (racket-variable->symbol hash 'name "V-" ""))
-    ((LiteralKeyword) ;; LiteralKeyword
+    ((Variable IdentifierVariable ExpressionVariable StatementVariable SymbolVariable LiteralKeyword) ;; Variable, IdentifierVariable, ExpressionVariable, StatementVariable LiteralKeyword
      (racket-variable->symbol hash 'name "V-" ""))
     ((Repetition) ;; Repetition (in pattern of MacroDefinition)
      (racket-hash-value->sexp hash 'elements))
@@ -106,6 +104,8 @@
      `("JS" "getter" ,(racket-hash-value->sexp hash 'name) ,@(racket-hash-value->sexp hash 'body)))
     ((SetterDefinition) ;; SetterDefinition
      `("JS" "setter" ,(racket-hash-value->sexp hash 'name) ,(racket-hash-value->sexp hash 'param) ,@(racket-hash-value->sexp hash 'body)))
+    ((PropertyIdentifier) ;; PropertyIdentifier
+     (racket-variable->symbol hash 'name "P-" ""))
     ((NewOperator) ;; NewOperator
      `("JS" "new" ,(racket-hash-value->sexp hash 'constructor) ,@(racket-hash-value->sexp hash 'arguments)))
     ((PropertyAccess) ;; PropertyAccess
