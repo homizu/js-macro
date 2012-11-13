@@ -166,6 +166,9 @@ ExpressionNoIn // changed  // for in で使う
 Statement // changed
   = MacroStatement       // added
   / Block
+  / VariableStatement {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+    }
   / EmptyStatement
   / ExpressionStatement
   / IfStatement
@@ -173,11 +176,20 @@ Statement // changed
   / ContinueStatement
   / BreakStatement
   / ReturnStatement
+  / WithStatement {
+      throw new JSMacroSyntaxError(line, column, "Invalid with statement. The with statement must not be used.");
+    }
   / LabelledStatement
   / SwitchStatement
   / ThrowStatement
   / TryStatement
   / DebuggerStatement
+  / MacroDefinition {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("macro definition"));
+    }
+  / FunctionDeclaration {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("function declaration"));
+    }
   / FunctionExpression
   / CharacterStatement   // added
 
@@ -199,10 +211,15 @@ VariableDeclarationListNoIn // changed
       return makeElementsList(head, ellipsis, tail, 3, 4);
     }
 
-ForStatement
+ForStatement // changed
   = ForToken __
     "(" __
-    initializer:ExpressionNoIn? __
+    initializer:(
+        VarToken __ VariableDeclarationListNoIn {
+          throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+        }
+      / ExpressionNoIn?
+    ) __
     ";" __
     test:Expression? __
     ";" __
@@ -219,10 +236,15 @@ ForStatement
       };
     }
 
-ForInStatement
+ForInStatement // changed
   = ForToken __
     "(" __
-    iterator:LeftHandSideExpression __
+    iterator:(
+        VarToken __ VariableDeclarationNoIn {
+          throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+        }
+      / LeftHandSideExpression
+    ) __
     InToken __
     collection:Expression __
     ")" __
@@ -255,24 +277,22 @@ FormalParameterList // changed
     }
 
 FunctionBody // changed
-  = SourceElements
-
-Program //changed
-  = elements:SourceElements {
-      return {
-        type:     "Program",
-        elements: elements
-      };
-    }
-
-SourceElements // changed
   = declarations:(DeclarationStatement __)* statements:(Statement __)* {
-      var result = [];
+      var elements = [];
       for (var i = 0; i < declarations.length; i++) {
-        result.push(declarations[i][0]);
+          elements.push(declarations[i][0]);
       }
       for (i = 0; i < statements.length; i++) {
-        result.push(statements[i][0]);
+          elements.push(statements[i][0]);
+      }
+      return elements;
+    }
+
+SourceElements // changed (The SourceElement is not used in the parser because of optimization.)
+    = head:(DeclarationStatement / Statement) tail:(__ (DeclarationStatement / Statement))* {
+      var result=[head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][1]);
       }
       return result;
     }

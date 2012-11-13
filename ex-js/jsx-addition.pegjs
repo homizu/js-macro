@@ -82,7 +82,8 @@ Pattern
   = ("_" / !"=>" Identifier) __ patterns:SubPatternList? { return patterns || []; }
 
 SubPatternList
-  = head:SubPattern middle:(__ SubPattern)* ellipsis:(__ "...")? tail:(__ SubPattern)* {
+  = head:SubPattern middle:(__ SubPattern)* ellipsis:(__ "..." { return { line: line, column: column }; })?
+    tail:(__ SubPattern)* {
         var result = [head];
         for (var i=0; i<middle.length; i++) {
             result.push(middle[i][1]);
@@ -97,7 +98,8 @@ SubPatternList
                     break;
                 }
             }
-            if (!elements) throw new Error("Bad ellipsis usage in macro definition.");
+            if (!elements)
+                throw new JSMacroSyntaxError(ellipsis.line, ellipsis.column, "Bad ellipsis usage. Something except punctuation marks must be before ellipsis.");
             result.push({ type: "Repetition",
                           elements: elements,
                           punctuationMark: mark.reverse() });

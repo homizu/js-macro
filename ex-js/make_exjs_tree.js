@@ -24,7 +24,7 @@
     var debug = true;
     var resultDir = 'converted/';
     var parserDir = path.join(exjsDir, 'parsers/');
-    var jsxRevision = 7;
+    var jsxRevision = 8;
 
     var start, end; // 時間計測用変数
 
@@ -38,11 +38,10 @@
     };
     
     var printErrorMessage = function (e) {
-        var m = "";
-        if (e instanceof parser.SyntaxError)
-            m += "Line " + e.line + ", column " + e.column + ": ";
-        m += e.message + "\n";
-        console.log(m);
+        console.log((e.line !== undefined && e.column !== undefined
+                     ? "Line " + e.line + ", column " + e.column + ": "
+                     : "")
+                    + e.message + "\n");
     }
 
     if (argv.length === 3) {
@@ -67,7 +66,7 @@
                 try {
                     if (debug) console.log('Building a parser ...');
                     start = new Date();
-                    parser = PEG.buildParser(grammar, { cache: true});
+                    parser = PEG.buildParser(grammar, { cache: true, trackLineAndColumn: true });
                     end = new Date();
                     if (debug) console.log('Done.\nTime: %ds.', (end.getTime() - start.getTime()) / 1000);
                 } catch (e) {
@@ -117,7 +116,7 @@
                                 if (debug) console.log('Re-building a parser ...');
                                 grammar = grammar + macro;
                                 start = new Date();
-                                parser = PEG.buildParser(grammar, { cache: true });
+                                parser = PEG.buildParser(grammar, { cache: true, trackLineAndColumn: true });
                                 end = new Date();
                                 if (debug) console.log('Done.\nTime: %ds.\n', (end.getTime() - start.getTime()) / 1000);
                             } catch (e) {
