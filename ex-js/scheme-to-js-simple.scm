@@ -39,7 +39,7 @@
          (str (list->string (map (lambda (c)
                                    (if (memq c unwanted-chars) #\_ c)) ;; . ` * を _ にする
                                  chars))))
-    (bformat "~a" (string->symbol (pregexp-replace "^(V|LK)-" str "")))) ;; 変数名の V- と LK- を取り除く
+    (bformat "~a" (string->symbol (pregexp-replace "^(V|P)-" str "")))) ;; シンボルの V- と P- を取り除く
   #t)
 
 (define (do-fargs arg*)
@@ -199,20 +199,6 @@
   (bformat "}")
   #f)
 
-(define (do-variable e)
-  (bformat "var ")
-  (bseparating (lambda (s)
-                 (let ((name (car s))
-                       (value (cadr s)))
-                   (do-symbol name)
-                   (if (not (eq? value #\nul))
-                       (begin
-                         (bformat " = ")
-                         (s2j value)))))
-               ", "
-               e)
-  #t)
-
 (define (do-if e)
   (let ((e1 (car e))
         (e2 (cadr e))
@@ -250,9 +236,7 @@
         (e3 (caddr e))
         (e4 (cadddr e)))
     (bformat "for (")
-    (if (and (list? e1) (list? (car e1)))
-        (do-variable e1)
-        (s2j e1))
+    (s2j e1)
     (bformat "; ")
     (if (not (eq? e2 #\nul)) (s2j e2))
     (bformat "; ")
@@ -266,9 +250,7 @@
         (e2 (cadr e))
         (e3 (caddr e)))
      (bformat "for (")
-     (if (and (list? e1) (symbol? (car e1)) (pregexp-match "^V-" (symbol->string (car e1))))
-         (do-variable (list e1))
-         (s2j e1))
+     (s2j e1)
      (bformat " in ")
      (s2j e2)
      (bformat ") ")

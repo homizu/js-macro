@@ -7210,7 +7210,7 @@ module.exports = (function(){
         pos0 = pos;
         result0 = parse_IdentifierName();
         if (result0 !== null) {
-          result0 = (function(offset, name) { return { type: "Variable", name: name }; })(pos0, result0);
+          result0 = (function(offset, name) { return { type: "PropertyIdentifier", name: name }; })(pos0, result0);
         }
         if (result0 === null) {
           pos = pos0;
