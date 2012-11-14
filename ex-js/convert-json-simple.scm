@@ -140,8 +140,6 @@
      `("JS" ,(string-downcase (first (regexp-split #rx"Statement" (symbol->string type)))) ,(hash-ref hash 'label)))
     ((ReturnStatement) ;; ReturnStatement
      `("JS" "return" ,(racket-hash-value->sexp hash 'value)))
-    ((WithStatement) ;; WithStatement
-     `("JS" "with" ,(racket-hash-value->sexp hash 'environment) ,(racket-hash-value->sexp hash 'statement)))
     ((SwitchStatement) ;; SwitchStatement
      `("JS" "switch" ,(racket-hash-value->sexp hash 'expression) ,@(racket-hash-value->sexp hash 'clauses)))
     ((CaseClause) ;; CaseClause
