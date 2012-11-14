@@ -20351,14 +20351,62 @@ module.exports = (function(){
           return cachedResult.result;
         }
         
-        var result0, result1;
-        var pos0, pos1;
+        var result0, result1, result2;
+        var pos0, pos1, pos2, pos3, pos4;
         
         pos0 = clone(pos);
         pos1 = clone(pos);
         result0 = (function(offset, line, column) { return macroType === "expression"; })(pos.offset, pos.line, pos.column) ? "" : null;
         if (result0 !== null) {
+          pos2 = clone(pos);
+          pos3 = clone(pos);
           result1 = parse_AssignmentExpression();
+          if (result1 !== null) {
+            pos4 = clone(pos);
+            if (input.charCodeAt(pos.offset) === 59) {
+              result2 = ";";
+              advance(pos, 1);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("\";\"");
+              }
+            }
+            if (result2 !== null) {
+              result2 = (function(offset, line, column) { 
+                    throw new JSMacroSyntaxError(line, column, "Unexpected semicolon. The expression macro's template must be an expression.");
+                   })(pos4.offset, pos4.line, pos4.column);
+            }
+            if (result2 === null) {
+              pos = clone(pos4);
+            }
+            result2 = result2 !== null ? result2 : "";
+            if (result2 !== null) {
+              result1 = [result1, result2];
+            } else {
+              result1 = null;
+              pos = clone(pos3);
+            }
+          } else {
+            result1 = null;
+            pos = clone(pos3);
+          }
+          if (result1 !== null) {
+            result1 = (function(offset, line, column, ae) { return ae; })(pos2.offset, pos2.line, pos2.column, result1[0]);
+          }
+          if (result1 === null) {
+            pos = clone(pos2);
+          }
+          if (result1 === null) {
+            pos2 = clone(pos);
+            result1 = parse_Statement();
+            if (result1 !== null) {
+              result1 = (function(offset, line, column) { throw new JSMacroSyntaxError(line, column, "Unexpected statement. The expression macro's template must be an expression."); })(pos2.offset, pos2.line, pos2.column);
+            }
+            if (result1 === null) {
+              pos = clone(pos2);
+            }
+          }
           if (result1 !== null) {
             result0 = [result0, result1];
           } else {
@@ -20370,7 +20418,9 @@ module.exports = (function(){
           pos = clone(pos1);
         }
         if (result0 !== null) {
-          result0 = (function(offset, line, column, e) { return e; })(pos0.offset, pos0.line, pos0.column, result0[1]);
+          result0 = (function(offset, line, column, e) {
+              return e;
+            })(pos0.offset, pos0.line, pos0.column, result0[1]);
         }
         if (result0 === null) {
           pos = clone(pos0);

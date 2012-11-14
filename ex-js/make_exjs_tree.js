@@ -18,13 +18,13 @@
     var parser = require('ex-javascript-parser');
     //var parser = require('jsx-parser');
 
-    var exjsDir = path.dirname(process.argv[1]);
+    //var exjsDir = path.dirname(process.argv[1]);
     var grammarFile = path.join(exjsDir, 'ex-javascript.pegjs');
-    //var grammarFile = path.join(exjsDir, 'jsx.pegjs');
+    var grammarFile = path.join(exjsDir, 'jsx.pegjs');
     var debug = true;
     var resultDir = 'converted/';
     var parserDir = path.join(exjsDir, 'parsers/');
-    var jsxRevision = 8;
+    var jsxRevision = 9;
 
     var start, end; // 時間計測用変数
 

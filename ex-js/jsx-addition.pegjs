@@ -199,7 +199,13 @@ MacroStatement
   = &{}
 
 StatementInTemplate
-  = &{ return macroType === "expression"; } e:AssignmentExpression { return e; }
+  = &{ return macroType === "expression"; }
+    e:(ae:AssignmentExpression (";" { 
+        throw new JSMacroSyntaxError(line, column, "Unexpected semicolon. The expression macro's template must be an expression.");
+       })? { return ae; }
+       / Statement { throw new JSMacroSyntaxError(line, column, "Unexpected statement. The expression macro's template must be an expression."); }) {
+      return e;
+    }
   / &{ return macroType === "statement"; } s:Statement { return s; }
 
 MacroIdentifier
