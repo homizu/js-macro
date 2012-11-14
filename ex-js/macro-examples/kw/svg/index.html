@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<link type="text/css" rel="stylesheet" href="../lib/jsx.css"/>
+	<title>The SVG Macro</title>
+</head>
+<body>
+
+<p>Smart Vector Graphicsを利用するためのマクロです．</p>
+
+<pre><code>Rect x:20 y:20 width:100 height:80
+
+Circle cx:200 cy:60 r:40 fill:'white' stroke:'red' stroke_width:3
+</code></pre>
+
+<p>以下のデモでは，このような表現で長方形と円を描画できることを示します．</p>
+
+<hr />
+
+<h1 id="demo">Demo</h1>
+
+<p><svg id="svg" xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="300" height="120">
+</svg></p>
+
+<hr />
+
+<h1 id="jsxcode">JSX Code</h1>
+
+<pre><code>expression let {
+  identifier: v;
+  expression: e1, e2;
+  keyword: In;
+  { let v = e1 In e2 =&gt;
+    (function (v) { return e2 })(e1) }
+}
+
+function SVG$Shape(type, plist) {
+  var shape = document.createElementNS(&quot;http://www.w3.org/2000/svg&quot;, type);
+  plist.forEach(function (attr_value) {
+      shape.setAttribute(attr_value[0].replace(/_/g, '-'), attr_value[1]);
+    });
+  return shape;
+}
+
+expression Rect {
+  expression: value;
+  symbol: attr;
+  { Rect [# attr: value #] ... =&gt; SVG$Shape('rect', [[attr, value], ...]) }
+}
+
+expression Circle {
+  expression: value;
+  symbol: attr;
+  { Rect [# attr: value #] ... =&gt; SVG$Shape('circle', [[attr, value], ...]) }
+}
+
+$(function () {
+    var add =
+      let svg = $('#svg').get()[0] In
+        function (shape) { svg.appendChild(shape); };
+
+    add(Rect x:20 y:20 width:100 height:80 fill:'blue');
+    add(Circle cx:200 cy:60 r:40 fill:'white' stroke:'red' stroke_width:3);
+  });
+</code></pre>
+
+<hr />
+
+<h1 id="expandedjavascriptcode">Expanded JavaScript Code</h1>
+
+<pre><code>function SVG$Shape (type_194_, plist_194_) {
+  var shape_195_ = (document.createElementNS (&quot;http://www.w3.org/2000/svg&quot;, type_194_));
+  (plist_194_.forEach (function (attr_value_196_) {
+    (shape_195_.setAttribute ((attr_value_196_[0].replace (/_/g, &quot;-&quot;)), attr_value_196_[1]));
+  }));
+  return shape_195_;
+}
+
+
+($ (function () {
+  var add_199_ = (function (svg_201_) {
+    return function (shape_203_) {
+      (svg_201_.appendChild (shape_203_));
+    };
+  } ((($ (&quot;#svg&quot;)).get ())[0]));
+  (add_199_ ((SVG$Shape (&quot;rect&quot;, [ [ &quot;x&quot;, 20 ], [ &quot;y&quot;, 20 ], [ &quot;width&quot;, 100 ], [ &quot;height&quot;, 80 ], [ &quot;fill&quot;, &quot;blue&quot; ] ]))));
+  (add_199_ ((SVG$Shape (&quot;circle&quot;, [ [ &quot;cx&quot;, 200 ], [ &quot;cy&quot;, 60 ], [ &quot;r&quot;, 40 ], [ &quot;fill&quot;, &quot;white&quot; ], [ &quot;stroke&quot;, &quot;red&quot; ], [ &quot;stroke_width&quot;, 3 ] ]))));
+}));
+</code></pre>
+
+<script src="../lib/jquery.min.js"></script>
+
+<script src="converted/svg-expanded.js"></script>
+
+</body>
+</html>
