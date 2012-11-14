@@ -190,6 +190,12 @@
         (if (s2j e) (bformat ";"))
         #f)))
 
+(define (isblock? e)
+  (and (list? e)
+       (>= (length e) 2)
+       (string? (cadr e))
+       (string=? (cadr e) "block")))
+
 (define (do-block e)
   (bformat "{")
   (bnewline 2)
@@ -202,16 +208,15 @@
 (define (do-if e)
   (let ((e1 (car e))
         (e2 (cadr e))
-        (e3 (caddr e))
-        (block #t))
+        (e3 (caddr e)))
+    (display e1)(newline)(display e2)(newline)(display e3)(newline)
     (bformat "if (") (s2j e1) (bformat ") ") ;; condition
-    (set! block (do-statement e2)) ;; then
+    (do-block (if (isblock? e2) (cddr e2) (list e2))) ;; then
     (if (not (eq? e3 #\nul)) ;; else
         (begin
-          (if block (bformat " ") (bformat "~%"))
-          (bformat "else ")
-          (do-statement e3))))
-  #f)
+          (bformat " else ")
+          (do-block (if (isblock? e3) (cddr e3) (list e3))))))
+    #f)
 
 (define (do-dowhile e)
   (let ((block #t))
@@ -262,13 +267,6 @@
     (bformat "return ")
     (if (not (eq? v #\nul)) (s2j v)))
   #t)
-
-(define (do-with e)
-  (bformat "with (")
-  (s2j (car e))
-  (bformat ") ")
-  (do-statement (cadr e))
-  #f)
 
 (define (do-switch e)
   (bformat "switch (")
@@ -369,7 +367,6 @@
                                 (bformat "break")
                                 (if (not (eq? label #\nul)) (bformat " ~a" label))) #t)
           ((string=? type "return") (do-return body))
-          ((string=? type "with") (do-with body))
           ((string=? type "switch") (do-switch body))
           ((string=? type "case") (do-case body))
           ((string=? type "default") (do-default body))
