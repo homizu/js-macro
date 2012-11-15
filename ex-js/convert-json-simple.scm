@@ -82,8 +82,6 @@
      (hash-ref hash 'value))
     ((Expressions) ;; Expressions (AssignmentExpression, AssignmentExpression, ...)
      `("JS" "expressions" ,@(racket-hash-value->sexp hash 'elements)))
-    ((Statements) ;; Statements (StatementVariable StatementVariable ...)
-     `(begin ,@(racket-variable->symbol hash 'elements "V-" ""))) 
     ((NumericLiteral) ;; NumericLiteral
      `("JS" "number" ,(hash-ref hash 'value)))
     ((StringLiteral) ;; StringLiteral

@@ -92,6 +92,19 @@ RegularExpressionLiteral "regular expression" //changed
       };
     }
 
+PrimaryExpression
+  = ThisToken       { return { type: "This" }; }
+  / name:Identifier { // changed
+      if (metaVariables.statement.indexOf(name) >=0)
+          throw new JSMacroSyntaxError(line, column, "Unexpected statement variable. Another type of variable or an expression must be here.");
+      else
+          return { type: "Variable", name: name };
+    }
+  / Literal
+  / ArrayLiteral
+  / ObjectLiteral
+  / "(" __ expression:Expression __ ")" { return expression; }
+
 ElementList // changed
   = (Elision __)?
     head:AssignmentExpression ellipsis:CommaEllipsis?
@@ -131,14 +144,7 @@ AssignmentExpression
   / ConditionalExpression
 
 Expression // changed
-  = head:IdentifierName &{ return metaVariables.statement.indexOf(head) >= 0;} ellipsis:Ellipsis?
-    tail:(__ name:IdentifierName &{ return metaVariables.statement.indexOf(name) >= 0; } Ellipsis?)* {
-      return {
-        type: "Statements",
-          elements: makeElementsList(head, ellipsis, tail, 1, 3)
-      };
-    }
-  / head:AssignmentExpression ellipsis:CommaEllipsis?
+  = head:AssignmentExpression ellipsis:CommaEllipsis?
     tail:(__ "," __ AssignmentExpression CommaEllipsis?)* {
       var result = head;
       if (ellipsis || tail.length > 0) {
@@ -165,6 +171,7 @@ ExpressionNoIn // changed  // for in で使う
 
 Statement // changed
   = MacroStatement       // added
+  / StatementVariable    // added
   / Block
   / VariableStatement {
       throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
@@ -277,15 +284,14 @@ FormalParameterList // changed
     }
 
 FunctionBody // changed
-  = declarations:(DeclarationStatement __)* statements:(Statement __)* {
-      var elements = [];
-      for (var i = 0; i < declarations.length; i++) {
-          elements.push(declarations[i][0]);
-      }
-      for (i = 0; i < statements.length; i++) {
-          elements.push(statements[i][0]);
-      }
-      return elements;
+  = declarations:(
+        head:DeclarationStatement ellipsis:Ellipsis?
+        tail:(__ DeclarationStatement Ellipsis?)* {
+            return makeElementsList(head, ellipsis, tail, 1, 2);
+        })?
+    statements:(__ StatementList)? {
+        return [].concat(declarations !== "" ? declarations : [],
+                         statements !== "" ? statements[1] : []);
     }
 
 SourceElements // changed (The SourceElement is not used in the parser because of optimization.)
