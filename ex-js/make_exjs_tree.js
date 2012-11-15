@@ -24,7 +24,7 @@
     var debug = true;
     var resultDir = 'converted/';
     var parserDir = path.join(exjsDir, 'parsers/');
-    var jsxRevision = 9;
+    var jsxRevision = 10;
 
     var start, end; // 時間計測用変数
 
