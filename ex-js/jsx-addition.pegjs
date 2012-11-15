@@ -126,41 +126,53 @@ SubPattern
        };
     }
   / Literal
-  / name:IdentifierName {
-        var type;
-        if (metaVariables.identifier.indexOf(name) >= 0)
-           type = 'IdentifierVariable';
-        else if (metaVariables.expression.indexOf(name) >= 0)
-           type = 'ExpressionVariable';
-        else if (metaVariables.statement.indexOf(name) >= 0)
-           type = 'StatementVariable';
-        else if (metaVariables.symbol.indexOf(name) >= 0)
-           type = 'SymbolVariable';
-        else if (metaVariables.literal.indexOf(name) >= 0)
-           type = 'LiteralKeyword';
-        
-        if (type)
-           return {
-               type: type,
-               name: name
-           };
-        else
-           return {
-               type: "PunctuationMark",
-               value: name
-           };
+  / IdentifierVariable
+  / ExpressionVariable
+  / StatementVariable
+  / SymbolVariable
+  / name:LiteralKeyword &{ return metaVariables.literal.indexOf(name) >= 0; } {
+        return {
+            type: "LiteralKeyword",
+            name: name
+        };
     }
-  / punc:(Punctuator / "," / ";" / "|") {
-        if (metaVariables.literal.indexOf(punc) >= 0)
-           return {
-               type: "LiteralKeyword",
-               name: punc
-           };
-        else
-           return {
-               type: "PunctuationMark",
-               value: punc
-           };
+  / name:(IdentifierName / Punctuator / "," / ";" / "|") {
+        return {
+            type: "PunctuationMark",
+            value: name
+        };
+    }
+
+IdentifierVariable
+  = name:IdentifierName &{ return metaVariables.identifier.indexOf(name) >= 0; } {
+        return {
+            type: "IdentifierVariable",
+            name: name
+        };
+    }
+
+ExpressionVariable
+  = name:IdentifierName &{ return metaVariables.expression.indexOf(name) >= 0; } {
+        return {
+            type: "ExpressionVariable",
+            name: name
+        };
+    }
+
+StatementVariable
+  = name:IdentifierName &{ return metaVariables.statement.indexOf(name) >= 0; } {
+        return {
+            type: "StatementVariable",
+            name: name
+        };
+    }
+
+SymbolVariable
+  = name:IdentifierName &{ return metaVariables.symbol.indexOf(name) >= 0; } {
+        return {
+            type: "SymbolVariable",
+            name: name
+        };
     }
 
 Punctuator
