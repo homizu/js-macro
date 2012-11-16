@@ -6,16 +6,17 @@ statement block {
     keyword: var;
     
     {block {
-       [#var [# id = expr ; #] ...#]
+        [# var [# id = expr #], ... ;#]
         stmt ...
-     } => ((function(id, ...) {
+     } => ((function() {
+        var id = expr, ...;
         stmt ...
-     })(expr, ...));}
+     })());}
     
 }
 
-block {
-  var i = 100; j = 200;
-  var x = i+j;
-  return x;
+block { 
+    var i =  100, j = 200,
+    x = i+j;
+　  return x;
 }
