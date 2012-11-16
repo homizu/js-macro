@@ -256,6 +256,8 @@ module.exports = (function(){
         "Punctuator": parse_Punctuator,
         "PunctuatorSymbol": parse_PunctuatorSymbol,
         "Template": parse_Template,
+        "Errors": parse_Errors,
+        "ForbiddenInStatement": parse_ForbiddenInStatement,
         "CharacterStatement": parse_CharacterStatement,
         "ExcludeWord": parse_ExcludeWord,
         "MacroExpression": parse_MacroExpression,
@@ -11970,24 +11972,14 @@ module.exports = (function(){
         }
         
         var result0;
-        var pos0;
         
         result0 = parse_MacroStatement();
         if (result0 === null) {
           result0 = parse_StatementVariable();
           if (result0 === null) {
-            result0 = parse_Block();
+            result0 = parse_Errors();
             if (result0 === null) {
-              pos0 = clone(pos);
-              result0 = parse_VariableStatement();
-              if (result0 !== null) {
-                result0 = (function(offset, line, column) {
-                    throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
-                  })(pos0.offset, pos0.line, pos0.column);
-              }
-              if (result0 === null) {
-                pos = clone(pos0);
-              }
+              result0 = parse_Block();
               if (result0 === null) {
                 result0 = parse_EmptyStatement();
                 if (result0 === null) {
@@ -12003,55 +11995,19 @@ module.exports = (function(){
                           if (result0 === null) {
                             result0 = parse_ReturnStatement();
                             if (result0 === null) {
-                              pos0 = clone(pos);
-                              result0 = parse_WithStatement();
-                              if (result0 !== null) {
-                                result0 = (function(offset, line, column) {
-                                    throw new JSMacroSyntaxError(line, column, "Invalid with statement. The with statement must not be used.");
-                                  })(pos0.offset, pos0.line, pos0.column);
-                              }
+                              result0 = parse_LabelledStatement();
                               if (result0 === null) {
-                                pos = clone(pos0);
-                              }
-                              if (result0 === null) {
-                                result0 = parse_LabelledStatement();
+                                result0 = parse_SwitchStatement();
                                 if (result0 === null) {
-                                  result0 = parse_SwitchStatement();
+                                  result0 = parse_ThrowStatement();
                                   if (result0 === null) {
-                                    result0 = parse_ThrowStatement();
+                                    result0 = parse_TryStatement();
                                     if (result0 === null) {
-                                      result0 = parse_TryStatement();
+                                      result0 = parse_DebuggerStatement();
                                       if (result0 === null) {
-                                        result0 = parse_DebuggerStatement();
+                                        result0 = parse_FunctionExpression();
                                         if (result0 === null) {
-                                          pos0 = clone(pos);
-                                          result0 = parse_MacroDefinition();
-                                          if (result0 !== null) {
-                                            result0 = (function(offset, line, column) {
-                                                throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("macro definition"));
-                                              })(pos0.offset, pos0.line, pos0.column);
-                                          }
-                                          if (result0 === null) {
-                                            pos = clone(pos0);
-                                          }
-                                          if (result0 === null) {
-                                            pos0 = clone(pos);
-                                            result0 = parse_FunctionDeclaration();
-                                            if (result0 !== null) {
-                                              result0 = (function(offset, line, column) {
-                                                  throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("function declaration"));
-                                                })(pos0.offset, pos0.line, pos0.column);
-                                            }
-                                            if (result0 === null) {
-                                              pos = clone(pos0);
-                                            }
-                                            if (result0 === null) {
-                                              result0 = parse_FunctionExpression();
-                                              if (result0 === null) {
-                                                result0 = parse_CharacterStatement();
-                                              }
-                                            }
-                                          }
+                                          result0 = parse_CharacterStatement();
                                         }
                                       }
                                     }
@@ -17558,6 +17514,90 @@ module.exports = (function(){
         }
         if (result0 === null) {
           pos = clone(pos0);
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_Errors() {
+        var cacheKey = "Errors@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0;
+        
+        result0 = (function(offset, line, column) {})(pos.offset, pos.line, pos.column) ? "" : null;
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_ForbiddenInStatement() {
+        var cacheKey = "ForbiddenInStatement@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0;
+        var pos0;
+        
+        pos0 = clone(pos);
+        result0 = parse_VariableStatement();
+        if (result0 !== null) {
+          result0 = (function(offset, line, column) {
+              throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+            })(pos0.offset, pos0.line, pos0.column);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        if (result0 === null) {
+          pos0 = clone(pos);
+          result0 = parse_MacroDefinition();
+          if (result0 !== null) {
+            result0 = (function(offset, line, column) {
+                throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("macro definition"));
+              })(pos0.offset, pos0.line, pos0.column);
+          }
+          if (result0 === null) {
+            pos = clone(pos0);
+          }
+          if (result0 === null) {
+            pos0 = clone(pos);
+            result0 = parse_FunctionDeclaration();
+            if (result0 !== null) {
+              result0 = (function(offset, line, column) {
+                  throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("function declaration"));
+                })(pos0.offset, pos0.line, pos0.column);
+            }
+            if (result0 === null) {
+              pos = clone(pos0);
+            }
+            if (result0 === null) {
+              pos0 = clone(pos);
+              result0 = parse_WithStatement();
+              if (result0 !== null) {
+                result0 = (function(offset, line, column) {
+                    throw new JSMacroSyntaxError(line, column, "Invalid with statement. The with statement must not be used.");
+                  })(pos0.offset, pos0.line, pos0.column);
+              }
+              if (result0 === null) {
+                pos = clone(pos0);
+              }
+            }
+          }
         }
         
         cache[cacheKey] = {
