@@ -3,6 +3,7 @@ module.exports = (function () {
     var generator = { debug: false };
 
     var template = 'Template\n = StatementInTemplate\n\n';
+    var errors = 'Errors\n = ForbiddenInStatement\n\n';
     var characterStatement = 'CharacterStatement\n = &{}\n\n';
     var macroExpression = 'MacroExpression\n = '
     var macroStatement = 'MacroStatement\n = '
@@ -445,6 +446,24 @@ module.exports = (function () {
         }
         return false;
     };
+
+    var functionNumber = 0;
+    var collectMacroDefinition = function (result, elements, funcNum) {
+        var i, element;
+        for (i in elements) {
+            element = elements[i];
+            if (element instanceof Object) {
+                if (element.type && element.type.indexOf('MacroDefinition') >= 0) {
+                    result.push([element, funcNum]);
+                } else if (element.type === 'Function' || element.type === 'FunctionDeclaration' || element.type === 'GetterDefinition' || element.type === 'SetterDefinition') {
+                    functionNumber++;
+                    collectMacroDefinition(result, element, functionNumber);
+                } else {
+                    collectMacroDefinition(result, element, funcNum);
+                }
+            }
+        }
+    };
     
 
     generator.generate = function(jsObj) {
@@ -460,6 +479,10 @@ module.exports = (function () {
                 if (element.type.indexOf('MacroDefinition') >= 0)
                     macroDefs.push(element);
             }
+
+            var testResult = [];
+            collectMacroDefinition(testResult, elements, functionNumber);
+            console.log(testResult);
 
             for (var i=0; i<macroDefs.length; i++) {
                 var macroDef = macroDefs[i];
@@ -500,7 +523,7 @@ module.exports = (function () {
 
             }
 
-            return template + characterStatement
+            return template + errors + characterStatement
                 + (expressionMacros.length > 0 ?  macroExpression + expressionMacros.join(' \n / ') + '\n\n' : '')
                 + (statementMacros.length > 0 ? macroStatement + statementMacros.join(' \n / ') + '\n\n' : '');
             

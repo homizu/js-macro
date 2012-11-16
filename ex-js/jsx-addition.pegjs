@@ -193,6 +193,23 @@ Template
       return result;
     }
 
+Errors
+  = &{}
+
+ForbiddenInStatement
+  = VariableStatement {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+    }
+  / MacroDefinition {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("macro definition"));
+    }
+  / FunctionDeclaration {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("function declaration"));
+    }
+  / WithStatement {
+      throw new JSMacroSyntaxError(line, column, "Invalid with statement. The with statement must not be used.");
+    }
+
 CharacterStatement
   = !ExcludeWord char:.
      { return { type: "Characterstmt", value: char }; }
