@@ -1751,10 +1751,8 @@ ExpressionNoIn // changed  // for in で使う
 Statement // changed
   = MacroStatement       // added
   / StatementVariable    // added
+  / Errors               // added
   / Block
-  / VariableStatement {
-      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
-    }
   / EmptyStatement
   / ExpressionStatement
   / IfStatement
@@ -1762,20 +1760,11 @@ Statement // changed
   / ContinueStatement
   / BreakStatement
   / ReturnStatement
-  / WithStatement {
-      throw new JSMacroSyntaxError(line, column, "Invalid with statement. The with statement must not be used.");
-    }
   / LabelledStatement
   / SwitchStatement
   / ThrowStatement
   / TryStatement
   / DebuggerStatement
-  / MacroDefinition {
-      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("macro definition"));
-    }
-  / FunctionDeclaration {
-      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("function declaration"));
-    }
   / FunctionExpression
   / CharacterStatement   // added
 
@@ -2077,6 +2066,23 @@ Template
           result.push(tail[i][1]);
       }
       return result;
+    }
+
+Errors
+  = &{}
+
+ForbiddenInStatement
+  = VariableStatement {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("var declaration"));
+    }
+  / MacroDefinition {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("macro definition"));
+    }
+  / FunctionDeclaration {
+      throw new JSMacroSyntaxError(line, column, buildMisplacedMessage("function declaration"));
+    }
+  / WithStatement {
+      throw new JSMacroSyntaxError(line, column, "Invalid with statement. The with statement must not be used.");
     }
 
 CharacterStatement
