@@ -5,6 +5,7 @@
                 "{": { close: "}", type: "Brace" },
                 "[": { close: "]", type: "Bracket"} }; // 括弧を表すオブジェクト
   var macroType = false;                // マクロの種類(expression, statement)を表す変数
+  var outerMacro = false;               // マクロ内マクロを検出するための変数
   var metaVariables = { identifier: [],
                         expression: [], 
                         statement: [],

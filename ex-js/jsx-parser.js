@@ -282,6 +282,7 @@ module.exports = (function(){
         "Punctuator": parse_Punctuator,
         "PunctuatorSymbol": parse_PunctuatorSymbol,
         "Template": parse_Template,
+        "CheckOuterMacro": parse_CheckOuterMacro,
         "Errors": parse_Errors,
         "ForbiddenInStatement": parse_ForbiddenInStatement,
         "CharacterStatement": parse_CharacterStatement,
@@ -18568,7 +18569,7 @@ module.exports = (function(){
           return cachedResult.result;
         }
         
-        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9;
+        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10;
         var pos0, pos1, pos2;
         
         pos0 = clone(pos);
@@ -18579,7 +18580,8 @@ module.exports = (function(){
           result0 = parse_StatementToken();
         }
         if (result0 !== null) {
-          result0 = (function(offset, line, column, type) { macroType = type; })(pos2.offset, pos2.line, pos2.column, result0);
+          result0 = (function(offset, line, column, t) {
+                outerMacro = macroType; return macroType = t; })(pos2.offset, pos2.line, pos2.column, result0);
         }
         if (result0 === null) {
           pos = clone(pos2);
@@ -18650,7 +18652,13 @@ module.exports = (function(){
                             }
                           }
                           if (result9 !== null) {
-                            result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9];
+                            result10 = parse_CheckOuterMacro();
+                            if (result10 !== null) {
+                              result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10];
+                            } else {
+                              result0 = null;
+                              pos = clone(pos1);
+                            }
                           } else {
                             result0 = null;
                             pos = clone(pos1);
@@ -18692,8 +18700,10 @@ module.exports = (function(){
           pos = clone(pos1);
         }
         if (result0 !== null) {
-          result0 = (function(offset, line, column, macroName, syntaxRules) { 
-                var type = macroType.charAt(0).toUpperCase() + macroType.slice(1) + "MacroDefinition";
+          result0 = (function(offset, line, column, type, macroName, syntaxRules, c) {
+                if (c)
+                   throw new JSMacroSyntaxError(line, column, "Unexpected macro definition. The macro definition must not be in the macro's template."); 
+                var type = type.charAt(0).toUpperCase() + type.slice(1) + "MacroDefinition";
                 var literals = metaVariables.literal;
                 macroType = false;
                 for (var i in metaVariables)
@@ -18702,7 +18712,7 @@ module.exports = (function(){
                          macroName: macroName,
                          literals: literals,
                          syntaxRules: syntaxRules };
-            })(pos0.offset, pos0.line, pos0.column, result0[2], result0[7]);
+            })(pos0.offset, pos0.line, pos0.column, result0[0], result0[2], result0[7], result0[10]);
         }
         if (result0 === null) {
           pos = clone(pos0);
@@ -20396,6 +20406,34 @@ module.exports = (function(){
         return result0;
       }
       
+      function parse_CheckOuterMacro() {
+        var cacheKey = "CheckOuterMacro@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0;
+        var pos0, pos1;
+        
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = [];
+        if (result0 !== null) {
+          result0 = (function(offset, line, column) { return false; })(pos0.offset, pos0.line, pos0.column);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
       function parse_Errors() {
         var cacheKey = "Errors@" + pos.offset;
         var cachedResult = cache[cacheKey];
@@ -20549,15 +20587,9 @@ module.exports = (function(){
         
         result0 = parse_EOS();
         if (result0 === null) {
-          result0 = parse_ExpressionToken();
+          result0 = parse_CaseClause();
           if (result0 === null) {
-            result0 = parse_StatementToken();
-            if (result0 === null) {
-              result0 = parse_CaseToken();
-              if (result0 === null) {
-                result0 = parse_DefaultToken();
-              }
-            }
+            result0 = parse_DefaultClause();
           }
         }
         
@@ -20865,6 +20897,7 @@ module.exports = (function(){
                       "{": { close: "}", type: "Brace" },
                       "[": { close: "]", type: "Bracket"} }; // 括弧を表すオブジェクト
         var macroType = false;                // マクロの種類(expression, statement)を表す変数
+        var outerMacro = false;               // マクロ内マクロを検出するための変数
         var metaVariables = { identifier: [],
                               expression: [], 
                               statement: [],
