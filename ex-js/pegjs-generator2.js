@@ -3,6 +3,7 @@ module.exports = (function () {
     var generator = { debug: false };
 
     var template = 'Template\n = StatementInTemplate\n\n';
+    var checkOuterMacro = 'CheckOuterMacro\n = { return outerMacro; }\n\n';
     var errors = 'Errors\n = ForbiddenInStatement\n\n';
     var characterStatement = 'CharacterStatement\n = &{}\n\n';
     var macroExpression = 'MacroExpression\n = '
@@ -523,7 +524,8 @@ module.exports = (function () {
 
             }
 
-            return template + errors + characterStatement
+            return template + checkOuterMacro
+                + errors + characterStatement
                 + (expressionMacros.length > 0 ?  macroExpression + expressionMacros.join(' \n / ') + '\n\n' : '')
                 + (statementMacros.length > 0 ? macroStatement + statementMacros.join(' \n / ') + '\n\n' : '');
             

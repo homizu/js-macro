@@ -51,6 +51,7 @@
                 "{": { close: "}", type: "Brace" },
                 "[": { close: "]", type: "Bracket"} }; // 括弧を表すオブジェクト
   var macroType = false;                // マクロの種類(expression, statement)を表す変数
+  var outerMacro = false;               // マクロ内マクロを検出するための変数
   var metaVariables = { identifier: [],
                         expression: [], 
                         statement: [], 
@@ -1575,11 +1576,15 @@ SourceElement
 /* マクロ定義のパーザー written by homizu */
 
 MacroDefinition
-  = (type:(ExpressionToken / StatementToken) { macroType = type; }) __
+  = type:(t:(ExpressionToken / StatementToken) {
+        outerMacro = macroType; return macroType = t; }) __
     macroName:Identifier __ "{" __
     (MetaVariableDecralation __)*
-    syntaxRules:SyntaxRuleList __ "}" { 
-        var type = macroType.charAt(0).toUpperCase() + macroType.slice(1) + "MacroDefinition";
+    syntaxRules:SyntaxRuleList __ "}"
+    c:CheckOuterMacro {
+        if (c)
+           throw new JSMacroSyntaxError(line, column, "Unexpected macro definition. The macro definition must not be in the macro's template.");
+        var type = type.charAt(0).toUpperCase() + type.slice(1) + "MacroDefinition";
         var literals = metaVariables.literal;
         macroType = false;
         for (var i in metaVariables)
@@ -1753,6 +1758,9 @@ Template
       return result;
     }
 
+CheckOuterMacro
+  = { return false; }
+
 Errors
   = &{}
 
@@ -1776,10 +1784,8 @@ CharacterStatement
 
 ExcludeWord
   = EOS
-  / ExpressionToken
-  / StatementToken
-  / CaseToken
-  / DefaultToken
+  / CaseClause
+  / DefaultClause
 
 MacroExpression
   = &{}
