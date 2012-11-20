@@ -1,7 +1,8 @@
 /* Initializer for jsx (JavaScript with a macro system) */
 
 {
-  var group = { "(": { close: ")", type: "Paren" }, 
+  var group = { "[#": { close: "#]", type: "RepBlock" },
+                "(": { close: ")", type: "Paren" }, 
                 "{": { close: "}", type: "Brace" },
                 "[": { close: "]", type: "Bracket"} }; // 括弧を表すオブジェクト
   var macroType = false;                // マクロの種類(expression, statement)を表す変数
