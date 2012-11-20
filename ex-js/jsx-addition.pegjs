@@ -116,13 +116,7 @@ SubPatternList
     }
 
 SubPattern
-  = "[#" __ patterns: SubPatternList __ "#]" {
-        return {
-          type: "RepBlock",
-          elements: patterns
-        };
-    }
-  / g_open:("("/"{"/"[") __ patterns:SubPatternList? __ g_close:(")"/"}"/"]")
+  = g_open:("[#"/"("/"{"/"[") __ patterns:SubPatternList? __ g_close:("#]"/")"/"}"/"]")
     &{ return group[g_open].close === g_close; } {
        return {
          type: group[g_open].type,

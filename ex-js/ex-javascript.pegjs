@@ -47,7 +47,8 @@
 
 /* Initializer written by homizu */
 {
-  var group = { "(": { close: ")", type: "Paren" }, 
+  var group = { "[#": { close: "#]", type: "RepBlock" },
+                "(": { close: ")", type: "Paren" }, 
                 "{": { close: "}", type: "Brace" },
                 "[": { close: "]", type: "Bracket"} }; // 括弧を表すオブジェクト
   var macroType = false;                // マクロの種類(expression, statement)を表す変数
@@ -1677,13 +1678,7 @@ SubPatternList
     }
 
 SubPattern
-  = "[#" __ patterns: SubPatternList __ "#]" {
-        return {
-          type: "RepBlock",
-          elements: patterns
-        };
-    }
-  / g_open:("("/"{"/"[") __ patterns:SubPatternList? __ g_close:(")"/"}"/"]")
+  = g_open:("[#"/"("/"{"/"[") __ patterns:SubPatternList? __ g_close:("#]"/")"/"}"/"]")
     &{ return group[g_open].close === g_close; } {
        return {
          type: group[g_open].type,
