@@ -23,7 +23,7 @@
     //var grammarFile = path.join(exjsDir, 'jsx.pegjs');
     var debug = true;
     var resultDir = 'converted/';
-    var parserDir = path.join(exjsDir, 'parsers/');
+    var parserDir = path.join(process.env.HOME, '.ex-js/parsers/');
     var jsxRevision = 11;
 
     var start, end; // 時間計測用変数
@@ -108,9 +108,6 @@
                             if (debug) console.log('Find a parser');
                             parser = require(parserFile);
                         } else {
-                            if(!dir)
-                                fs.mkdir(parserDir, function(err) {});
-                
                             // re-generate a parser
                             try {
                                 if (debug) console.log('Re-building a parser ...');
@@ -169,12 +166,16 @@
                         // write a parser code
                         if (!file) {
                             if (debug) console.log('Writing a parser file ...');
-                            fs.writeFile(parserFile,
-                                         'module.exports = ' + parser.toSource() + ';',
-                                         function(err) {
-                                             if (err) throw err;
-                                             if (debug) console.log('Done.');
-                                         });
+                            fs.mkdir(path.dirname(parserDir), function(err) {
+                                    fs.mkdir(parserDir, function(err) { 
+                                        fs.writeFile(parserFile,
+                                                     'module.exports = ' + parser.toSource() + ';',
+                                                     function(err) {
+                                                         if (err) throw err;
+                                                         if (debug) console.log('Done.');
+                                                     });
+                                    });
+                            });
                         }
                         
                     });
