@@ -125,20 +125,13 @@ module.exports = (function () {
 
         // Literal
         literal: function(type, value) {
-            switch (type) {
-            case 'NumericLiteral':
-            case 'StringLiteral':
+            if (type === 'NullLiteral') {
                 return {
                     type: type,
                     value: value,
-                    toCode: function (context) {
-                        return '(v:' + type + ' &{ return eval(v) === ' + value + '; }\n\
-{ return { type: "' + type + '", value: v }; })';
-                    }
+                    toCode: function (context) { return 'NullLiteral'; }
                 };
-                break;
-            case 'BooleanLiteral':
-            case 'RegularExpressionLiteral':
+            } else {
                 return {
                     type: type,
                     value: value,
@@ -147,14 +140,6 @@ module.exports = (function () {
 { return v; })';
                     }
                 };
-                break;
-            case 'NullLiteral':
-                return {
-                    type: type,
-                    value: value,
-                    toCode: function (context) { return 'NullLiteral'; }
-                };
-                break;
             }
         },
 
@@ -212,8 +197,8 @@ module.exports = (function () {
                     return '(' + es.join(' __ ') + ' { return [' + tags.join(', ') + ']; })';
                 }
             };
-        },
-
+        }//,
+/*
         // Prioritized choice
         choice: function(elements) {
             return {
@@ -229,7 +214,7 @@ module.exports = (function () {
                 }
             };
         }
-     
+*/     
     };
     
     var jsMacroTypes = [
