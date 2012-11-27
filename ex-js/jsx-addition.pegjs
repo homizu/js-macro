@@ -251,10 +251,5 @@ MacroKeyword
       return { type: "LiteralKeyword", name: name };
     }
 
-MacroEllipsis
-  = "..." {
-      return { type: "Repeat",
-               elements: [{ type: "Ellipsis" }] };
-    }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

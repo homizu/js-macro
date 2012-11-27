@@ -292,8 +292,7 @@ module.exports = (function(){
         "StatementInTemplate": parse_StatementInTemplate,
         "MacroIdentifier": parse_MacroIdentifier,
         "MacroSymbol": parse_MacroSymbol,
-        "MacroKeyword": parse_MacroKeyword,
-        "MacroEllipsis": parse_MacroEllipsis
+        "MacroKeyword": parse_MacroKeyword
       };
       
       if (startRule !== undefined) {
@@ -20786,44 +20785,6 @@ module.exports = (function(){
           result0 = (function(offset, line, column, name) {
               return { type: "LiteralKeyword", name: name };
             })(pos0.offset, pos0.line, pos0.column, result0);
-        }
-        if (result0 === null) {
-          pos = clone(pos0);
-        }
-        
-        cache[cacheKey] = {
-          nextPos: clone(pos),
-          result:  result0
-        };
-        return result0;
-      }
-      
-      function parse_MacroEllipsis() {
-        var cacheKey = "MacroEllipsis@" + pos.offset;
-        var cachedResult = cache[cacheKey];
-        if (cachedResult) {
-          pos = clone(cachedResult.nextPos);
-          return cachedResult.result;
-        }
-        
-        var result0;
-        var pos0;
-        
-        pos0 = clone(pos);
-        if (input.substr(pos.offset, 3) === "...") {
-          result0 = "...";
-          advance(pos, 3);
-        } else {
-          result0 = null;
-          if (reportFailures === 0) {
-            matchFailed("\"...\"");
-          }
-        }
-        if (result0 !== null) {
-          result0 = (function(offset, line, column) {
-              return { type: "Repeat",
-                       elements: [{ type: "Ellipsis" }] };
-            })(pos0.offset, pos0.line, pos0.column);
         }
         if (result0 === null) {
           pos = clone(pos0);
