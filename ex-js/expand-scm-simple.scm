@@ -20,9 +20,9 @@
 (define (expand-scm sform-file-path) ;; 引数のファイル名は -sform.scm で終わる
   (let* ((in (transcoded-port (open-file-input-port sform-file-path)
                               (make-transcoder (utf-8-codec))))
-         (expanded (parameterize ((coreform-optimize #f))
-                                 (macro-expand (read in))))
-         (js (scheme-to-javascript expanded)))
+         (expanded (time (parameterize ((coreform-optimize #f))
+                                 (macro-expand (read in)))))
+         (js (time (scheme-to-javascript expanded))))
     (write-file (change-suffix sform-file-path "-expanded.scm") expanded pretty-print)
     (write-file (change-suffix sform-file-path "-expanded.js") js display)
     (close-input-port in)))

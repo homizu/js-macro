@@ -16,12 +16,20 @@
   // ...が出現する要素の並びからリストを作る関数
   var makeElementsList = function (head, ellipsis, tail, elementIndex, ellipsisIndex) {
       var elements = [head];
-      if (ellipsis)
-         elements.push({ type: "Ellipsis" });
+      if (ellipsis) {
+          elements.push({ type: "Ellipsis" });
+          for (var i=0; i<ellipsis[2].length; i++) {
+              elements.push({ type: "Ellipsis" });
+          }
+      }
       for (var i=0; i<tail.length; i++) {
           elements.push(tail[i][elementIndex]);
-          if (tail[i][ellipsisIndex])
-             elements.push({ type: "Ellipsis" });
+          if (tail[i][ellipsisIndex]) {
+              elements.push({ type: "Ellipsis" });
+              for (var j=0; j<tail[i][ellipsisIndex][2].length; j++) {
+                  elements.push({ type: "Ellipsis" });
+              }
+          }
       }
       return elements;
   }
@@ -1674,7 +1682,8 @@ RegularExpressionLiteral "regular expression" //changed
     }
 
 PrimaryExpression
-  = ThisToken       { return { type: "This" }; }
+  = MacroExpression
+  / ThisToken       { return { type: "This" }; }
   / name:Identifier { // changed
       if (metaVariables.statement.indexOf(name) >=0)
           throw new JSMacroSyntaxError(line, column, "Unexpected statement variable. Another type of variable or an expression must be here.");
@@ -1709,20 +1718,6 @@ ArgumentList // changed
     tail:(__ "," __ AssignmentExpression CommaEllipsis?)* {
         return makeElementsList(head, ellipsis, tail, 3, 4);
     }
-
-AssignmentExpression
-  = MacroExpression // add
-  / left:LeftHandSideExpression __
-    operator:AssignmentOperator __
-    right:AssignmentExpression {
-      return {
-        type:     "AssignmentExpression",
-        operator: operator,
-        left:     left,
-        right:    right
-      };
-    }
-  / ConditionalExpression
 
 Expression // changed
   = head:AssignmentExpression ellipsis:CommaEllipsis?
@@ -1881,10 +1876,10 @@ ExpressionToken = "expression"       !IdentifierPart { return "expression"; } //
 StatementToken  = "statement"        !IdentifierPart { return "statement"; } // added by homizu
 
 Ellipsis // added
-  = &{ return macroType; } __ "..."
+  = &{ return macroType; } (__ "...") (__ "...")*
 
 CommaEllipsis // added
-  = &{ return macroType; } __ "," __ "..."
+  = &{ return macroType; } (__ "," __ "...") (__ "," __ "...")*
 
 DeclarationStatement // added
   = MacroDefinition
