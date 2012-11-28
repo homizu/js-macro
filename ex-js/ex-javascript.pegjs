@@ -520,7 +520,8 @@ __
 /* ===== A.3 Expressions ===== */
 
 PrimaryExpression
-  = ThisToken       { return { type: "This" }; }
+  = MacroExpression // add
+  / ThisToken       { return { type: "This" }; }
   / name:Identifier { // changed
       if (metaVariables.statement.indexOf(name) >=0)
           throw new JSMacroSyntaxError(line, column, "Unexpected statement variable. Another type of variable or an expression must be here.");
@@ -1079,8 +1080,7 @@ ConditionalExpressionNoIn
   / LogicalORExpressionNoIn
 
 AssignmentExpression
-  = MacroExpression // add
-  / left:LeftHandSideExpression __
+  = left:LeftHandSideExpression __
     operator:AssignmentOperator __
     right:AssignmentExpression {
       return {

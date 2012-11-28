@@ -247,7 +247,6 @@ module.exports = (function(){
         "PropertyNameAndValueList": parse_PropertyNameAndValueList,
         "PropertyName": parse_PropertyName,
         "ArgumentList": parse_ArgumentList,
-        "AssignmentExpression": parse_AssignmentExpression,
         "Expression": parse_Expression,
         "ExpressionNoIn": parse_ExpressionNoIn,
         "Statement": parse_Statement,
@@ -16070,64 +16069,70 @@ module.exports = (function(){
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
         
-        pos0 = clone(pos);
-        result0 = parse_ThisToken();
-        if (result0 !== null) {
-          result0 = (function(offset, line, column) { return { type: "This" }; })(pos0.offset, pos0.line, pos0.column);
-        }
-        if (result0 === null) {
-          pos = clone(pos0);
-        }
+        result0 = parse_MacroExpression();
         if (result0 === null) {
           pos0 = clone(pos);
-          result0 = parse_Identifier();
+          result0 = parse_ThisToken();
           if (result0 !== null) {
-            result0 = (function(offset, line, column, name) { // changed
-                if (metaVariables.statement.indexOf(name) >=0)
-                    throw new JSMacroSyntaxError(line, column, "Unexpected statement variable. Another type of variable or an expression must be here.");
-                else
-                    return { type: "Variable", name: name };
-              })(pos0.offset, pos0.line, pos0.column, result0);
+            result0 = (function(offset, line, column) { return { type: "This" }; })(pos0.offset, pos0.line, pos0.column);
           }
           if (result0 === null) {
             pos = clone(pos0);
           }
           if (result0 === null) {
-            result0 = parse_Literal();
+            pos0 = clone(pos);
+            result0 = parse_Identifier();
+            if (result0 !== null) {
+              result0 = (function(offset, line, column, name) { // changed
+                  if (metaVariables.statement.indexOf(name) >=0)
+                      throw new JSMacroSyntaxError(line, column, "Unexpected statement variable. Another type of variable or an expression must be here.");
+                  else
+                      return { type: "Variable", name: name };
+                })(pos0.offset, pos0.line, pos0.column, result0);
+            }
             if (result0 === null) {
-              result0 = parse_ArrayLiteral();
+              pos = clone(pos0);
+            }
+            if (result0 === null) {
+              result0 = parse_Literal();
               if (result0 === null) {
-                result0 = parse_ObjectLiteral();
+                result0 = parse_ArrayLiteral();
                 if (result0 === null) {
-                  pos0 = clone(pos);
-                  pos1 = clone(pos);
-                  if (input.charCodeAt(pos.offset) === 40) {
-                    result0 = "(";
-                    advance(pos, 1);
-                  } else {
-                    result0 = null;
-                    if (reportFailures === 0) {
-                      matchFailed("\"(\"");
+                  result0 = parse_ObjectLiteral();
+                  if (result0 === null) {
+                    pos0 = clone(pos);
+                    pos1 = clone(pos);
+                    if (input.charCodeAt(pos.offset) === 40) {
+                      result0 = "(";
+                      advance(pos, 1);
+                    } else {
+                      result0 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\"(\"");
+                      }
                     }
-                  }
-                  if (result0 !== null) {
-                    result1 = parse___();
-                    if (result1 !== null) {
-                      result2 = parse_Expression();
-                      if (result2 !== null) {
-                        result3 = parse___();
-                        if (result3 !== null) {
-                          if (input.charCodeAt(pos.offset) === 41) {
-                            result4 = ")";
-                            advance(pos, 1);
-                          } else {
-                            result4 = null;
-                            if (reportFailures === 0) {
-                              matchFailed("\")\"");
+                    if (result0 !== null) {
+                      result1 = parse___();
+                      if (result1 !== null) {
+                        result2 = parse_Expression();
+                        if (result2 !== null) {
+                          result3 = parse___();
+                          if (result3 !== null) {
+                            if (input.charCodeAt(pos.offset) === 41) {
+                              result4 = ")";
+                              advance(pos, 1);
+                            } else {
+                              result4 = null;
+                              if (reportFailures === 0) {
+                                matchFailed("\")\"");
+                              }
                             }
-                          }
-                          if (result4 !== null) {
-                            result0 = [result0, result1, result2, result3, result4];
+                            if (result4 !== null) {
+                              result0 = [result0, result1, result2, result3, result4];
+                            } else {
+                              result0 = null;
+                              pos = clone(pos1);
+                            }
                           } else {
                             result0 = null;
                             pos = clone(pos1);
@@ -16144,15 +16149,12 @@ module.exports = (function(){
                       result0 = null;
                       pos = clone(pos1);
                     }
-                  } else {
-                    result0 = null;
-                    pos = clone(pos1);
-                  }
-                  if (result0 !== null) {
-                    result0 = (function(offset, line, column, expression) { return expression; })(pos0.offset, pos0.line, pos0.column, result0[2]);
-                  }
-                  if (result0 === null) {
-                    pos = clone(pos0);
+                    if (result0 !== null) {
+                      result0 = (function(offset, line, column, expression) { return expression; })(pos0.offset, pos0.line, pos0.column, result0[2]);
+                    }
+                    if (result0 === null) {
+                      pos = clone(pos0);
+                    }
                   }
                 }
               }
@@ -16639,77 +16641,6 @@ module.exports = (function(){
         }
         if (result0 === null) {
           pos = clone(pos0);
-        }
-        
-        cache[cacheKey] = {
-          nextPos: clone(pos),
-          result:  result0
-        };
-        return result0;
-      }
-      
-      function parse_AssignmentExpression() {
-        var cacheKey = "AssignmentExpression@" + pos.offset;
-        var cachedResult = cache[cacheKey];
-        if (cachedResult) {
-          pos = clone(cachedResult.nextPos);
-          return cachedResult.result;
-        }
-        
-        var result0, result1, result2, result3, result4;
-        var pos0, pos1;
-        
-        result0 = parse_MacroExpression();
-        if (result0 === null) {
-          pos0 = clone(pos);
-          pos1 = clone(pos);
-          result0 = parse_LeftHandSideExpression();
-          if (result0 !== null) {
-            result1 = parse___();
-            if (result1 !== null) {
-              result2 = parse_AssignmentOperator();
-              if (result2 !== null) {
-                result3 = parse___();
-                if (result3 !== null) {
-                  result4 = parse_AssignmentExpression();
-                  if (result4 !== null) {
-                    result0 = [result0, result1, result2, result3, result4];
-                  } else {
-                    result0 = null;
-                    pos = clone(pos1);
-                  }
-                } else {
-                  result0 = null;
-                  pos = clone(pos1);
-                }
-              } else {
-                result0 = null;
-                pos = clone(pos1);
-              }
-            } else {
-              result0 = null;
-              pos = clone(pos1);
-            }
-          } else {
-            result0 = null;
-            pos = clone(pos1);
-          }
-          if (result0 !== null) {
-            result0 = (function(offset, line, column, left, operator, right) {
-                return {
-                  type:     "AssignmentExpression",
-                  operator: operator,
-                  left:     left,
-                  right:    right
-                };
-              })(pos0.offset, pos0.line, pos0.column, result0[0], result0[2], result0[4]);
-          }
-          if (result0 === null) {
-            pos = clone(pos0);
-          }
-          if (result0 === null) {
-            result0 = parse_ConditionalExpression();
-          }
         }
         
         cache[cacheKey] = {

@@ -1674,7 +1674,8 @@ RegularExpressionLiteral "regular expression" //changed
     }
 
 PrimaryExpression
-  = ThisToken       { return { type: "This" }; }
+  = MacroExpression
+  / ThisToken       { return { type: "This" }; }
   / name:Identifier { // changed
       if (metaVariables.statement.indexOf(name) >=0)
           throw new JSMacroSyntaxError(line, column, "Unexpected statement variable. Another type of variable or an expression must be here.");
@@ -1709,20 +1710,6 @@ ArgumentList // changed
     tail:(__ "," __ AssignmentExpression CommaEllipsis?)* {
         return makeElementsList(head, ellipsis, tail, 3, 4);
     }
-
-AssignmentExpression
-  = MacroExpression // add
-  / left:LeftHandSideExpression __
-    operator:AssignmentOperator __
-    right:AssignmentExpression {
-      return {
-        type:     "AssignmentExpression",
-        operator: operator,
-        left:     left,
-        right:    right
-      };
-    }
-  / ConditionalExpression
 
 Expression // changed
   = head:AssignmentExpression ellipsis:CommaEllipsis?
