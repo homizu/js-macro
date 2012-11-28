@@ -4,10 +4,10 @@ ExpressionToken = "expression"       !IdentifierPart { return "expression"; } //
 StatementToken  = "statement"        !IdentifierPart { return "statement"; } // added by homizu
 
 Ellipsis // added
-  = &{ return macroType; } __ "..."
+  = &{ return macroType; } (__ "...") (__ "...")*
 
 CommaEllipsis // added
-  = &{ return macroType; } __ "," __ "..."
+  = &{ return macroType; } (__ "," __ "...") (__ "," __ "...")*
 
 DeclarationStatement // added
   = MacroDefinition

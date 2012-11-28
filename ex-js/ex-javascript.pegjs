@@ -62,12 +62,20 @@
   // ...が出現する要素の並びからリストを作る関数
   var makeElementsList = function (head, ellipsis, tail, elementIndex, ellipsisIndex) {
       var elements = [head];
-      if (ellipsis)
-         elements.push({ type: "Ellipsis" });
+      if (ellipsis) {
+          elements.push({ type: "Ellipsis" });
+          for (var i=0; i<ellipsis[2].length; i++) {
+              elements.push({ type: "Ellipsis" });
+          }
+      }
       for (var i=0; i<tail.length; i++) {
           elements.push(tail[i][elementIndex]);
-          if (tail[i][ellipsisIndex])
-             elements.push({ type: "Ellipsis" });
+          if (tail[i][ellipsisIndex]) {
+              elements.push({ type: "Ellipsis" });
+              for (var j=0; j<tail[i][ellipsisIndex][2].length; j++) {
+                  elements.push({ type: "Ellipsis" });
+              }
+          }
       }
       return elements;
   }
@@ -552,10 +560,10 @@ Elision
   = "," (__ ",")*
 
 Ellipsis // added
-  = &{ return macroType; } __ "..."
+  = &{ return macroType; } (__ "...") (__ "...")*
 
 CommaEllipsis // added
-  = &{ return macroType; } __ "," __ "..."
+  = &{ return macroType; } (__ "," __ "...") (__ "," __ "...")*
 
 ObjectLiteral
   = "{" __ properties:(PropertyNameAndValueList __ ("," __)?)? "}" {
