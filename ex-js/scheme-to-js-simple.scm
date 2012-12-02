@@ -334,7 +334,6 @@
         (body (cdr e)))
     (cond ((string=? type "expressions") (do-expressions body))
           ((string=? type "const") (bformat "~a" (car body)) #t)
-          ((string=? type "number") (bformat "~a" (car body)) #t)
           ((string=? type "string") (bformat "\"~a\"" ;; double quote
                                              (fold-left
                                               (lambda (str pat ins) (pregexp-replace* pat str ins))

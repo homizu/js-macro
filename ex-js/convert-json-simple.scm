@@ -82,13 +82,11 @@
      (hash-ref hash 'value))
     ((Expressions) ;; Expressions (AssignmentExpression, AssignmentExpression, ...)
      `("JS" "expressions" ,@(racket-hash-value->sexp hash 'elements)))
-    ((NumericLiteral) ;; NumericLiteral
-     `("JS" "number" ,(hash-ref hash 'value)))
     ((StringLiteral) ;; StringLiteral
      `("JS" "string" ,(hash-ref hash 'value)))
     ((NullLiteral) ;; NullLiteral
      `("JS" "const" "null"))
-    ((BooleanLiteral RegularExpressionLiteral) ;; BooleanLiteral, RegularExpressionLiteral
+    ((NumericLiteral BooleanLiteral RegularExpressionLiteral) ;; BooleanLiteral, RegularExpressionLiteral
      `("JS" "const" ,(hash-ref hash 'value)))
     ((This) ;; This
      `("JS" "const" "this"))
